@@ -552,14 +552,15 @@ void SDLInterface::BltClipF(Image *theImage, float theX, float theY, const Rect 
 	SDL_SetTextureScaleMode(aTexture, theDrawMode ? SDL_SCALEMODE_LINEAR : SDL_SCALEMODE_NEAREST);
 
 	SDL_FRect destRect = {theX, theY, theSrcRect.mWidth, theSrcRect.mHeight};
-	SDL_Rect clipRect;
-	if (theClipRect == nullptr)
-		clipRect = {0, 0, theImage->mWidth, theImage->mHeight};
-	else
+	if (theClipRect != nullptr)
+	{
+		SDL_Rect clipRect;
 		clipRect = {theClipRect->mX, theClipRect->mY, theClipRect->mWidth, theClipRect->mHeight};
+		SDL_SetRenderClipRect(mRenderer, &clipRect);
+	}
+
 	SDL_FRect srcRect = {theSrcRect.mX, theSrcRect.mY, theSrcRect.mWidth, theSrcRect.mHeight};
 
-	SDL_SetRenderClipRect(mRenderer, &clipRect);
 	SDL_SetTextureBlendMode(aTexture, ChooseBlendMode(theDrawMode));
 	SDL_RenderTexture(mRenderer, aTexture, &srcRect, &destRect);
 	SDL_SetRenderClipRect(mRenderer, nullptr);
@@ -609,20 +610,16 @@ void SDLInterface::StretchBlt(Image *theImage, const Rect &theDestRect, const Re
 	SDL_FRect destRect = {(float)theDestRect.mX, (float)theDestRect.mY, (float)theDestRect.mWidth,
 						  (float)theDestRect.mHeight};
 
-	SDL_Rect clipRect;
-	if (theClipRect == nullptr)
+	if (theClipRect != nullptr)
 	{
-		clipRect = {0, 0, theImage->mWidth, theImage->mHeight};
-	}
-	else
-	{
+		SDL_Rect clipRect;
 		clipRect = {theClipRect->mX, theClipRect->mY, theClipRect->mWidth, theClipRect->mHeight};
+		SDL_SetRenderClipRect(mRenderer, &clipRect);
 	}
 
 	SDL_FRect srcRect = {(float)theSrcRect.mX, (float)theSrcRect.mY, (float)theSrcRect.mWidth,
 						 (float)theSrcRect.mHeight};
 
-	SDL_SetRenderClipRect(mRenderer, &clipRect);
 	SDL_SetTextureBlendMode(aTexture, ChooseBlendMode(theDrawMode));
 	SDL_RenderTextureRotated(mRenderer, aTexture, &srcRect, &destRect, 0.0, nullptr,
 							 mirror ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
@@ -652,19 +649,15 @@ void SDLInterface::BltRotated(Image *theImage, float theX, float theY, const Rec
 	SDL_FRect srcRect = {static_cast<float>(theSrcRect.mX), static_cast<float>(theSrcRect.mY),
 						 static_cast<float>(theSrcRect.mWidth), static_cast<float>(theSrcRect.mHeight)};
 
-	SDL_Rect clipRect;
-	if (theClipRect)
+	if (theClipRect != nullptr)
 	{
+		SDL_Rect clipRect;
 		clipRect = {theClipRect->mX, theClipRect->mY, theClipRect->mWidth, theClipRect->mHeight};
-	}
-	else
-	{
-		clipRect = {0, 0, theImage->mWidth, theImage->mHeight};
+		SDL_SetRenderClipRect(mRenderer, &clipRect);
 	}
 
 	SDL_FPoint rotationCenter = {theRotCenterX, theRotCenterY};
 
-	SDL_SetRenderClipRect(mRenderer, &clipRect);
 	SDL_SetTextureBlendMode(aTexture, ChooseBlendMode(theDrawMode));
 	SDL_RenderTextureRotated(mRenderer, aTexture, &srcRect, &destRect, theRot, &rotationCenter, SDL_FLIP_NONE);
 	SDL_SetRenderClipRect(mRenderer, nullptr);
@@ -690,9 +683,12 @@ void SDLInterface::BltTransformed(Image *theImage, const Rect *theClipRect, cons
 	SDL_SetTextureColorMod(aTexture, theColor.GetRed(), theColor.GetGreen(), theColor.GetBlue());
 	SDL_SetTextureAlphaMod(aTexture, theColor.GetAlpha());
 
-	SDL_Rect clipRect = theClipRect
-							? SDL_Rect{theClipRect->mX, theClipRect->mY, theClipRect->mWidth, theClipRect->mHeight}
-							: SDL_Rect{0, 0, theImage->mWidth, theImage->mHeight};
+	if (theClipRect != nullptr)
+	{
+		SDL_Rect clipRect;
+		clipRect = {theClipRect->mX, theClipRect->mY, theClipRect->mWidth, theClipRect->mHeight};
+		SDL_SetRenderClipRect(mRenderer, &clipRect);
+	}
 
 	SDL_SetTextureBlendMode(aTexture, ChooseBlendMode(theDrawMode));
 
@@ -725,7 +721,6 @@ void SDLInterface::BltTransformed(Image *theImage, const Rect *theClipRect, cons
 
 	int indices[] = {0, 1, 2, 1, 3, 2};
 
-	SDL_SetRenderClipRect(mRenderer, &clipRect);
 	SDL_RenderGeometry(mRenderer, aTexture, vertices, 4, indices, 6);
 	SDL_SetRenderClipRect(mRenderer, nullptr);
 	SDL_SetRenderTarget(mRenderer, nullptr);
@@ -913,14 +908,28 @@ void SDLInterface::FillPoly(const Point theVertices[], int theNumVertices, const
 							const Color &theColor, int theDrawMode, int tx, int ty)
 {
 	if (theNumVertices < 3)
-		return;
+		if (theNumVertices == 2)
+		{
+			DrawLine(theVertices[0].mX + tx, theVertices[0].mY + ty, theVertices[1].mX + tx, theVertices[1].mY + ty, theColor, theDrawMode);
+			return;
+		}
+			
+
+	if (theClipRect != nullptr)
+	{
+		SDL_Rect clipRect;
+		clipRect = {theClipRect->mX, theClipRect->mY, theClipRect->mWidth, theClipRect->mHeight};
+		SDL_SetRenderClipRect(mRenderer, &clipRect);
+	}
 
 	for (int i = 0; i < theNumVertices - 1; i++)
-		DrawLine(theVertices[i].mX, theVertices[i].mY, theVertices[i + 1].mX, theVertices[i + 1].mY, theColor,
+		DrawLine(theVertices[i].mX + tx, theVertices[i].mY + ty, theVertices[i + 1].mX + tx, theVertices[i + 1].mY + ty, theColor,
 				 theDrawMode);
 
-	DrawLine(theVertices[theNumVertices - 1].mX, theVertices[theNumVertices - 1].mY, theVertices[0].mX,
-			 theVertices[0].mY, theColor, theDrawMode);
+	DrawLine(theVertices[theNumVertices - 1].mX + tx, theVertices[theNumVertices - 1].mY + ty, theVertices[0].mX + tx,
+			 theVertices[0].mY + ty, theColor, theDrawMode);
+
+	SDL_SetRenderClipRect(mRenderer, nullptr);
 }
 
 void SDLInterface::BltTexture(SDL_Texture *theTexture, const SDL_FRect &theSrcRect, const SDL_FRect &theDestRect,
