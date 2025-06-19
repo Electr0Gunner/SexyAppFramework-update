@@ -2,6 +2,8 @@
 *.pdb
 *.ilk
 
+.cache/
+
 .vs/
 .idea/
 

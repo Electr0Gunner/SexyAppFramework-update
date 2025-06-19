@@ -19,8 +19,13 @@
 #include <list>
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstddef>
 
 extern void DumpUnfreed();
+
+#ifndef _MSC_VER
+#define __cdecl
+#endif
 
 #if defined(MEMTRACE) && !defined(RELEASEFINAL)
 

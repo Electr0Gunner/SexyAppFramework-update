@@ -11,6 +11,7 @@
 #include <memory>
 #include <cstdio>
 #include <fstream>
+#include <vector> // how is this not included.
 
 class PakCollection;
 

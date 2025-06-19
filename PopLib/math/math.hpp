@@ -25,7 +25,7 @@ class Math
 
 	inline static float Fabs(float x)
 	{
-		return std::fabsf(x);
+		return (float)std::fabs(x);
 	}
 
 	inline static float DegToRad(float degrees)
@@ -59,12 +59,12 @@ class Math
 		return std::fabs(a - b) <= epsilon;
 	}
 
-	inline static float Sin(float angleRadians) { return std::sinf(angleRadians); }
-	inline static float Cos(float angleRadians) { return std::cosf(angleRadians); }
-	inline static float Tan(float angleRadians) { return std::tanf(angleRadians); }
-	inline static float Asin(float x) { return std::asinf(x); }
-	inline static float Acos(float x) { return std::acosf(x); }
-	inline static float Atan2(float y, float x) { return std::atan2f(y, x); }
+	inline static float Sin(float angleRadians) { return (float)std::sin(angleRadians); }
+	inline static float Cos(float angleRadians) { return (float)std::cos(angleRadians); }
+	inline static float Tan(float angleRadians) { return (float)std::tan(angleRadians); }
+	inline static float Asin(float x) { return (float)std::asin(x); }
+	inline static float Acos(float x) { return (float)std::acos(x); }
+	inline static float Atan2(float y, float x) { return (float)std::atan2(y, x); }
 
 	template <typename T> int Sign(T val) {
     return (T(0) < val) - (val < T(0));

@@ -17,7 +17,7 @@ namespace PopLib
 #ifdef _WIN32
 std::string gAppDataFolder = std::filesystem::path(std::getenv("LOCALAPPDATA")).string() + "/";
 #else
-std::string gAppDataFolder = std::filesystem::path(std::getenv("HOME")).string() + ".config/";
+std::string gAppDataFolder = std::filesystem::path(std::getenv("HOME")).string() + "/.config/";
 #endif
 }
 
