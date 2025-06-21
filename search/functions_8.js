@@ -1,15 +1,15 @@
 var searchData=
 [
-  ['imguimanager_0',['ImGuiManager',['../classPopWork_1_1ImGuiManager.html#a0ab4acf67dc63c7f47318d82473aceec',1,'PopWork::ImGuiManager']]],
-  ['init_1',['Init',['../classPopWork_1_1AppBase.html#ae2e13d9a0c2964b684cdcebfd017c729',1,'PopWork::AppBase']]],
-  ['inithook_2',['InitHook',['../classPopWork_1_1AppBase.html#ac60d59096b6517e446faceaa2378bfd7',1,'PopWork::AppBase']]],
-  ['initpropertieshook_3',['InitPropertiesHook',['../classPopWork_1_1AppBase.html#ada4dc5800d94af88035e921e25dd079b',1,'PopWork::AppBase']]],
-  ['initsdlinterface_4',['InitSDLInterface',['../classPopWork_1_1AppBase.html#ad4ec5e148dac7ebba0f7da51db8e0822',1,'PopWork::AppBase']]],
-  ['is3daccelerated_5',['Is3DAccelerated',['../classPopWork_1_1AppBase.html#abdb6c0e27457b2c22e7075f7e581c561',1,'PopWork::AppBase']]],
-  ['is3daccelerationrecommended_6',['Is3DAccelerationRecommended',['../classPopWork_1_1AppBase.html#a0c169bba15b7950c271b72b125074b0a',1,'PopWork::AppBase']]],
-  ['is3daccelerationsupported_7',['Is3DAccelerationSupported',['../classPopWork_1_1AppBase.html#a311b8e69e7c715abb6ab7a716eb3f1c2',1,'PopWork::AppBase']]],
-  ['isaltkeyused_8',['IsAltKeyUsed',['../classPopWork_1_1AppBase.html#a013d82c710bb0ffd134da73f00938a87',1,'PopWork::AppBase']]],
-  ['ismuted_9',['IsMuted',['../classPopWork_1_1AppBase.html#a8607921dcd604c0d3d33074119f3356c',1,'PopWork::AppBase']]],
-  ['isplaying_10',['isplaying',['../classPopWork_1_1BassMusicInterface.html#abdc1efe80ffbf02c7c25a9eff68c7879',1,'PopWork::BassMusicInterface::IsPlaying()'],['../classPopWork_1_1MusicInterface.html#ab14fbdf12df7d693cf5b25fec4ba6e4d',1,'PopWork::MusicInterface::IsPlaying()']]],
-  ['isscreensaver_11',['IsScreenSaver',['../classPopWork_1_1AppBase.html#aa6f6138a4f880707201d1929e836d58a',1,'PopWork::AppBase']]]
+  ['imguimanager_0',['ImGuiManager',['../classPopLib_1_1ImGuiManager.html#a091010f641cbfdba0fbf92d48c066faa',1,'PopLib::ImGuiManager']]],
+  ['init_1',['Init',['../classPopLib_1_1AppBase.html#a312a6bf31eda92766d48ad03b4c120cc',1,'PopLib::AppBase']]],
+  ['inithook_2',['InitHook',['../classPopLib_1_1AppBase.html#a3e1b94852974a2b3a705074c0248bbc3',1,'PopLib::AppBase']]],
+  ['initpropertieshook_3',['InitPropertiesHook',['../classPopLib_1_1AppBase.html#a1fa6ba0e745fcf523c0affa5002f6f80',1,'PopLib::AppBase']]],
+  ['initsdlinterface_4',['InitSDLInterface',['../classPopLib_1_1AppBase.html#ab9a32c40843d3c4615fece3f1fef8e4a',1,'PopLib::AppBase']]],
+  ['is3daccelerated_5',['Is3DAccelerated',['../classPopLib_1_1AppBase.html#acf9260bf93c390b3d61227509af614e3',1,'PopLib::AppBase']]],
+  ['is3daccelerationrecommended_6',['Is3DAccelerationRecommended',['../classPopLib_1_1AppBase.html#a57b81a364a9aba1190098ff82552f7f5',1,'PopLib::AppBase']]],
+  ['is3daccelerationsupported_7',['Is3DAccelerationSupported',['../classPopLib_1_1AppBase.html#a4c3e3bd759f9a935ef8d8c1ca574f0f8',1,'PopLib::AppBase']]],
+  ['isaltkeyused_8',['IsAltKeyUsed',['../classPopLib_1_1AppBase.html#af7d63258c09a22fcff5cc84f31e8029d',1,'PopLib::AppBase']]],
+  ['ismuted_9',['IsMuted',['../classPopLib_1_1AppBase.html#a9f9e6566c64ef3230fe304db1a0ea76a',1,'PopLib::AppBase']]],
+  ['isplaying_10',['isplaying',['../classPopLib_1_1BassMusicInterface.html#ab455cc5409c5ded64013c5f3599e47a8',1,'PopLib::BassMusicInterface::IsPlaying()'],['../classPopLib_1_1MusicInterface.html#a0a429cacddb10a2089d01c2aa04b7b80',1,'PopLib::MusicInterface::IsPlaying()']]],
+  ['isscreensaver_11',['IsScreenSaver',['../classPopLib_1_1AppBase.html#af247dfa47bd7ea5d1ba29a43084c1ae9',1,'PopLib::AppBase']]]
 ];

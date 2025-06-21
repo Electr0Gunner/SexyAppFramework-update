@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['handlecmdlineparam_0',['HandleCmdLineParam',['../classPopWork_1_1AppBase.html#a37d21126222467b97d0248a18e5b7a9a',1,'PopWork::AppBase']]],
-  ['handlegamealreadyrunning_1',['HandleGameAlreadyRunning',['../classPopWork_1_1AppBase.html#add3ad6a2d333aa112b0a29c31943ac4e',1,'PopWork::AppBase']]],
-  ['handlenotifygamemessage_2',['HandleNotifyGameMessage',['../classPopWork_1_1AppBase.html#a1a6eb90651c157ab1ffb75057b1be005',1,'PopWork::AppBase']]],
-  ['hsltorgb_3',['hsltorgb',['../classPopWork_1_1AppBase.html#a24696b1c1b33a93ee0ac7d87a86b2c77',1,'PopWork::AppBase::HSLToRGB(int h, int s, int l)'],['../classPopWork_1_1AppBase.html#ad01215559760d45358a9d33c25375517',1,'PopWork::AppBase::HSLToRGB(const ulong *theSource, ulong *theDest, int theSize)']]]
+  ['handlecmdlineparam_0',['HandleCmdLineParam',['../classPopLib_1_1AppBase.html#a4272d3d513acebb21a5aafff698393e9',1,'PopLib::AppBase']]],
+  ['handlegamealreadyrunning_1',['HandleGameAlreadyRunning',['../classPopLib_1_1AppBase.html#ad5b35b412d396323400db0b982ac7bc9',1,'PopLib::AppBase']]],
+  ['handlenotifygamemessage_2',['HandleNotifyGameMessage',['../classPopLib_1_1AppBase.html#a232a98b71fbe656c22ee2221c517b286',1,'PopLib::AppBase']]],
+  ['hsltorgb_3',['hsltorgb',['../classPopLib_1_1AppBase.html#a78638a1220ecc65264865d6a0a9b89c0',1,'PopLib::AppBase::HSLToRGB(int h, int s, int l)'],['../classPopLib_1_1AppBase.html#af69da44686c977a3dc717483c5328761',1,'PopLib::AppBase::HSLToRGB(const ulong *theSource, ulong *theDest, int theSize)']]]
 ];

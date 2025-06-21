@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['imguimanager_0',['ImGuiManager',['../classPopWork_1_1ImGuiManager.html',1,'PopWork']]],
-  ['imguiwindowentry_1',['ImGuiWindowEntry',['../structImGuiWindowEntry.html',1,'']]]
+  ['gpakfileentry_0',['GPAKFileEntry',['../structGPAKFileEntry.html',1,'']]],
+  ['gpakheader_1',['GPAKHeader',['../structGPAKHeader.html',1,'']]]
 ];

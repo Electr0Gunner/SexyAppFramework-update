@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PopWork: /home/runner/work/PopLib/PopLib/PopWork/math/mtrand.hpp Source File</title>
+<title>PopLib: /home/runner/work/PopLib/PopLib/PopLib/math/mtrand.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PopWork
+   <div id="projectname">PopLib
    </div>
   </td>
  </tr>
@@ -74,7 +74,7 @@ $(document).ready(function() { init_codefold(0); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_3292b6b34698b1d2a9a2069f287b8510.html">PopWork</a></li><li class="navelem"><a class="el" href="dir_39d0432883be56ea54543dc6929e4f8d.html">math</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_2fcea83f96a9adc922f9f17156c14770.html">PopLib</a></li><li class="navelem"><a class="el" href="dir_9793d5717cc5fa2582f0747bcc499e36.html">math</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -100,7 +100,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#undef min</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacePopWork.html">PopWork</a></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacePopLib.html">PopLib</a></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>{</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#define MTRAND_N 624</span></div>
@@ -119,12 +119,12 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        engine.seed(seq);</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacePopWork.html#afdf3b84bd14648b5f70d30eb77ddf6a6">SRand</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> seed)</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacePopLib.html#aaa38ea886774d47fbad8a72024391b47">SRand</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> seed)</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    {</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        engine.seed(seed == 0 ? 4357UL : seed);</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    }</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacePopWork.html#afdf3b84bd14648b5f70d30eb77ddf6a6">SRand</a>(<span class="keyword">const</span> std::string &amp;serialData)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacePopLib.html#aaa38ea886774d47fbad8a72024391b47">SRand</a>(<span class="keyword">const</span> std::string &amp;serialData)</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    {</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        std::seed_seq seq(serialData.begin(), serialData.end());</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        engine.seed(seq);</div>
@@ -206,11 +206,11 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    }</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>};</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>} <span class="comment">// namespace PopWork</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>} <span class="comment">// namespace PopLib</span></div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="anamespacePopWork_html"><div class="ttname"><a href="namespacePopWork.html">PopWork</a></div><div class="ttdoc">root namespace for all PopWork classes</div><div class="ttdef"><b>Definition</b> appbase.hpp:42</div></div>
-<div class="ttc" id="anamespacePopWork_html_afdf3b84bd14648b5f70d30eb77ddf6a6"><div class="ttname"><a href="namespacePopWork.html#afdf3b84bd14648b5f70d30eb77ddf6a6">PopWork::SRand</a></div><div class="ttdeci">void SRand(ulong theSeed)</div><div class="ttdoc">ulong random</div></div>
+<div class="ttc" id="anamespacePopLib_html"><div class="ttname"><a href="namespacePopLib.html">PopLib</a></div><div class="ttdoc">root namespace for all PopLib classes</div><div class="ttdef"><b>Definition</b> appbase.hpp:42</div></div>
+<div class="ttc" id="anamespacePopLib_html_aaa38ea886774d47fbad8a72024391b47"><div class="ttname"><a href="namespacePopLib.html#aaa38ea886774d47fbad8a72024391b47">PopLib::SRand</a></div><div class="ttdeci">void SRand(ulong theSeed)</div><div class="ttdoc">ulong random</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

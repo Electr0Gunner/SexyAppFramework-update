@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PopWork: /home/runner/work/PopLib/PopLib/PopWork/graphics/imagefont.hpp Source File</title>
+<title>PopLib: /home/runner/work/PopLib/PopLib/PopLib/graphics/imagefont.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PopWork
+   <div id="projectname">PopLib
    </div>
   </td>
  </tr>
@@ -74,7 +74,7 @@ $(document).ready(function() { init_codefold(0); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_3292b6b34698b1d2a9a2069f287b8510.html">PopWork</a></li><li class="navelem"><a class="el" href="dir_486aaa917dc2823170659a496423c749.html">graphics</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_2fcea83f96a9adc922f9f17156c14770.html">PopLib</a></li><li class="navelem"><a class="el" href="dir_932867eee50af87a001463a3ba75a8f8.html">graphics</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -91,7 +91,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;readwrite/descparser.hpp&quot;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;sharedimage.hpp&quot;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacePopWork.html">PopWork</a></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacePopLib.html">PopLib</a></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>{</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">class </span>AppBase;</div>
@@ -174,7 +174,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">void</span> Ref();</div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">void</span> DeRef();</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">bool</span> Load(AppBase *thePopWorkApp, <span class="keyword">const</span> std::string &amp;theFontDescFileName);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">bool</span> Load(AppBase *thePopLibApp, <span class="keyword">const</span> std::string &amp;theFontDescFileName);</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">bool</span> LoadLegacy(Image *theFontImage, <span class="keyword">const</span> std::string &amp;theFontDescFileName);</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>};</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
@@ -226,7 +226,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                              <span class="keyword">const</span> Rect *theClipRect, RectList *theDrawnAreas, <span class="keywordtype">int</span> *theWidth);</div>
 <div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>  <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    ImageFont(AppBase *thePopWorkApp, <span class="keyword">const</span> std::string &amp;theFontDescFileName);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    ImageFont(AppBase *thePopLibApp, <span class="keyword">const</span> std::string &amp;theFontDescFileName);</div>
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    ImageFont(Image *theFontImage); <span class="comment">// for constructing your own image font without a file descriptor</span></div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    ImageFont(<span class="keyword">const</span> ImageFont &amp;theImageFont);</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keyword">virtual</span> ~ImageFont();</div>
@@ -257,10 +257,10 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> Prepare();</div>
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>};</div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>} <span class="comment">// namespace PopWork</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>} <span class="comment">// namespace PopLib</span></div>
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
 <div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="anamespacePopWork_html"><div class="ttname"><a href="namespacePopWork.html">PopWork</a></div><div class="ttdoc">root namespace for all PopWork classes</div><div class="ttdef"><b>Definition</b> appbase.hpp:42</div></div>
+<div class="ttc" id="anamespacePopLib_html"><div class="ttname"><a href="namespacePopLib.html">PopLib</a></div><div class="ttdoc">root namespace for all PopLib classes</div><div class="ttdef"><b>Definition</b> appbase.hpp:42</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['gappbase_0',['gAppBase',['../namespacePopWork.html#a6f25d4a51cead8012f292922abae8436',1,'PopWork']]],
-  ['gerrorhandler_1',['gErrorHandler',['../namespacePopWork.html#ac9b6652423c7ae93fcb0b075ef962074',1,'PopWork']]]
+  ['gappbase_0',['gAppBase',['../namespacePopLib.html#a3a4a394cf82c62932fdff6f509957832',1,'PopLib']]],
+  ['gerrorhandler_1',['gErrorHandler',['../namespacePopLib.html#a7f10ba56226fc7247eda3dab38a3948f',1,'PopLib']]]
 ];

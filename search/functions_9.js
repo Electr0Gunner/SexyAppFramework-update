@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['jsonparser_0',['JsonParser',['../classPopWork_1_1JsonParser.html#a6a1ae1fe22791b9b1b0a08165a8c268f',1,'PopWork::JsonParser']]]
+  ['jsonparser_0',['JsonParser',['../classPopLib_1_1JsonParser.html#ab20935c854f4369d8158a7fcba28154f',1,'PopLib::JsonParser']]]
 ];

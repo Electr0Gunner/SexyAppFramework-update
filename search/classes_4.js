@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['jsonparser_0',['JsonParser',['../classPopWork_1_1JsonParser.html',1,'PopWork']]]
+  ['imguimanager_0',['ImGuiManager',['../classPopLib_1_1ImGuiManager.html',1,'PopLib']]],
+  ['imguiwindowentry_1',['ImGuiWindowEntry',['../structImGuiWindowEntry.html',1,'']]]
 ];

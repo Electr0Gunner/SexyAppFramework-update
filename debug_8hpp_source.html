@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PopWork: /home/runner/work/PopLib/PopLib/PopWork/debug/debug.hpp Source File</title>
+<title>PopLib: /home/runner/work/PopLib/PopLib/PopLib/debug/debug.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PopWork
+   <div id="projectname">PopLib
    </div>
   </td>
  </tr>
@@ -74,7 +74,7 @@ $(document).ready(function() { init_codefold(0); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_3292b6b34698b1d2a9a2069f287b8510.html">PopWork</a></li><li class="navelem"><a class="el" href="dir_0f3d7673de222c11329e83ddff8a081c.html">debug</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_2fcea83f96a9adc922f9f17156c14770.html">PopLib</a></li><li class="navelem"><a class="el" href="dir_471b6c2a9eb66567c19200e2dbf9cbb2.html">debug</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -92,14 +92,14 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">extern</span> <span class="keywordtype">bool</span> gInAssert;</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#ifdef POPWORK_TRACING_ENABLED</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keywordtype">void</span> PopWorkTrace(<span class="keyword">const</span> <span class="keywordtype">char</span> *theStr);</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#define POPWORK_TRACE(theStr) PopWorkTrace(theStr)</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#ifdef TRACING_ENABLED</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keywordtype">void</span> Trace(<span class="keyword">const</span> <span class="keywordtype">char</span> *theStr);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#define TRACE(theStr) Trace(theStr)</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#define POPWORK_TRACE(theStr)</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#define TRACE(theStr)</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keywordtype">void</span> PopWorkTraceFmt(<span class="keyword">const</span> PopChar *fmt, ...);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keywordtype">void</span> TraceFmt(<span class="keyword">const</span> PopChar *fmt, ...);</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keywordtype">void</span> OutputDebug(<span class="keyword">const</span> PopChar *fmt, ...);</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#ifdef NDEBUG</span></div>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PopWork: /home/runner/work/PopLib/PopLib/PopWork/readwrite/jsonparser.hpp Source File</title>
+<title>PopLib: /home/runner/work/PopLib/PopLib/PopLib/readwrite/jsonparser.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PopWork
+   <div id="projectname">PopLib
    </div>
   </td>
  </tr>
@@ -74,7 +74,7 @@ $(document).ready(function() { init_codefold(0); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_3292b6b34698b1d2a9a2069f287b8510.html">PopWork</a></li><li class="navelem"><a class="el" href="dir_45551362a47c81d37abf597804feda2f.html">readwrite</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_2fcea83f96a9adc922f9f17156c14770.html">PopLib</a></li><li class="navelem"><a class="el" href="dir_5c50c78bae5b020167d84f8c829d49a9.html">readwrite</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -93,49 +93,51 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">struct </span><a class="code hl_struct" href="structPFILE.html">PFILE</a>;</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacePopWork.html">PopWork</a></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacePopLib.html">PopLib</a></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>{</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
 <div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classPopWork_1_1JsonParser.html">   19</a></span><span class="keyword">class </span><a class="code hl_class" href="classPopWork_1_1JsonParser.html">JsonParser</a></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classPopLib_1_1JsonParser.html">   19</a></span><span class="keyword">class </span><a class="code hl_class" href="classPopLib_1_1JsonParser.html">JsonParser</a></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  <span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classPopWork_1_1JsonParser.html#ac0020a04d7985efd6c1ec18c21087f38">   23</a></span>    std::string <a class="code hl_variable" href="classPopWork_1_1JsonParser.html#ac0020a04d7985efd6c1ec18c21087f38">mFileName</a>;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classPopWork_1_1JsonParser.html#a09766a186a8a58cffe102a674fc1e998">   25</a></span>    PopString <a class="code hl_variable" href="classPopWork_1_1JsonParser.html#a09766a186a8a58cffe102a674fc1e998">mErrorText</a>;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classPopWork_1_1JsonParser.html#aed698507363328b63dc15a2384fd3f95">   27</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classPopWork_1_1JsonParser.html#aed698507363328b63dc15a2384fd3f95">mLineNum</a>;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classPopWork_1_1JsonParser.html#a1fdc2e3eb12016fd91431ec870a8d4c3">   29</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classPopWork_1_1JsonParser.html#a1fdc2e3eb12016fd91431ec870a8d4c3">mHasFailed</a>;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classPopWork_1_1JsonParser.html#a6654b2a67782bde9012ed85800e4d2a9">   31</a></span>    nlohmann::json <a class="code hl_variable" href="classPopWork_1_1JsonParser.html#a6654b2a67782bde9012ed85800e4d2a9">mJson</a>;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classPopWork_1_1JsonParser.html#a7c3e85f17ca256ea25403eb39038985e">   35</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classPopWork_1_1JsonParser.html#a7c3e85f17ca256ea25403eb39038985e">Fail</a>(<span class="keyword">const</span> PopString &amp;theErrorText);</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classPopWork_1_1JsonParser.html#a6a1ae1fe22791b9b1b0a08165a8c268f">   39</a></span>    <a class="code hl_function" href="classPopWork_1_1JsonParser.html#a6a1ae1fe22791b9b1b0a08165a8c268f">JsonParser</a>();</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classPopWork_1_1JsonParser.html#afab49edb242635c9dcef8e7db2726b17">   41</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classPopWork_1_1JsonParser.html#afab49edb242635c9dcef8e7db2726b17">~JsonParser</a>();</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classPopWork_1_1JsonParser.html#a2dcdfe1db30019592f1bbebeee29019b">   46</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classPopWork_1_1JsonParser.html#a2dcdfe1db30019592f1bbebeee29019b">OpenFile</a>(<span class="keyword">const</span> std::string &amp;theFilename);</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classPopWork_1_1JsonParser.html#a9ab25b2d70bdd586f71eb641813e1ff1">   51</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classPopWork_1_1JsonParser.html#a9ab25b2d70bdd586f71eb641813e1ff1">GetValueInt</a>(<span class="keyword">const</span> std::string &amp;theName);</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classPopWork_1_1JsonParser.html#a62c79d0bdb882606578b027609ae81b5">   55</a></span>    PopString <a class="code hl_function" href="classPopWork_1_1JsonParser.html#a62c79d0bdb882606578b027609ae81b5">GetValueStr</a>(<span class="keyword">const</span> std::string &amp;theName);</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>};</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classPopLib_1_1JsonParser.html#a763e2187b50dbec383575bff6f3e0c97">   23</a></span>        std::string <a class="code hl_variable" href="classPopLib_1_1JsonParser.html#a763e2187b50dbec383575bff6f3e0c97">mFileName</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classPopLib_1_1JsonParser.html#aeea360859721020f7ce369ab9ccb3532">   25</a></span>        PopString <a class="code hl_variable" href="classPopLib_1_1JsonParser.html#aeea360859721020f7ce369ab9ccb3532">mErrorText</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classPopLib_1_1JsonParser.html#a1633e12e802ce6bf45b75f1d93d3274d">   27</a></span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="classPopLib_1_1JsonParser.html#a1633e12e802ce6bf45b75f1d93d3274d">mLineNum</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classPopLib_1_1JsonParser.html#a487e33482b5bf027429679bec3bdae29">   29</a></span>        <span class="keywordtype">bool</span> <a class="code hl_variable" href="classPopLib_1_1JsonParser.html#a487e33482b5bf027429679bec3bdae29">mHasFailed</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classPopLib_1_1JsonParser.html#a58c4287424f893c298d8809c895478d7">   33</a></span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classPopLib_1_1JsonParser.html#a58c4287424f893c298d8809c895478d7">Fail</a>(<span class="keyword">const</span> PopString &amp;theErrorText);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classPopLib_1_1JsonParser.html#aefc6a264d2793d15e7519df455ccbb93">   37</a></span>        nlohmann::json <a class="code hl_variable" href="classPopLib_1_1JsonParser.html#aefc6a264d2793d15e7519df455ccbb93">mJson</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classPopLib_1_1JsonParser.html#ab20935c854f4369d8158a7fcba28154f">   41</a></span>        <a class="code hl_function" href="classPopLib_1_1JsonParser.html#ab20935c854f4369d8158a7fcba28154f">JsonParser</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classPopLib_1_1JsonParser.html#a919283ca6a34991edd7aef8f8e187dfa">   43</a></span>        <span class="keyword">virtual</span> <a class="code hl_function" href="classPopLib_1_1JsonParser.html#a919283ca6a34991edd7aef8f8e187dfa">~JsonParser</a>();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classPopLib_1_1JsonParser.html#ae6c286dee179dca437f66358242095ac">   48</a></span>        <span class="keywordtype">bool</span> <a class="code hl_function" href="classPopLib_1_1JsonParser.html#ae6c286dee179dca437f66358242095ac">OpenFile</a>(<span class="keyword">const</span> std::string &amp;theFilename);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classPopLib_1_1JsonParser.html#ab32f4b8da848a05d0e0125f3e42b1d6b">   53</a></span>        <span class="keywordtype">int</span> <a class="code hl_function" href="classPopLib_1_1JsonParser.html#ab32f4b8da848a05d0e0125f3e42b1d6b">GetValueInt</a>(<span class="keyword">const</span> std::string &amp;theName);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classPopLib_1_1JsonParser.html#a5d9ffeff64008b21de936ba8a8f0ac99">   57</a></span>        PopString <a class="code hl_function" href="classPopLib_1_1JsonParser.html#a5d9ffeff64008b21de936ba8a8f0ac99">GetValueStr</a>(<span class="keyword">const</span> std::string &amp;theName);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
 </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}; <span class="comment">// namespace PopWork</span></div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="preprocessor">#endif </span><span class="comment">//__JSONPARSER_HPP__</span></div>
-<div class="ttc" id="aclassPopWork_1_1JsonParser_html"><div class="ttname"><a href="classPopWork_1_1JsonParser.html">PopWork::JsonParser</a></div><div class="ttdoc">a parser for json</div><div class="ttdef"><b>Definition</b> jsonparser.hpp:20</div></div>
-<div class="ttc" id="aclassPopWork_1_1JsonParser_html_a09766a186a8a58cffe102a674fc1e998"><div class="ttname"><a href="classPopWork_1_1JsonParser.html#a09766a186a8a58cffe102a674fc1e998">PopWork::JsonParser::mErrorText</a></div><div class="ttdeci">PopString mErrorText</div><div class="ttdoc">the error text</div><div class="ttdef"><b>Definition</b> jsonparser.hpp:25</div></div>
-<div class="ttc" id="aclassPopWork_1_1JsonParser_html_a1fdc2e3eb12016fd91431ec870a8d4c3"><div class="ttname"><a href="classPopWork_1_1JsonParser.html#a1fdc2e3eb12016fd91431ec870a8d4c3">PopWork::JsonParser::mHasFailed</a></div><div class="ttdeci">bool mHasFailed</div><div class="ttdoc">true if failed</div><div class="ttdef"><b>Definition</b> jsonparser.hpp:29</div></div>
-<div class="ttc" id="aclassPopWork_1_1JsonParser_html_a2dcdfe1db30019592f1bbebeee29019b"><div class="ttname"><a href="classPopWork_1_1JsonParser.html#a2dcdfe1db30019592f1bbebeee29019b">PopWork::JsonParser::OpenFile</a></div><div class="ttdeci">bool OpenFile(const std::string &amp;theFilename)</div><div class="ttdoc">opens a file</div></div>
-<div class="ttc" id="aclassPopWork_1_1JsonParser_html_a62c79d0bdb882606578b027609ae81b5"><div class="ttname"><a href="classPopWork_1_1JsonParser.html#a62c79d0bdb882606578b027609ae81b5">PopWork::JsonParser::GetValueStr</a></div><div class="ttdeci">PopString GetValueStr(const std::string &amp;theName)</div><div class="ttdoc">gets a string from the json file</div></div>
-<div class="ttc" id="aclassPopWork_1_1JsonParser_html_a6654b2a67782bde9012ed85800e4d2a9"><div class="ttname"><a href="classPopWork_1_1JsonParser.html#a6654b2a67782bde9012ed85800e4d2a9">PopWork::JsonParser::mJson</a></div><div class="ttdeci">nlohmann::json mJson</div><div class="ttdoc">the nlohmann::json object</div><div class="ttdef"><b>Definition</b> jsonparser.hpp:31</div></div>
-<div class="ttc" id="aclassPopWork_1_1JsonParser_html_a6a1ae1fe22791b9b1b0a08165a8c268f"><div class="ttname"><a href="classPopWork_1_1JsonParser.html#a6a1ae1fe22791b9b1b0a08165a8c268f">PopWork::JsonParser::JsonParser</a></div><div class="ttdeci">JsonParser()</div><div class="ttdoc">constructor</div></div>
-<div class="ttc" id="aclassPopWork_1_1JsonParser_html_a7c3e85f17ca256ea25403eb39038985e"><div class="ttname"><a href="classPopWork_1_1JsonParser.html#a7c3e85f17ca256ea25403eb39038985e">PopWork::JsonParser::Fail</a></div><div class="ttdeci">void Fail(const PopString &amp;theErrorText)</div><div class="ttdoc">fail</div></div>
-<div class="ttc" id="aclassPopWork_1_1JsonParser_html_a9ab25b2d70bdd586f71eb641813e1ff1"><div class="ttname"><a href="classPopWork_1_1JsonParser.html#a9ab25b2d70bdd586f71eb641813e1ff1">PopWork::JsonParser::GetValueInt</a></div><div class="ttdeci">int GetValueInt(const std::string &amp;theName)</div><div class="ttdoc">gets an int from the json file</div></div>
-<div class="ttc" id="aclassPopWork_1_1JsonParser_html_ac0020a04d7985efd6c1ec18c21087f38"><div class="ttname"><a href="classPopWork_1_1JsonParser.html#ac0020a04d7985efd6c1ec18c21087f38">PopWork::JsonParser::mFileName</a></div><div class="ttdeci">std::string mFileName</div><div class="ttdoc">the json file name</div><div class="ttdef"><b>Definition</b> jsonparser.hpp:23</div></div>
-<div class="ttc" id="aclassPopWork_1_1JsonParser_html_aed698507363328b63dc15a2384fd3f95"><div class="ttname"><a href="classPopWork_1_1JsonParser.html#aed698507363328b63dc15a2384fd3f95">PopWork::JsonParser::mLineNum</a></div><div class="ttdeci">int mLineNum</div><div class="ttdoc">current line number</div><div class="ttdef"><b>Definition</b> jsonparser.hpp:27</div></div>
-<div class="ttc" id="aclassPopWork_1_1JsonParser_html_afab49edb242635c9dcef8e7db2726b17"><div class="ttname"><a href="classPopWork_1_1JsonParser.html#afab49edb242635c9dcef8e7db2726b17">PopWork::JsonParser::~JsonParser</a></div><div class="ttdeci">virtual ~JsonParser()</div><div class="ttdoc">destructor</div></div>
-<div class="ttc" id="anamespacePopWork_html"><div class="ttname"><a href="namespacePopWork.html">PopWork</a></div><div class="ttdoc">root namespace for all PopWork classes</div><div class="ttdef"><b>Definition</b> appbase.hpp:42</div></div>
-<div class="ttc" id="astructPFILE_html"><div class="ttname"><a href="structPFILE.html">PFILE</a></div><div class="ttdoc">file struct that allows to exist both locally and inside a .pak file</div><div class="ttdef"><b>Definition</b> pakinterface.hpp:58</div></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}; <span class="comment">// namespace PopLib</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="preprocessor">#endif </span><span class="comment">//__JSONPARSER_HPP__</span></div>
+<div class="ttc" id="aclassPopLib_1_1JsonParser_html"><div class="ttname"><a href="classPopLib_1_1JsonParser.html">PopLib::JsonParser</a></div><div class="ttdoc">a parser for json</div><div class="ttdef"><b>Definition</b> jsonparser.hpp:20</div></div>
+<div class="ttc" id="aclassPopLib_1_1JsonParser_html_a1633e12e802ce6bf45b75f1d93d3274d"><div class="ttname"><a href="classPopLib_1_1JsonParser.html#a1633e12e802ce6bf45b75f1d93d3274d">PopLib::JsonParser::mLineNum</a></div><div class="ttdeci">int mLineNum</div><div class="ttdoc">current line number</div><div class="ttdef"><b>Definition</b> jsonparser.hpp:27</div></div>
+<div class="ttc" id="aclassPopLib_1_1JsonParser_html_a487e33482b5bf027429679bec3bdae29"><div class="ttname"><a href="classPopLib_1_1JsonParser.html#a487e33482b5bf027429679bec3bdae29">PopLib::JsonParser::mHasFailed</a></div><div class="ttdeci">bool mHasFailed</div><div class="ttdoc">true if failed</div><div class="ttdef"><b>Definition</b> jsonparser.hpp:29</div></div>
+<div class="ttc" id="aclassPopLib_1_1JsonParser_html_a58c4287424f893c298d8809c895478d7"><div class="ttname"><a href="classPopLib_1_1JsonParser.html#a58c4287424f893c298d8809c895478d7">PopLib::JsonParser::Fail</a></div><div class="ttdeci">void Fail(const PopString &amp;theErrorText)</div><div class="ttdoc">fail</div></div>
+<div class="ttc" id="aclassPopLib_1_1JsonParser_html_a5d9ffeff64008b21de936ba8a8f0ac99"><div class="ttname"><a href="classPopLib_1_1JsonParser.html#a5d9ffeff64008b21de936ba8a8f0ac99">PopLib::JsonParser::GetValueStr</a></div><div class="ttdeci">PopString GetValueStr(const std::string &amp;theName)</div><div class="ttdoc">gets a string from the json file</div></div>
+<div class="ttc" id="aclassPopLib_1_1JsonParser_html_a763e2187b50dbec383575bff6f3e0c97"><div class="ttname"><a href="classPopLib_1_1JsonParser.html#a763e2187b50dbec383575bff6f3e0c97">PopLib::JsonParser::mFileName</a></div><div class="ttdeci">std::string mFileName</div><div class="ttdoc">the json file name</div><div class="ttdef"><b>Definition</b> jsonparser.hpp:23</div></div>
+<div class="ttc" id="aclassPopLib_1_1JsonParser_html_a919283ca6a34991edd7aef8f8e187dfa"><div class="ttname"><a href="classPopLib_1_1JsonParser.html#a919283ca6a34991edd7aef8f8e187dfa">PopLib::JsonParser::~JsonParser</a></div><div class="ttdeci">virtual ~JsonParser()</div><div class="ttdoc">destructor</div></div>
+<div class="ttc" id="aclassPopLib_1_1JsonParser_html_ab20935c854f4369d8158a7fcba28154f"><div class="ttname"><a href="classPopLib_1_1JsonParser.html#ab20935c854f4369d8158a7fcba28154f">PopLib::JsonParser::JsonParser</a></div><div class="ttdeci">JsonParser()</div><div class="ttdoc">constructor</div></div>
+<div class="ttc" id="aclassPopLib_1_1JsonParser_html_ab32f4b8da848a05d0e0125f3e42b1d6b"><div class="ttname"><a href="classPopLib_1_1JsonParser.html#ab32f4b8da848a05d0e0125f3e42b1d6b">PopLib::JsonParser::GetValueInt</a></div><div class="ttdeci">int GetValueInt(const std::string &amp;theName)</div><div class="ttdoc">gets an int from the json file</div></div>
+<div class="ttc" id="aclassPopLib_1_1JsonParser_html_ae6c286dee179dca437f66358242095ac"><div class="ttname"><a href="classPopLib_1_1JsonParser.html#ae6c286dee179dca437f66358242095ac">PopLib::JsonParser::OpenFile</a></div><div class="ttdeci">bool OpenFile(const std::string &amp;theFilename)</div><div class="ttdoc">opens a file</div></div>
+<div class="ttc" id="aclassPopLib_1_1JsonParser_html_aeea360859721020f7ce369ab9ccb3532"><div class="ttname"><a href="classPopLib_1_1JsonParser.html#aeea360859721020f7ce369ab9ccb3532">PopLib::JsonParser::mErrorText</a></div><div class="ttdeci">PopString mErrorText</div><div class="ttdoc">the error text</div><div class="ttdef"><b>Definition</b> jsonparser.hpp:25</div></div>
+<div class="ttc" id="aclassPopLib_1_1JsonParser_html_aefc6a264d2793d15e7519df455ccbb93"><div class="ttname"><a href="classPopLib_1_1JsonParser.html#aefc6a264d2793d15e7519df455ccbb93">PopLib::JsonParser::mJson</a></div><div class="ttdeci">nlohmann::json mJson</div><div class="ttdoc">the nlohmann::json object</div><div class="ttdef"><b>Definition</b> jsonparser.hpp:37</div></div>
+<div class="ttc" id="anamespacePopLib_html"><div class="ttname"><a href="namespacePopLib.html">PopLib</a></div><div class="ttdoc">root namespace for all PopLib classes</div><div class="ttdef"><b>Definition</b> appbase.hpp:42</div></div>
+<div class="ttc" id="astructPFILE_html"><div class="ttname"><a href="structPFILE.html">PFILE</a></div><div class="ttdoc">file struct that allows to exist both locally and inside a .pak file</div><div class="ttdef"><b>Definition</b> pakinterface.hpp:72</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

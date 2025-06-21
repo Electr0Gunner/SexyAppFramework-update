@@ -1,12 +1,12 @@
 var searchData=
 [
-  ['loadingthreadcompleted_0',['LoadingThreadCompleted',['../classPopWork_1_1AppBase.html#a90527e311070cd49db44acb087141836',1,'PopWork::AppBase']]],
-  ['loadingthreadproc_1',['LoadingThreadProc',['../classPopWork_1_1AppBase.html#aa84b21e6b3adbaffd4c3636522de9180',1,'PopWork::AppBase']]],
-  ['loadingthreadprocstub_2',['LoadingThreadProcStub',['../classPopWork_1_1AppBase.html#af41c6136b0a4c120785c79c9b5460b9d',1,'PopWork::AppBase']]],
-  ['loadmusic_3',['loadmusic',['../classPopWork_1_1BassMusicInterface.html#a146a61da55d9d32293940c22e5fb0d7b',1,'PopWork::BassMusicInterface::LoadMusic()'],['../classPopWork_1_1MusicInterface.html#a79239e449272f2cf22835a9ae7e13eac',1,'PopWork::MusicInterface::LoadMusic()']]],
-  ['loadproperties_4',['loadproperties',['../classPopWork_1_1AppBase.html#a9ef938c37da447b8cc3a06907f10a3ed',1,'PopWork::AppBase::LoadProperties(const std::string &amp;theFileName, bool required, bool checkSig)'],['../classPopWork_1_1AppBase.html#abbebb17de9dc04f549dbc1417c2892a0',1,'PopWork::AppBase::LoadProperties()']]],
-  ['loadresourcemanifest_5',['LoadResourceManifest',['../classPopWork_1_1AppBase.html#aac79fbcea84c617e675023ebf47f296f',1,'PopWork::AppBase']]],
-  ['logscreensavererror_6',['LogScreenSaverError',['../classPopWork_1_1AppBase.html#af9db0eecb57f10b439a903860b768959',1,'PopWork::AppBase']]],
-  ['lostfocus_7',['LostFocus',['../classPopWork_1_1AppBase.html#a055d8a3c376163192695c749e632d126',1,'PopWork::AppBase']]],
-  ['lower_8',['lower',['../namespacePopWork.html#a766615286fd9c33ebdd11c7ca9950410',1,'PopWork::Lower(const std::string &amp;theData)'],['../namespacePopWork.html#a260bf1f09f02357ee437ddfc40a111c4',1,'PopWork::Lower(const std::wstring &amp;theData)']]]
+  ['loadingthreadcompleted_0',['LoadingThreadCompleted',['../classPopLib_1_1AppBase.html#ad9f1647f2bfd132c500c3e5e15c445fd',1,'PopLib::AppBase']]],
+  ['loadingthreadproc_1',['LoadingThreadProc',['../classPopLib_1_1AppBase.html#a4099b8cfe7f77ec85fc3515b8e749b74',1,'PopLib::AppBase']]],
+  ['loadingthreadprocstub_2',['LoadingThreadProcStub',['../classPopLib_1_1AppBase.html#aa6a72542143e50ab8a9a4eb9f14298d2',1,'PopLib::AppBase']]],
+  ['loadmusic_3',['loadmusic',['../classPopLib_1_1BassMusicInterface.html#a307e9dfc7484048890fdf199c30cd628',1,'PopLib::BassMusicInterface::LoadMusic()'],['../classPopLib_1_1MusicInterface.html#a15e6b2e87f1ee4c4591deca7c6d7de0c',1,'PopLib::MusicInterface::LoadMusic()']]],
+  ['loadproperties_4',['loadproperties',['../classPopLib_1_1AppBase.html#ac231b3402ab2f3c953d212ddb800f516',1,'PopLib::AppBase::LoadProperties(const std::string &amp;theFileName, bool required, bool checkSig)'],['../classPopLib_1_1AppBase.html#a65ed925150d90c13ce73ec258ec5cde4',1,'PopLib::AppBase::LoadProperties()']]],
+  ['loadresourcemanifest_5',['LoadResourceManifest',['../classPopLib_1_1AppBase.html#accaea8dfe24edbd0271d00efbc677419',1,'PopLib::AppBase']]],
+  ['logscreensavererror_6',['LogScreenSaverError',['../classPopLib_1_1AppBase.html#aba5d157e5dce3626c988bd16cd2e8d77',1,'PopLib::AppBase']]],
+  ['lostfocus_7',['LostFocus',['../classPopLib_1_1AppBase.html#a73d152a1eaa621bbd0f0e5e36fb83df8',1,'PopLib::AppBase']]],
+  ['lower_8',['lower',['../namespacePopLib.html#a244786fa782dcd3fc877cff83b782dcc',1,'PopLib::Lower(const std::string &amp;theData)'],['../namespacePopLib.html#ac8626e07d1fd2f28ee78d62fbee554f0',1,'PopLib::Lower(const std::wstring &amp;theData)']]]
 ];

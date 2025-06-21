@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PopWork: /home/runner/work/PopLib/PopLib/PopWork/misc/profile.hpp Source File</title>
+<title>PopLib: /home/runner/work/PopLib/PopLib/PopLib/misc/profile.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PopWork
+   <div id="projectname">PopLib
    </div>
   </td>
  </tr>
@@ -74,7 +74,7 @@ $(document).ready(function() { init_codefold(0); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_3292b6b34698b1d2a9a2069f287b8510.html">PopWork</a></li><li class="navelem"><a class="el" href="dir_308103d4f34cabc35ac796a5b3e0747c.html">misc</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_2fcea83f96a9adc922f9f17156c14770.html">PopLib</a></li><li class="navelem"><a class="el" href="dir_ed5b4594cb6c918f3b20214cf4bea62e.html">misc</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -90,7 +90,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;common.hpp&quot;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;map&gt;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacePopWork.html">PopWork</a></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacePopLib.html">PopLib</a></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>XMLParser; <span class="comment">// Forward Class declaration to avoid Include files</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>XMLElement;</div>
@@ -118,8 +118,8 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  <span class="keyword">public</span>:</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> Save(PopString theFileName); <span class="comment">// Returns &#39;true&#39; if success</span></div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> Load(PopString theFileName); <span class="comment">// Returns &#39;true&#39; if success</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> ParseXML(PopWork::XMLParser *theParser);</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> HasAttribute(PopWork::XMLElement *theNode, PopString theAttrib);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> ParseXML(PopLib::XMLParser *theParser);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> HasAttribute(PopLib::XMLElement *theNode, PopString theAttrib);</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="comment">// Even More Abstract Serialization functions</span></div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  <span class="keyword">public</span>:</div>
@@ -140,9 +140,9 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> ResetProfile();</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="comment">// A new Feature!  Allows for Multiple State Types!  Story mode, Casual Mode, Mini Game Mode</span></div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">virtual</span> std::string GetStateFileName(PopString theStateName, PopString theUserName = _S(<span class="stringliteral">&quot;&quot;</span>));</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> EraseStateSaves(PopString theUserName = _S(<span class="stringliteral">&quot;&quot;</span>));</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">virtual</span> std::string GetUserFileName(PopString theUserName = _S(<span class="stringliteral">&quot;&quot;</span>));</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">virtual</span> std::string GetStateFileName(PopString theStateName, PopString theUserName = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> EraseStateSaves(PopString theUserName = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">virtual</span> std::string GetUserFileName(PopString theUserName = <span class="stringliteral">&quot;&quot;</span>);</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="comment">// Another Cool Feature!  Read and Write integers with String Values!</span></div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> SetIntegerValue(PopString theValueName, <span class="keywordtype">int</span> theValue);</div>
@@ -157,20 +157,20 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> SetStringValue(PopString theValueName, PopString theValue);</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">virtual</span> PopString GetStringValue(PopString theValueName, PopString theDefault);</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}; <span class="comment">// namespace PopWork</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}; <span class="comment">// namespace PopLib</span></div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="preprocessor">#define GETPROFILEINT(a, b) PopWork::Profile::GetProfile()-&gt;GetIntegerValue(a, b)</span></div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#define GETPROFILEFLOAT(a, b) PopWork::Profile::GetProfile()-&gt;GetFloat(a, b)</span></div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="preprocessor">#define GETPROFILEBOOL(a, b) PopWork::Profile::GetProfile()-&gt;GetBooleanValue(a, b)</span></div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="preprocessor">#define GETPROFILESTRING(a, b) PopWork::Profile::GetProfile()-&gt;GetStringValue(a, b)</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="preprocessor">#define GETPROFILEINT(a, b) PopLib::Profile::GetProfile()-&gt;GetIntegerValue(a, b)</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#define GETPROFILEFLOAT(a, b) PopLib::Profile::GetProfile()-&gt;GetFloat(a, b)</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="preprocessor">#define GETPROFILEBOOL(a, b) PopLib::Profile::GetProfile()-&gt;GetBooleanValue(a, b)</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="preprocessor">#define GETPROFILESTRING(a, b) PopLib::Profile::GetProfile()-&gt;GetStringValue(a, b)</span></div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="preprocessor">#define SETPROFILEINT(a, b) PopWork::Profile::GetProfile()-&gt;SetIntegerValue(a, b)</span></div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="preprocessor">#define SETPROFILEFLOAT(a, b) PopWork::Profile::GetProfile()-&gt;SetFloat(a, b)</span></div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="preprocessor">#define SETPROFILEBOOL(a, b) PopWork::Profile::GetProfile()-&gt;SetBooleanValue(a, b)</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="preprocessor">#define SETPROFILESTRING(a, b) PopWork::Profile::GetProfile()-&gt;SetStringValue(a, b)</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="preprocessor">#define SETPROFILEINT(a, b) PopLib::Profile::GetProfile()-&gt;SetIntegerValue(a, b)</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="preprocessor">#define SETPROFILEFLOAT(a, b) PopLib::Profile::GetProfile()-&gt;SetFloat(a, b)</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="preprocessor">#define SETPROFILEBOOL(a, b) PopLib::Profile::GetProfile()-&gt;SetBooleanValue(a, b)</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="preprocessor">#define SETPROFILESTRING(a, b) PopLib::Profile::GetProfile()-&gt;SetStringValue(a, b)</span></div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="anamespacePopWork_html"><div class="ttname"><a href="namespacePopWork.html">PopWork</a></div><div class="ttdoc">root namespace for all PopWork classes</div><div class="ttdef"><b>Definition</b> appbase.hpp:42</div></div>
+<div class="ttc" id="anamespacePopLib_html"><div class="ttname"><a href="namespacePopLib.html">PopLib</a></div><div class="ttdoc">root namespace for all PopLib classes</div><div class="ttdef"><b>Definition</b> appbase.hpp:42</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

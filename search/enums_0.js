@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['msgboxflags_0',['MsgBoxFlags',['../namespacePopWork.html#ac2451330155b128a48deba4f20d0e9a9',1,'PopWork']]]
+  ['msgboxflags_0',['MsgBoxFlags',['../namespacePopLib.html#a7ea1081508d73b4400a85996f2abb113',1,'PopLib']]]
 ];

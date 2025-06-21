@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PopWork: /home/runner/work/PopLib/PopLib/PopWork/debug/memmgr.hpp Source File</title>
+<title>PopLib: /home/runner/work/PopLib/PopLib/PopLib/debug/memmgr.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">PopWork
+   <div id="projectname">PopLib
    </div>
   </td>
  </tr>
@@ -74,7 +74,7 @@ $(document).ready(function() { init_codefold(0); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_3292b6b34698b1d2a9a2069f287b8510.html">PopWork</a></li><li class="navelem"><a class="el" href="dir_0f3d7673de222c11329e83ddff8a081c.html">debug</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_2fcea83f96a9adc922f9f17156c14770.html">PopLib</a></li><li class="navelem"><a class="el" href="dir_471b6c2a9eb66567c19200e2dbf9cbb2.html">debug</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -101,22 +101,22 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">extern</span> <span class="keywordtype">void</span> PopWorkDumpUnfreed();</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">extern</span> <span class="keywordtype">void</span> DumpUnfreed();</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#if defined(POPWORK_MEMTRACE) &amp;&amp; !defined(RELEASEFINAL)</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#if defined(MEMTRACE) &amp;&amp; !defined(RELEASEFINAL)</span></div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">/************************************************************************/</span></div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment">/* DO NOT CALL THESE TWO METHODS DIRECTLY                               */</span></div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment">/************************************************************************/</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keywordtype">void</span> PopWorkMemAddTrack(<span class="keywordtype">void</span> *addr, <span class="keywordtype">int</span> asize, <span class="keyword">const</span> <span class="keywordtype">char</span> *fname, <span class="keywordtype">int</span> lnum);</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keywordtype">void</span> PopWorkMemRemoveTrack(<span class="keywordtype">void</span> *addr);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keywordtype">void</span> MemAddTrack(<span class="keywordtype">void</span> *addr, <span class="keywordtype">int</span> asize, <span class="keyword">const</span> <span class="keywordtype">char</span> *fname, <span class="keywordtype">int</span> lnum);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keywordtype">void</span> MemRemoveTrack(<span class="keywordtype">void</span> *addr);</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment">// Replacement for the standard &quot;new&quot; operator, records size of allocation and</span></div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment">// the file/line number it was on</span></div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">inline</span> <span class="keywordtype">void</span> *__cdecl <span class="keyword">operator</span> <span class="keyword">new</span>(<span class="keywordtype">size_t</span> size, <span class="keyword">const</span> <span class="keywordtype">char</span> *file, <span class="keywordtype">int</span> line)</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>{</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> *ptr = (<span class="keywordtype">void</span> *)malloc(size);</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    PopWorkMemAddTrack(ptr, size, file, line);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    MemAddTrack(ptr, size, file, line);</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">return</span> (ptr);</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
@@ -124,7 +124,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">inline</span> <span class="keywordtype">void</span> *__cdecl <span class="keyword">operator</span> <span class="keyword">new</span>[](<span class="keywordtype">size_t</span> size, <span class="keyword">const</span> <span class="keywordtype">char</span> *file, <span class="keywordtype">int</span> line)</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>{</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">void</span> *ptr = (<span class="keywordtype">void</span> *)malloc(size);</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    PopWorkMemAddTrack(ptr, size, file, line);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    MemAddTrack(ptr, size, file, line);</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">return</span> (ptr);</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>}</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
@@ -144,13 +144,13 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="comment">// custom delete operators</span></div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keyword">inline</span> <span class="keywordtype">void</span> __cdecl <span class="keyword">operator</span> <span class="keyword">delete</span>(<span class="keywordtype">void</span> *p)</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>{</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    PopWorkMemRemoveTrack(p);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    MemRemoveTrack(p);</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    free(p);</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">inline</span> <span class="keywordtype">void</span> __cdecl <span class="keyword">operator</span> <span class="keyword">delete</span>[](<span class="keywordtype">void</span> *p)</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>{</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    PopWorkMemRemoveTrack(p);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    MemRemoveTrack(p);</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    free(p);</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
@@ -168,7 +168,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="preprocessor">#define DEBUG_NEW new (__FILE__, __LINE__)</span></div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="preprocessor">#define new DEBUG_NEW</span></div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="preprocessor">#endif </span><span class="comment">// POPWORK_MEMTRACE</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="preprocessor">#endif </span><span class="comment">// MEMTRACE</span></div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->

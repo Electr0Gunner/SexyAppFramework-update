@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['fadein_0',['fadein',['../classPopWork_1_1BassMusicInterface.html#a1e19a23281e9f22a68c2b9d2d7df4598',1,'PopWork::BassMusicInterface::FadeIn()'],['../classPopWork_1_1MusicInterface.html#a369ce18cfdc776f44c2f52fe43bf6509',1,'PopWork::MusicInterface::FadeIn()']]],
-  ['fadeout_1',['fadeout',['../classPopWork_1_1BassMusicInterface.html#ae5892f43635f8e253cdb507b7ca74b9c',1,'PopWork::BassMusicInterface::FadeOut()'],['../classPopWork_1_1MusicInterface.html#aa5ad1280d0b644800b32e8359f2bed51',1,'PopWork::MusicInterface::FadeOut()']]],
-  ['fadeoutall_2',['fadeoutall',['../classPopWork_1_1BassMusicInterface.html#a4722ad131c7fc0b1d77bc6232d3a9272',1,'PopWork::BassMusicInterface::FadeOutAll()'],['../classPopWork_1_1MusicInterface.html#afbebd9d177699ed0373926631016a47e',1,'PopWork::MusicInterface::FadeOutAll()']]],
-  ['fail_3',['Fail',['../classPopWork_1_1JsonParser.html#a7c3e85f17ca256ea25403eb39038985e',1,'PopWork::JsonParser']]],
-  ['fileexists_4',['FileExists',['../classPopWork_1_1AppBase.html#a489bdb4aaaf81afed44024786a749690',1,'PopWork::AppBase']]],
-  ['flipimage_5',['FlipImage',['../classPopWork_1_1AppBase.html#aa81cadc3ada4456b4420669c1e1fedfe',1,'PopWork::AppBase']]],
-  ['frame_6',['Frame',['../classPopWork_1_1ImGuiManager.html#a7b5b9cabbf496e981a2f34852e208416',1,'PopWork::ImGuiManager']]],
-  ['func_7',['func',['../structImGuiWindowEntry.html#ac44462931bab87f0e3a4c6c3012c0c07',1,'ImGuiWindowEntry']]]
+  ['fadein_0',['fadein',['../classPopLib_1_1BassMusicInterface.html#a81b1de0ad47eca01323b6f2d764e0372',1,'PopLib::BassMusicInterface::FadeIn()'],['../classPopLib_1_1MusicInterface.html#ab3ccbdc3bfb2e499eaab85f259a7be87',1,'PopLib::MusicInterface::FadeIn()']]],
+  ['fadeout_1',['fadeout',['../classPopLib_1_1BassMusicInterface.html#a4254ef77391cb54c174ea1ca18405078',1,'PopLib::BassMusicInterface::FadeOut()'],['../classPopLib_1_1MusicInterface.html#a43e875dee0deca3de63bc0b9fbf57f98',1,'PopLib::MusicInterface::FadeOut()']]],
+  ['fadeoutall_2',['fadeoutall',['../classPopLib_1_1BassMusicInterface.html#a711e61a575d5ce3ff958ae9bb02fb68d',1,'PopLib::BassMusicInterface::FadeOutAll()'],['../classPopLib_1_1MusicInterface.html#a732dab284437e3c0b55c65102435bee3',1,'PopLib::MusicInterface::FadeOutAll()']]],
+  ['fail_3',['Fail',['../classPopLib_1_1JsonParser.html#a58c4287424f893c298d8809c895478d7',1,'PopLib::JsonParser']]],
+  ['fileexists_4',['FileExists',['../classPopLib_1_1AppBase.html#a3a577048b98598676fadc915590d7eb3',1,'PopLib::AppBase']]],
+  ['flipimage_5',['FlipImage',['../classPopLib_1_1AppBase.html#a519cd3b4f435ec42bc25422956cee6a4',1,'PopLib::AppBase']]],
+  ['frame_6',['Frame',['../classPopLib_1_1ImGuiManager.html#a4ef7c5dbcf026e3bbebf0e6cdf17118a',1,'PopLib::ImGuiManager']]],
+  ['func_7',['func',['../structImGuiWindowEntry.html#aec7cac3195305f187e8e95d5e5d837db',1,'ImGuiWindowEntry']]]
 ];
