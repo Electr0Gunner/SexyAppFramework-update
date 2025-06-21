@@ -251,17 +251,17 @@ void GameApp::LoadingThreadCompleted()
 	mAlteredImg = (SDLImage *)CopyImage(mTurbotImg);
 
 	// 2. Now we need to get the pixel data. The pixel data is stored as
-	// an unsigned long array, where each entry represents the RGBA value.
+	// an ulong array, where each entry represents the RGBA value.
 	// The data is actually stored in ARGB format, where alpha is
 	// the leftmost byte and blue is the rightmost byte.
-	unsigned long *bits = mAlteredImg->GetBits();
+	ulong *bits = mAlteredImg->GetBits();
 
 	// 3. Now we will loop over each pixel in the image. The size of the bits array
 	// is simply the width times the height.
 	for (int i = 0; i < mAlteredImg->GetWidth() * mAlteredImg->GetHeight(); i++)
 	{
 		// 4. Get the ARGB color value for this pixel
-		unsigned long c = bits[i];
+		ulong c = bits[i];
 
 		// 5. To illustrate the ARGB storage format, we will assign each
 		// component to a variable, although we're actually only going to care
@@ -276,7 +276,7 @@ void GameApp::LoadingThreadCompleted()
 		// Let's alter these to produce a grayscale image using one of many
 		// conversion methods. This method uses 30% of the red value,
 		// 59% of the green value, and 11% of the blue value:
-		unsigned long gray = (unsigned long)((float)red * 0.30f + (float)green * 0.59f + (float)blue * 0.11f);
+		ulong gray = (ulong)((float)red * 0.30f + (float)green * 0.59f + (float)blue * 0.11f);
 
 		// 7. Now we need to put the pixel data back into the image's data.
 		// We do the opposite of how we extracted the ARGB values above and

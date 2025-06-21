@@ -165,7 +165,7 @@ bool FontData::Error(const std::string &theError)
 
 		if (mCurrentLine.length() > 0)
 		{
-			anErrorString += " on Line " + StrFormat("%d:\r\n\r\n", mCurrentLineNum) + mCurrentLine;
+			anErrorString += " on Line " + StrFormat("%d:\n\n", mCurrentLineNum) + mCurrentLine;
 		}
 
 		mApp->Popup(anErrorString);
@@ -998,7 +998,7 @@ bool FontData::Load(AppBase *thePopLibApp, const std::string &theFontDescFileNam
 	mApp = thePopLibApp;
 	mCurrentLine = "";
 
-	mFontErrorHeader = "Font Descriptor Error in " + theFontDescFileName + "\r\n";
+	mFontErrorHeader = "Font Descriptor Error in " + theFontDescFileName + "\n";
 
 	mSourceFile = theFontDescFileName;
 

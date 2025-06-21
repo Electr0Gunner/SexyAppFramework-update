@@ -748,7 +748,7 @@ void AppBase::DumpProgramInfo()
 	ImageLib::Image anImageLibImage;
 	anImageLibImage.mWidth = aThumbWidth;
 	anImageLibImage.mHeight = aThumbHeight;
-	anImageLibImage.mBits = new unsigned long[aThumbWidth * aThumbHeight];
+	anImageLibImage.mBits = new ulong[aThumbWidth * aThumbHeight];
 
 	typedef std::multimap<int, MemoryImage *, std::greater<int>> SortedImageMap;
 
@@ -941,7 +941,7 @@ void AppBase::DumpProgramInfo()
 
 		ulong *aBits = aCopiedImage.GetBits();
 
-		ulong *aThumbBitsPtr = anImageLibImage.mBits;
+		uint32_t *aThumbBitsPtr = (uint32_t *)anImageLibImage.mBits;
 
 		for (int aThumbY = 0; aThumbY < aThumbHeight; aThumbY++)
 			for (int aThumbX = 0; aThumbX < aThumbWidth; aThumbX++)
@@ -1372,7 +1372,7 @@ void AppBase::ReadFromRegistry()
 		RegistryWriteInteger("InProgress", 1);
 }
 
-bool AppBase::WriteBytesToFile(const std::string &theFileName, const void *theData, unsigned long theDataLen)
+bool AppBase::WriteBytesToFile(const std::string &theFileName, const void *theData, ulong theDataLen)
 {
 	MkDir(GetFileDir(theFileName));
 	FILE *aFP = fopen(theFileName.c_str(), "w+b");
@@ -3547,7 +3547,7 @@ PopLib::SDLImage *AppBase::GetImage(const std::string &theFileName, bool commitB
 
 	SDLImage *anImage = new SDLImage(mSDLInterface);
 	anImage->mFilePath = theFileName;
-	anImage->SetBits(aLoadedImage->GetBits(), aLoadedImage->GetWidth(), aLoadedImage->GetHeight(), commitBits);
+	anImage->SetBits((uint32_t*)aLoadedImage->GetBits(), aLoadedImage->GetWidth(), aLoadedImage->GetHeight(), commitBits);
 	delete aLoadedImage;
 
 	return anImage;

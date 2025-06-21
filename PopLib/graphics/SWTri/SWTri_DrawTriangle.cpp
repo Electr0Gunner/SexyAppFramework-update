@@ -3,11 +3,11 @@
 #pragma warning(disable : 4101)
 
 #if (TRI0 == 0)
-#define PTYPE unsigned long
+#define PTYPE ulong
 #define PIXEL_INCLUDE "SWTri_Pixel8888.cpp"
 #define NAME0 8888
 #elif (TRI0 == 1)
-#define PTYPE unsigned long
+#define PTYPE ulong
 #define PIXEL_INCLUDE "SWTri_Pixel888.cpp"
 #define NAME0 0888
 #elif (TRI0 == 2)

@@ -80,7 +80,10 @@ typedef std::string PopString;
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
-typedef unsigned long ulong;
+#ifdef ulong
+#undef ulong
+#endif
+#define ulong uint32_t
 typedef __int64 int64;
 
 typedef std::map<std::string, std::string> DefinesMap;
@@ -274,22 +277,22 @@ inline void inlineLower(std::wstring &theData)
 	std::transform(theData.begin(), theData.end(), theData.begin(), tolower);
 }
 
-inline void inlineLTrim(std::string &theData, const std::string &theChars = " \t\r\n")
+inline void inlineLTrim(std::string &theData, const std::string &theChars = " \t\n")
 {
 	theData.erase(0, theData.find_first_not_of(theChars));
 }
 
-inline void inlineLTrim(std::wstring &theData, const std::wstring &theChars = L" \t\r\n")
+inline void inlineLTrim(std::wstring &theData, const std::wstring &theChars = L" \t\n")
 {
 	theData.erase(0, theData.find_first_not_of(theChars));
 }
 
-inline void inlineRTrim(std::string &theData, const std::string &theChars = " \t\r\n")
+inline void inlineRTrim(std::string &theData, const std::string &theChars = " \t\n")
 {
 	theData.resize(theData.find_last_not_of(theChars) + 1);
 }
 
-inline void inlineTrim(std::string &theData, const std::string &theChars = " \t\r\n")
+inline void inlineTrim(std::string &theData, const std::string &theChars = " \t\n")
 {
 	inlineRTrim(theData, theChars);
 	inlineLTrim(theData, theChars);

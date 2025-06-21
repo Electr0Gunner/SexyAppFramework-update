@@ -32,7 +32,7 @@ int Image::GetHeight()
 	return mHeight;
 }
 
-unsigned long *Image::GetBits()
+ulong *Image::GetBits()
 {
 	return mBits;
 }
@@ -57,7 +57,7 @@ Image *GetImageSTB(const std::string &theFileName)
 	int width, height, num_channels;
 	unsigned char *stb_image = stbi_load_from_memory(data.data(), fileSize, &width, &height, &num_channels, NULL);
 
-	unsigned long *aBits = new unsigned long[width * height];
+	ulong *aBits = new ulong[width * height];
 	for (int i = 0; i < width * height; ++i)
 	{
 		unsigned char *pixel = &stb_image[i * num_channels];
@@ -265,7 +265,7 @@ Image *GetGIFImage(const std::string &theFileName)
 		p_fread(&flag, sizeof(char), 1, fp);
 
 		colors = !BitSet(flag, 0x80) ? global_colors : 1 << ((flag & 0x07) + 1);
-		unsigned long *colortable = new unsigned long[colors];
+		ulong *colortable = new ulong[colors];
 
 		interlaced = BitSet(flag, 0x40);
 
@@ -406,7 +406,7 @@ Image *GetGIFImage(const std::string &theFileName)
 		pass = 0;
 		top_stack = pixel_stack;
 
-		unsigned long *aBits = new unsigned long[width * height];
+		ulong *aBits = new ulong[width * height];
 
 		unsigned char *c = nullptr;
 
@@ -417,7 +417,7 @@ Image *GetGIFImage(const std::string &theFileName)
 			// break;
 			// indexes=GetIndexes(image);
 
-			unsigned long *q = aBits + offset * width;
+			ulong *q = aBits + offset * width;
 
 			for (x = 0; x < (int)width;)
 			{
@@ -718,8 +718,8 @@ Image *ImageLib::GetImage(const std::string &theFilename, bool lookForAlphaImage
 		{
 			if ((anImage->mWidth == anAlphaImage->mWidth) && (anImage->mHeight == anAlphaImage->mHeight))
 			{
-				unsigned long *aBits1 = anImage->mBits;
-				unsigned long *aBits2 = anAlphaImage->mBits;
+				ulong *aBits1 = anImage->mBits;
+				ulong *aBits2 = anAlphaImage->mBits;
 				int aSize = anImage->mWidth * anImage->mHeight;
 
 				for (int i = 0; i < aSize; i++)
@@ -736,7 +736,7 @@ Image *ImageLib::GetImage(const std::string &theFilename, bool lookForAlphaImage
 		{
 			anImage = anAlphaImage;
 
-			unsigned long *aBits1 = anImage->mBits;
+			ulong *aBits1 = anImage->mBits;
 
 			int aSize = anImage->mWidth * anImage->mHeight;
 			for (int i = 0; i < aSize; i++)
@@ -750,7 +750,7 @@ Image *ImageLib::GetImage(const std::string &theFilename, bool lookForAlphaImage
 			const int aColor = gAlphaComposeColor;
 			anImage = anAlphaImage;
 
-			unsigned long *aBits1 = anImage->mBits;
+			ulong *aBits1 = anImage->mBits;
 
 			int aSize = anImage->mWidth * anImage->mHeight;
 			for (int i = 0; i < aSize; i++)

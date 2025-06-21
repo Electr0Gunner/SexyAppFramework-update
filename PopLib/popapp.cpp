@@ -394,9 +394,9 @@ void PopApp::HandleCmdLineParam(const std::string& theParamName, const std::stri
 		// Just print version info and then quit
 		
 		std::string aVersionString = 
-			"Product: " + mProdName + "\r\n" +
-			"Version: " + mProductVersion + "\r\n" +
-			"Build Num: " + StrFormat("%d", mBuildNum) + "\r\n" +
+			"Product: " + mProdName + "\n" +
+			"Version: " + mProductVersion + "\n" +
+			"Build Num: " + StrFormat("%d", mBuildNum) + "\n" +
 			"Build Date: " + mBuildDate;
 
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Version Info",  aVersionString.c_str(), NULL);

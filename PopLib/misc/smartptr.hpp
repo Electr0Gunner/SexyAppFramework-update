@@ -65,7 +65,7 @@ class RefCount
 		return *this;
 	}
 
-	unsigned long GetRefCount()
+	ulong GetRefCount()
 	{
 		return mRefCount;
 	}

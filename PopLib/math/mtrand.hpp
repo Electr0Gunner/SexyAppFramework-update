@@ -25,8 +25,8 @@ namespace PopLib
 class MTRand
 {
   public:
-	explicit MTRand(unsigned long seed = 4357UL)
-		: engine(seed), dist_int(0, std::numeric_limits<unsigned long>::max()), dist_real(0.0f, 1.0f)
+	explicit MTRand(ulong seed = 4357UL)
+		: engine(seed), dist_int(0, std::numeric_limits<ulong>::max()), dist_real(0.0f, 1.0f)
 	{
 	}
 
@@ -36,7 +36,7 @@ class MTRand
 		engine.seed(seq);
 	}
 
-	void SRand(unsigned long seed)
+	void SRand(ulong seed)
 	{
 		engine.seed(seed == 0 ? 4357UL : seed);
 	}
@@ -47,22 +47,22 @@ class MTRand
 		engine.seed(seq);
 	}
 
-	unsigned long Next()
+	ulong Next()
 	{
 		return NextNoAssert();
 	}
 
-	unsigned long NextNoAssert()
+	ulong NextNoAssert()
 	{
 		return dist_int(engine);
 	}
 
-	unsigned long NextNoAssert(unsigned long range)
+	ulong NextNoAssert(ulong range)
 	{
 		return NextNoAssert() % range;
 	}
 
-	unsigned long Next(unsigned long range)
+	ulong Next(ulong range)
 	{
 		return NextNoAssert(range);
 	}
@@ -105,7 +105,7 @@ class MTRand
 
   private:
 	std::mt19937 engine;
-	std::uniform_int_distribution<unsigned long> dist_int;
+	std::uniform_int_distribution<ulong> dist_int;
 	std::uniform_real_distribution<float> dist_real;
 
 	static inline std::atomic<int> gRandAllowed{0};

@@ -28,7 +28,7 @@ int PopLib::Rand()
 
 int PopLib::Rand(int range)
 {
-	return gMTRand.Next((unsigned long)range);
+	return gMTRand.Next((ulong)range);
 }
 
 float PopLib::Rand(float range)

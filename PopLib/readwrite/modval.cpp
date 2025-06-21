@@ -478,7 +478,7 @@ bool PopLib::ReparseModValues()
 		}
 
 		if (aFileList.length() > 0)
-			aFileList += "\r\n  ";
+			aFileList += "\n  ";
 		aFileList += aFileName;
 
 		int aLineNum = 1;
@@ -675,7 +675,7 @@ bool PopLib::ReparseModValues()
 	{
 		if (aFileList.length() == 0)
 			aFileList = "none";
-		MessageBoxA(NULL, (std::string("WARNING: No file changes detected.  Files parsed: \r\n  ") + aFileList).c_str(),
+		MessageBoxA(NULL, (std::string("WARNING: No file changes detected.  Files parsed: \n  ") + aFileList).c_str(),
 	"MODVAL WARNING!", MB_OK | MB_ICONWARNING); return false;
 	}
 

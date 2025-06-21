@@ -684,17 +684,17 @@ bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, SDLImage *theImage)
 		return Fail(StrFormat("GridAlphaImage size mismatch between %s and %s", theRes->mPath.c_str(),
 							  theRes->mAlphaGridImage.c_str()));
 
-	unsigned long *aMasterRowPtr = theImage->mBits;
+	ulong *aMasterRowPtr = theImage->mBits;
 	for (int i = 0; i < aNumRows; i++)
 	{
-		unsigned long *aMasterColPtr = aMasterRowPtr;
+		ulong *aMasterColPtr = aMasterRowPtr;
 		for (int j = 0; j < aNumCols; j++)
 		{
-			unsigned long *aRowPtr = aMasterColPtr;
-			unsigned long *anAlphaBits = anAlphaImage->mBits;
+			ulong *aRowPtr = aMasterColPtr;
+			ulong *anAlphaBits = anAlphaImage->mBits;
 			for (int y = 0; y < aCelHeight; y++)
 			{
-				unsigned long *aDestPtr = aRowPtr;
+				ulong *aDestPtr = aRowPtr;
 				for (int x = 0; x < aCelWidth; x++)
 				{
 					*aDestPtr = (*aDestPtr & 0x00FFFFFF) | ((*anAlphaBits & 0xFF) << 24);
@@ -730,9 +730,9 @@ bool ResourceManager::LoadAlphaImage(ImageRes *theRes, SDLImage *theImage)
 		return Fail(StrFormat("AlphaImage size mismatch between %s and %s", theRes->mPath.c_str(),
 							  theRes->mAlphaImage.c_str()));
 
-	unsigned long *aBits1 = theImage->mBits;
+	ulong *aBits1 = theImage->mBits;
 
-	unsigned long *aBits2 = anAlphaImage->mBits;
+	ulong *aBits2 = anAlphaImage->mBits;
 	int aSize = theImage->mWidth * theImage->mHeight;
 
 	for (int i = 0; i < aSize; i++)
@@ -939,11 +939,11 @@ bool ResourceManager::DoLoadFont(FontRes *theRes)
 		{
 			char aBuf[1024];
 			strcpy(aBuf, theRes->mTags.c_str());
-			const char *aPtr = strtok(aBuf, ", \r\n\t");
+			const char *aPtr = strtok(aBuf, ", \n\t");
 			while (aPtr)
 			{
 				anImageFont->AddTag(aPtr);
-				aPtr = strtok(NULL, ", \r\n\t");
+				aPtr = strtok(NULL, ", \n\t");
 			}
 			anImageFont->Prepare();
 		}
@@ -1091,28 +1091,28 @@ void ResourceManager::DumpCurResGroup(std::string &theDestStr)
 	const ResList *rl = &mResGroupMap.find(mCurResGroup)->second;
 	ResList::const_iterator it = rl->begin();
 	theDestStr =
-		StrFormat("About to dump %d elements from current res group name %s\r\n", rl->size(), mCurResGroup.c_str());
+		StrFormat("About to dump %d elements from current res group name %s\n", rl->size(), mCurResGroup.c_str());
 
 	ResList::const_iterator rl_end = rl->end();
 	while (it != rl_end)
 	{
 		BaseRes *br = *it++;
-		std::string prefix = StrFormat("%s: %s\r\n", br->mId.c_str(), br->mPath.c_str());
+		std::string prefix = StrFormat("%s: %s\n", br->mId.c_str(), br->mPath.c_str());
 		theDestStr += prefix;
 		if (br->mFromProgram)
-			theDestStr += std::string("     res is from program\r\n");
+			theDestStr += std::string("     res is from program\n");
 		else if (br->mType == ResType_Image)
-			theDestStr += std::string("     res is an image\r\n");
+			theDestStr += std::string("     res is an image\n");
 		else if (br->mType == ResType_Sound)
-			theDestStr += std::string("     res is a sound\r\n");
+			theDestStr += std::string("     res is a sound\n");
 		else if (br->mType == ResType_Font)
-			theDestStr += std::string("     res is a font\r\n");
+			theDestStr += std::string("     res is a font\n");
 
 		if (it == mCurResGroupListItr)
-			theDestStr += std::string("iterator has reached mCurResGroupItr\r\n");
+			theDestStr += std::string("iterator has reached mCurResGroupItr\n");
 	}
 
-	theDestStr += std::string("Done dumping resources\r\n");
+	theDestStr += std::string("Done dumping resources\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

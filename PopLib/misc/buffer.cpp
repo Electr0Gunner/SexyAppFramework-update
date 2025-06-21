@@ -4,7 +4,7 @@
 #define POLYNOMIAL 0x04c11db7L
 
 static bool bCrcTableGenerated = false;
-static unsigned long crc_table[256];
+static ulong crc_table[256];
 
 using namespace PopLib;
 using namespace std;
@@ -30,10 +30,10 @@ static void GenerateCRCTable(void)
 	bCrcTableGenerated = true;
 
 	int i, j;
-	unsigned long crc_accum;
+	ulong crc_accum;
 	for (i = 0; i < 256; i++)
 	{
-		crc_accum = ((unsigned long)i << 24);
+		crc_accum = ((ulong)i << 24);
 		for (j = 0; j < 8; j++)
 		{
 			if (crc_accum & 0x80000000L)
@@ -48,7 +48,7 @@ static void GenerateCRCTable(void)
 //----------------------------------------------------------------------------
 // Update the CRC on the data block one byte at a time.
 //----------------------------------------------------------------------------
-static unsigned long UpdateCRC(unsigned long crc_accum, const char *data_blk_ptr, int data_blk_size)
+static ulong UpdateCRC(ulong crc_accum, const char *data_blk_ptr, int data_blk_size)
 {
 	if (!bCrcTableGenerated)
 		GenerateCRCTable();
@@ -377,7 +377,7 @@ void Buffer::WriteUTF8String(const std::wstring &theString)
 
 void Buffer::WriteLine(const std::string &theString)
 {
-	WriteBytes((const uchar *)(theString + "\r\n").c_str(), (int)theString.length() + 2);
+	WriteBytes((const uchar *)(theString + "\n").c_str(), (int)theString.length() + 2);
 }
 
 void Buffer::WriteBuffer(const ByteVector &theBuffer)

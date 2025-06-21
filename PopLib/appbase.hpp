@@ -1115,7 +1115,7 @@ class AppBase : public ButtonListener, public DialogListener
 	/// @param theData 
 	/// @param theDataLen 
 	/// @return true if success
-	bool WriteBytesToFile(const std::string &theFileName, const void *theData, unsigned long theDataLen);
+	bool WriteBytesToFile(const std::string &theFileName, const void *theData, ulong theDataLen);
 	/// @brief checks if a file exists
 	/// @param theFileName 
 	/// @return true if yes

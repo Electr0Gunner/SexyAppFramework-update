@@ -393,7 +393,7 @@ PopString TextWidget::GetSelection()
 		GetSelectedIndices(aLineNum, aSelIndices);
 
 		if (!first)
-			aSelString += "\r\n";
+			aSelString += "\n";
 
 		for (int aStrIdx = aSelIndices[0]; aStrIdx < aSelIndices[1]; aStrIdx++)
 		{
