@@ -19,7 +19,6 @@
 #define NOMINMAX
 #endif
 
-
 //vorbis workaounds since for some fucking reason, vorbis force defines min and max.
 #ifdef max
 #undef max
@@ -90,6 +89,27 @@ typedef std::map<std::string, std::string> DefinesMap;
 typedef std::map<std::wstring, std::wstring> WStringWStringMap;
 typedef PopString::value_type PopChar;
 #define HAS_PopChar
+
+#ifndef POPLIB_VERSION_MAJOR
+#define POPLIB_VERSION_MAJOR 0
+#endif
+
+#ifndef POPLIB_VERSION_MINOR
+#define POPLIB_VERSION_MINOR 0
+#endif
+
+#ifndef POPLIB_VERSION_PATCH
+#define POPLIB_VERSION_PATCH 0
+#endif
+
+#ifndef POPLIB_VERSION_STAGE
+#define POPLIB_VERSION_STAGE unknown
+#endif
+
+#define STR_HELPER(x) #x
+#define STR_MACRO(x) STR_HELPER(x)
+
+#define POPLIB_VERSION STR_MACRO(POPLIB_VERSION_MAJOR) "." STR_MACRO(POPLIB_VERSION_MINOR) "." STR_MACRO(POPLIB_VERSION_PATCH) "-" STR_MACRO(POPLIB_VERSION_STAGE)
 
 /**
  * @namespace PopLib

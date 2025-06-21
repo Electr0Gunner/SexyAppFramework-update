@@ -83,6 +83,13 @@ set(ALL_GROUPED_FILES ${SOURCE_FILES} ${HEADER_FILES})
 
 add_library(${PROJECT_NAME} STATIC ${ALL_GROUPED_FILES})
 
+target_compile_definitions(${PROJECT_NAME} PUBLIC
+    -DPOPLIB_VERSION_MAJOR=2
+    -DPOPLIB_VERSION_MINOR=0
+    -DPOPLIB_VERSION_PATCH=0
+    -DPOPLIB_VERSION_STAGE=alpha
+)
+
 # hacks!!
 target_include_directories(${PROJECT_NAME}
     PUBLIC
