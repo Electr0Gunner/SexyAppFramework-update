@@ -108,8 +108,8 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">class </span>MTRand</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">explicit</span> MTRand(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> seed = 4357UL)</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        : engine(seed), dist_int(0, std::numeric_limits&lt;unsigned long&gt;::max()), dist_real(0.0f, 1.0f)</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">explicit</span> MTRand(ulong seed = 4357UL)</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        : engine(seed), dist_int(0, std::numeric_limits&lt;ulong&gt;::max()), dist_real(0.0f, 1.0f)</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    {</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    }</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
@@ -119,7 +119,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        engine.seed(seq);</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacePopLib.html#aaa38ea886774d47fbad8a72024391b47">SRand</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> seed)</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacePopLib.html#aaa38ea886774d47fbad8a72024391b47">SRand</a>(ulong seed)</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    {</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        engine.seed(seed == 0 ? 4357UL : seed);</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    }</div>
@@ -130,22 +130,22 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        engine.seed(seq);</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> Next()</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    ulong Next()</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    {</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">return</span> NextNoAssert();</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    }</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> NextNoAssert()</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    ulong NextNoAssert()</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    {</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">return</span> dist_int(engine);</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    }</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> NextNoAssert(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> range)</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    ulong NextNoAssert(ulong range)</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    {</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">return</span> NextNoAssert() % range;</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    }</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> Next(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> range)</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    ulong Next(ulong range)</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    {</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">return</span> NextNoAssert(range);</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    }</div>
@@ -188,7 +188,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  <span class="keyword">private</span>:</div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    std::mt19937 engine;</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    std::uniform_int_distribution&lt;unsigned long&gt; dist_int;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    std::uniform_int_distribution&lt;ulong&gt; dist_int;</div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    std::uniform_real_distribution&lt;float&gt; dist_real;</div>
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keyword">static</span> <span class="keyword">inline</span> std::atomic&lt;int&gt; gRandAllowed{0};</div>
