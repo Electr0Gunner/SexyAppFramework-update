@@ -1012,10 +1012,15 @@ std::string SEHCatcher::GetSysInfo()
 	HMODULE aMod;
 	char aPath[256];
 	char aSDLStr[20];
+	char aPopLibStr[40];
 	char aOpenALStr[256];
 	char aBassStr[20];
 	if (mApp != NULL)
 	{
+		sprintf(aPopLibStr, "PopLib Ver: %s", POPLIB_VERSION);
+		aDebugDump += aPopLibStr;
+		aDebugDump += "\r\n";	
+
 		sprintf(aSDLStr, "SDL Ver: %d.%d.%d", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION);
 		aDebugDump += aSDLStr;
 		aDebugDump += "\r\n";
