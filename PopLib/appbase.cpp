@@ -15,6 +15,7 @@
 #include "math/mtrand.hpp"
 #include "readwrite/modval.hpp"
 #ifdef _WIN32
+#include "debug/sehcatcher.hpp"
 #include <direct.h>
 #else
 #include <unistd.h>
@@ -26,7 +27,7 @@
 #include "graphics/sysfont.hpp"
 #include "resources/resourcemanager.hpp"
 #include "audio/bassmusicinterface.hpp"
-#include "audio/bass.h"
+#include <bass.h>
 #include "misc/autocrit.hpp"
 #include "debug/debug.hpp"
 #include "debug/errorhandler.hpp"
@@ -57,6 +58,8 @@ using namespace PopLib;
 namespace fs = std::filesystem;
 
 AppBase *PopLib::gAppBase = nullptr;
+
+SEHCatcher PopLib::gSEHCatcher;
 
 static bool gScreenSaverActive = false;
 
@@ -246,6 +249,8 @@ AppBase::AppBase()
 	}
 	else*/
 	mTabletPC = false;
+
+	gSEHCatcher.mApp = this;
 
 	// std::wifstream stringsFile(_wfopen(L".\\properties\\fstrings", L"rb"));
 	//
@@ -2205,12 +2210,15 @@ bool AppBase::ProcessDeferredMessages(bool singleMessage)
 			Shutdown();
 			break;
 		case SDL_EVENT_WINDOW_FOCUS_GAINED:
-			mActive = true;
-			RehupFocus();
-			if (!mIsWindowed)
-				mWidgetManager->MarkAllDirty();
-			if (mIsOpeningURL && !mActive)
-				URLOpenSucceeded(mOpeningURL);
+			if ((!gInAssert) && (!mSEHOccured) && (!mShutdown))
+			{
+				mActive = true;
+				RehupFocus();
+				if (!mIsWindowed)
+					mWidgetManager->MarkAllDirty();
+				if (mIsOpeningURL && !mActive)
+					URLOpenSucceeded(mOpeningURL);
+			}
 			break;
 		case SDL_EVENT_WINDOW_FOCUS_LOST:
 			mActive = false;

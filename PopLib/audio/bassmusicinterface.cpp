@@ -1,5 +1,5 @@
 #include "bassmusicinterface.hpp"
-#include "bass.h"
+#include <bass.h>
 #include "paklib/pakinterface.hpp"
 
 using namespace PopLib;

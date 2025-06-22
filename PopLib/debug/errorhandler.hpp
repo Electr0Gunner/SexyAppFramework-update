@@ -30,6 +30,8 @@ class ErrorHandler
 	ErrorHandler(AppBase *theApp);
 	/// @brief destructor
 	virtual ~ErrorHandler();
+
+	void OnException(const std::exception& e);
 };
 
 /// @brief app error handler

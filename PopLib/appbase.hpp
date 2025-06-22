@@ -465,11 +465,6 @@ class AppBase : public ButtonListener, public DialogListener
 	/// @brief (ResourceManager) the app resource manager
 	ResourceManager *mResourceManager;
 
-#ifdef ZYLOM
-	/// @brief zylom game id
-	uint mZylomGameId;
-#endif
-
   protected:
 	/// @brief TBA
 	void RehupFocus();

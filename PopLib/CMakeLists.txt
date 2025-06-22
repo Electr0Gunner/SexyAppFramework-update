@@ -99,6 +99,7 @@ target_include_directories(${PROJECT_NAME}
         ${POPLIB_ROOT_DIR}/external/ogg/include
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${POPLIB_ROOT_DIR}/external/misc
+        ${POPLIB_ROOT_DIR}/external/bass
         ${POPLIB_ROOT_DIR}/external/discordrpc
         ${POPLIB_ROOT_DIR}/external/stb_image
 )
