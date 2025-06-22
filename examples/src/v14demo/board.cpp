@@ -23,13 +23,19 @@ using namespace PopLib;
 
 void crash()
 {
-    __try {
+#ifdef _WIN32
+	__try {
         int a = 0;
         int b = 5 / a;
         (void)b;
     }
     __except(PopLib::SEHCatcher::UnhandledExceptionFilter(GetExceptionInformation())) {
     }
+#else
+    int a = 0;
+    int b = 5 / a;
+    (void)b; // this executes the catcher automatically
+#endif
 }
 
 Board::Board(V14DemoApp* theApp)
