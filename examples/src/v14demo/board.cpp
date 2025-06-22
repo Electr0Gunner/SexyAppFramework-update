@@ -3,6 +3,7 @@
 #include "res.hpp"
 #include "v14demoapp.hpp"
 
+#include "PopLib/debug/sehcatcher.hpp"
 #include "PopLib/graphics/sysfont.hpp"
 #include "PopLib/graphics/font.hpp"
 #include "PopLib/graphics/graphics.hpp"
@@ -19,6 +20,17 @@
 #include "PopLib/audio/soundinstance.hpp"
 
 using namespace PopLib;
+
+void crash()
+{
+    __try {
+        int a = 0;
+        int b = 5 / a;
+        (void)b;
+    }
+    __except(PopLib::SEHCatcher::UnhandledExceptionFilter(GetExceptionInformation())) {
+    }
+}
 
 Board::Board(V14DemoApp* theApp)
 {
@@ -48,6 +60,13 @@ Board::Board(V14DemoApp* theApp)
 	mMsgButton->Resize(mDemoButton->mX + 20 + mDemoButton->mWidth, 10, w + 10, 50);
 	AddWidget(mMsgButton);
 
+	mCrashButton = new ButtonWidget(3, this);
+	mCrashButton->mLabel = "Crash the game";
+	mCrashButton->SetFont(FONT_DEFAULT);
+	w = FONT_DEFAULT->StringWidth(mCrashButton->mLabel);
+	mCrashButton->Resize(mMsgButton->mX + 20 + mMsgButton->mWidth, 10, w + 10, 50);
+	AddWidget(mCrashButton);
+
 	mDemoWidget = NULL;
 
 	mRect = Rect(mApp->mWidth / 2 - 1, mApp->mHeight / 2 - 1, 2, 2);
@@ -69,6 +88,7 @@ Board::~Board()
 	delete mDemoButton;
 	delete mDialogButton;
 	delete mMsgButton;
+	delete mCrashButton;
 
 	if (mDemoWidget != NULL)
 		mApp->mWidgetManager->RemoveWidget(mDemoWidget);
@@ -224,5 +244,9 @@ void Board::ButtonDepress(int id)
 	{
 		mApp->MsgBox("This is a SDL3 Message Box", "Test", MsgBoxFlags::MsgBox_ABORTRETRYIGNORE);
 
+	}
+	else if (id == mCrashButton->mId)
+	{
+		crash();
 	}
 }

@@ -67,6 +67,17 @@ public:
 	static bool				mExiting;
 	static bool				mShowUI;
 	static bool				mAllowSubmit;
+	#ifdef _WIN32
+	static HMODULE			mImageHelpLib;
+	static SYMINITIALIZEPROC mSymInitialize;
+	static SYMSETOPTIONSPROC mSymSetOptions;
+	static UNDECORATESYMBOLNAMEPROC mUnDecorateSymbolName;
+	static SYMCLEANUPPROC	mSymCleanup;
+	static STACKWALKPROC	mStackWalk;
+	static SYMFUNCTIONTABLEACCESSPROC mSymFunctionTableAccess;
+	static SYMGETMODULEBASEPROC mSymGetModuleBase;
+	static SYMGETSYMFROMADDRPROC mSymGetSymFromAddr;
+	#endif
 
 #ifdef _WIN32
 protected:
@@ -80,6 +91,10 @@ public:
 #ifdef _WIN32
 	static long __stdcall	UnhandledExceptionFilter(LPEXCEPTION_POINTERS lpExceptPtr);	
 	static void				DoHandleDebugEvent(LPEXCEPTION_POINTERS lpEP);
+	static std::string		IntelWalk(PCONTEXT theContext, int theSkipCount);
+	static std::string		ImageHelpWalk(PCONTEXT theContext, int theSkipCount);
+	static bool				LoadImageHelp();
+	static void				UnloadImageHelp();
 #else
 	static long UnhandledExceptionFilter(LPEXCEPTION_POINTERS) { return 0; }
 	static void DoHandleDebugEvent(LPEXCEPTION_POINTERS) {}

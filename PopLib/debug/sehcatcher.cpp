@@ -59,6 +59,18 @@ HTTPTransfer				SEHCatcher::mSubmitReportTransfer;
 bool						SEHCatcher::mExiting = false;
 bool						SEHCatcher::mShowUI = true;
 bool						SEHCatcher::mAllowSubmit = true;
+#ifdef _WIN32
+HMODULE						SEHCatcher::mImageHelpLib = NULL;
+SYMINITIALIZEPROC			SEHCatcher::mSymInitialize = NULL;
+SYMSETOPTIONSPROC			SEHCatcher::mSymSetOptions = NULL;
+UNDECORATESYMBOLNAMEPROC	SEHCatcher::mUnDecorateSymbolName = NULL;
+SYMCLEANUPPROC				SEHCatcher::mSymCleanup = NULL;
+STACKWALKPROC				SEHCatcher::mStackWalk = NULL;
+SYMFUNCTIONTABLEACCESSPROC	SEHCatcher::mSymFunctionTableAccess = NULL;
+SYMGETMODULEBASEPROC		SEHCatcher::mSymGetModuleBase = NULL;
+SYMGETSYMFROMADDRPROC		SEHCatcher::mSymGetSymFromAddr = NULL;
+LPTOP_LEVEL_EXCEPTION_FILTER SEHCatcher::mPreviousFilter;
+#endif
 
 std::wstring					SEHCatcher::mCrashMessage = L"An unexpected error has occured!\nSubmit an issue to the framework's GitHub page.\nPlease help out by providing as much information as you can about this crash.\nThe crash log has been copied to the clipboard.";
 std::string						SEHCatcher::mIssueWebsite = "https://github.com/teampopwork/PopLib/issues";
@@ -120,6 +132,7 @@ struct {
 
 SDL_Renderer *mRenderer;
 SDL_Window *mWindow;
+ImGuiContext *mImGuiContext;
 
 SEHCatcher::SEHCatcher() 
 { 	
@@ -144,13 +157,6 @@ SEHCatcher::~SEHCatcher() noexcept
     int signals[] = { SIGSEGV, SIGABRT, SIGFPE, SIGILL, SIGBUS, SIGTERM };
     for (int sig : signals) sigaction(sig, nullptr, nullptr);
 #endif
-
-    try { ImGui_ImplSDLRenderer3_Shutdown(); } catch(...) {}
-    try { ImGui_ImplSDL3_Shutdown(); }        catch(...) {}
-    try { ImGui::DestroyContext(); }          catch(...) {}
-    try { if (mRenderer) SDL_DestroyRenderer(mRenderer); } catch(...) {}
-    try { if (mWindow)   SDL_DestroyWindow(mWindow);   } catch(...) {}
-    try { SDL_Quit(); }                        catch(...) {}
 }
 
 #ifdef _WIN32
@@ -368,6 +374,71 @@ void SEHCatcher::GetSymbolsFromMapFile(std::string &theDebugDump)
 }
 
 #ifdef _WIN32
+
+
+std::string SEHCatcher::IntelWalk(PCONTEXT theContext, int theSkipCount)
+{
+	std::string aDebugDump;
+	char aBuffer[2048];
+
+
+#ifdef _WIN64
+	DWORD64 pc = theContext->Eip; 
+	PDWORD64 pFrame, pPrevFrame; 
+
+	pFrame = (PDWORD64)theContext->Ebp;
+#else
+	DWORD pc = theContext->Eip;
+	PDWORD pFrame, pPrevFrame;
+
+	pFrame = (PDWORD)theContext->Ebp;
+#endif
+
+    for (;;)
+    {
+        char szModule[MAX_PATH] = "";
+        DWORD section = 0, offset = 0;
+
+        GetLogicalAddress((PVOID)pc, szModule, sizeof(szModule), section, offset);
+
+        sprintf(aBuffer, "%08X  %08X  %04X:%08X %s\r\n",
+                  pc, pFrame, section, offset, GetFilename(szModule).c_str());
+		aDebugDump += aBuffer;
+
+		if (pFrame == nullptr)
+			break;
+
+#ifdef _WIN64
+		pc = pFrame[1];
+		pPrevFrame = pFrame;
+		pFrame = (PDWORD64)pFrame[0];// proceed to next higher frame on stack
+#else
+		pc = pFrame[1]; 
+		pPrevFrame = pFrame;
+		pFrame = (PDWORD)pFrame[0];
+#endif
+
+
+#ifdef _WIN64		
+		if ((DWORD64)pFrame & 3)    // Frame pointer must be aligned on a
+			break;                     // Bail if not aligned.
+#else
+		if ((DWORD)pFrame & 3)    // Frame pointer must be aligned on a
+			break;                  // DWORD boundary.  Bail if not so.
+#endif
+
+        if (pFrame <= pPrevFrame)
+            break;
+
+        // Can two DWORDs be read from the supposed frame address?          
+        if (IsBadWritePtr(pFrame, sizeof(PVOID)*2))
+            break;
+    };
+
+	return aDebugDump;
+}
+
+
 void SEHCatcher::DoHandleDebugEvent(LPEXCEPTION_POINTERS lpEP)
 {
 	bool hasImageHelp = LoadImageHelp();
@@ -467,6 +538,157 @@ void SEHCatcher::DoHandleDebugEvent(LPEXCEPTION_POINTERS lpEP)
 
 	UnloadImageHelp();	
 }
+
+bool SEHCatcher::LoadImageHelp()
+{
+	mImageHelpLib = LoadLibraryA("IMAGEHLP.DLL");
+    if (!mImageHelpLib)
+        return false;
+
+    mSymInitialize = (SYMINITIALIZEPROC) GetProcAddress(mImageHelpLib, "SymInitialize");
+    if (!mSymInitialize)
+        return false;
+
+	mSymSetOptions = (SYMSETOPTIONSPROC) GetProcAddress(mImageHelpLib, "SymSetOptions");
+    if (!mSymSetOptions)
+        return false;
+
+    mSymCleanup = (SYMCLEANUPPROC) GetProcAddress(mImageHelpLib, "SymCleanup");
+    if (!mSymCleanup)
+        return false;
+
+	mUnDecorateSymbolName = (UNDECORATESYMBOLNAMEPROC) GetProcAddress(mImageHelpLib, "UnDecorateSymbolName");
+    if (!mUnDecorateSymbolName)
+        return false;
+
+    mStackWalk = (STACKWALKPROC) GetProcAddress(mImageHelpLib, "StackWalk");
+    if (!mStackWalk)
+        return false;
+
+    mSymFunctionTableAccess = (SYMFUNCTIONTABLEACCESSPROC) GetProcAddress(mImageHelpLib, "SymFunctionTableAccess");
+    if (!mSymFunctionTableAccess)
+        return false;
+
+    mSymGetModuleBase = (SYMGETMODULEBASEPROC) GetProcAddress(mImageHelpLib, "SymGetModuleBase");
+    if (!mSymGetModuleBase)
+        return false;
+
+    mSymGetSymFromAddr = (SYMGETSYMFROMADDRPROC) GetProcAddress(mImageHelpLib, "SymGetSymFromAddr" );
+    if (!mSymGetSymFromAddr)
+        return false;    
+
+	mSymSetOptions(SYMOPT_DEFERRED_LOADS);
+
+	// Get image filename of the main executable
+	char filepath[MAX_PATH], *lastdir, *pPath;
+	DWORD filepathlen = GetModuleFileNameA ( NULL, filepath, sizeof(filepath));
+        
+    lastdir = strrchr (filepath, '/');
+    if (lastdir == NULL) lastdir = strrchr (filepath, '\\');
+    if (lastdir != NULL) lastdir[0] = '\0';
+
+    // Initialize the symbol table routines, supplying a pointer to the path
+    pPath = filepath;
+    if (strlen (filepath) == 0) pPath = NULL;
+
+     if (!mSymInitialize (GetCurrentProcess(), pPath, TRUE))
+		return false;
+
+    return true;
+}
+
+void SEHCatcher::UnloadImageHelp()
+{
+	if (mImageHelpLib != NULL)
+		FreeLibrary(mImageHelpLib);
+}
+
+
+std::string SEHCatcher::ImageHelpWalk(PCONTEXT theContext, int theSkipCount)
+{
+	char aBuffer[2048];
+	std::string aDebugDump;
+
+	STACKFRAME sf;
+	memset( &sf, 0, sizeof(sf) );	
+
+	// Initialize the STACKFRAME structure for the first call.  This is only
+	// necessary for Intel CPUs, and isn't mentioned in the documentation.
+	sf.AddrPC.Offset       = theContext->Eip;
+	sf.AddrPC.Mode         = AddrModeFlat;
+	sf.AddrStack.Offset    = theContext->Esp;
+	sf.AddrStack.Mode      = AddrModeFlat;
+	sf.AddrFrame.Offset    = theContext->Ebp;
+	sf.AddrFrame.Mode      = AddrModeFlat;
+	
+	int aLevelCount = 0;
+
+	for (;;)
+	{
+		if (!mStackWalk(IMAGE_FILE_MACHINE_I386, GetCurrentProcess(), GetCurrentThread(),
+						&sf, NULL  /*theContext*/, NULL, mSymFunctionTableAccess, mSymGetModuleBase, 0))
+		{
+			DWORD lastErr = GetLastError();
+			sprintf(aBuffer, "StackWalk failed (error %d)\r\n", lastErr);
+			aDebugDump += aBuffer;
+			break;
+		}
+
+		if ((sf.AddrFrame.Offset == 0) || (sf.AddrPC.Offset == 0))
+			break;
+
+		if (theSkipCount > 0)
+		{
+			theSkipCount--;
+			continue;
+		}
+
+		BYTE symbolBuffer[sizeof(IMAGEHLP_SYMBOL) + 512];
+		PIMAGEHLP_SYMBOL pSymbol = (PIMAGEHLP_SYMBOL)symbolBuffer;
+		pSymbol->SizeOfStruct = sizeof(symbolBuffer);
+		pSymbol->MaxNameLength = 512;
+			
+		DWORD symDisplacement = 0;  // Displacement of the input address,
+									// relative to the start of the symbol
+			
+		if (mSymGetSymFromAddr(GetCurrentProcess(), sf.AddrPC.Offset, &symDisplacement, pSymbol))
+		{
+			char aUDName[256];
+			mUnDecorateSymbolName(pSymbol->Name, aUDName, 256, 
+								 UNDNAME_NO_ALLOCATION_MODEL | UNDNAME_NO_ALLOCATION_LANGUAGE | 
+								 UNDNAME_NO_MS_THISTYPE | UNDNAME_NO_ACCESS_SPECIFIERS | 
+								 UNDNAME_NO_THISTYPE | UNDNAME_NO_MEMBER_TYPE | 
+								 UNDNAME_NO_RETURN_UDT_MODEL | UNDNAME_NO_THROW_SIGNATURES |
+								 UNDNAME_NO_SPECIAL_SYMS);
+				
+			sprintf(aBuffer, "%08X %08X %hs+%X\r\n", 
+					sf.AddrFrame.Offset, sf.AddrPC.Offset, aUDName, symDisplacement);
+		}
+		else // No symbol found.  Print out the logical address instead.
+		{
+			char szModule[MAX_PATH];            
+			DWORD section = 0, offset = 0;
+
+			GetLogicalAddress((PVOID)sf.AddrPC.Offset, szModule, sizeof(szModule), section, offset);				
+			sprintf(aBuffer, "%08X %08X %04X:%08X %s\r\n", sf.AddrFrame.Offset, sf.AddrPC.Offset, section, offset, GetFilename(szModule).c_str());
+		}
+		aDebugDump += aBuffer;
+		
+		sprintf(aBuffer, "Params: %08X %08X %08X %08X\r\n", sf.Params[0], sf.Params[1], sf.Params[2], sf.Params[3]);
+		aDebugDump += aBuffer;		
+		aDebugDump += "\r\n";
+
+		aLevelCount++;
+    
+        // check for loop
+        if (aLevelCount > 1000)
+            break;
+	}
+
+	return aDebugDump;
+}
+
+
 #endif
 
 bool SEHCatcher::GetLogicalAddress(void* addr, char* szModule, DWORD len, DWORD& section, DWORD& offset)
@@ -662,7 +884,8 @@ void SEHCatcher::ShowErrorDialog(const std::string& theErrorTitle, const std::st
     mRenderer = SDL_CreateRenderer(mWindow, NULL);
 
     IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
+	mImGuiContext = ImGui::CreateContext();
+	ImGui::SetCurrentContext(mImGuiContext);
 	ImGuiIO &io = ImGui::GetIO();
 	(void)io; // uhhhhhh
 	ImGui::StyleColorsDark();
@@ -762,6 +985,15 @@ void SEHCatcher::ShowErrorDialog(const std::string& theErrorTitle, const std::st
 
         SDL_Delay(16);
     }
+	
+    try { ImGui_ImplSDLRenderer3_Shutdown(); } catch(...) {}
+    try { ImGui_ImplSDL3_Shutdown(); }        catch(...) {}
+    try { ImGui::DestroyContext(mImGuiContext); }          catch(...) {}
+    try { if (mRenderer) SDL_DestroyRenderer(mRenderer); } catch(...) {}
+    try { if (mWindow)   SDL_DestroyWindow(mWindow);   } catch(...) {}
+
+	if (mExiting && !mDebugError)
+		mApp->Shutdown();
 }
 
 std::string SEHCatcher::GetSysInfo()
