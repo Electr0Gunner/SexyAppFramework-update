@@ -1,14 +1,30 @@
-#ifdef _WIN32
 #include "sehcatcher.hpp"
-#include <al/al.h>
+#include <AL/al.h>
 #include <bass.h>
+#include "SDL3/SDL_messagebox.h"
+#include "SDL3/SDL_oldnames.h"
+#include "SDL3/SDL_video.h"
 #include "appbase.hpp"
 #include <fstream>
+#include "imgui/core/imgui_impl_sdlrenderer3.h"
+#include "imgui/imguimanager.hpp"
+#ifndef _WIN32
+#include <csignal>
+#include <execinfo.h>
+#include <dlfcn.h>
+#include <sstream>
+#else
 #include <process.h>
+#endif
+
+#include <string>
+#include <locale>
+#include <codecvt>
 
 using namespace PopLib;
 
 // This is the best i couldve come up with.
+#ifdef _WIN32
 #ifdef _WIN64
     #define Eip Rip
     #define Ebx Rbx
@@ -30,41 +46,27 @@ using namespace PopLib;
     #define Ebp Ebp
 	#define Eax Eax
 #endif
+#endif
 
-LPTOP_LEVEL_EXCEPTION_FILTER SEHCatcher::mPreviousFilter;
 AppBase*				SEHCatcher::mApp = NULL;
-HFONT						SEHCatcher::mDialogFont = NULL;
-HFONT						SEHCatcher::mBoldFont = NULL;
 bool						SEHCatcher::mHasDemoFile = false;
 bool						SEHCatcher::mDebugError = false;
 std::string					SEHCatcher::mErrorTitle;
 std::string					SEHCatcher::mErrorText;
 std::string					SEHCatcher::mUserText;
 std::string					SEHCatcher::mUploadFileName;
-HWND						SEHCatcher::mYesButtonWindow = NULL;
-HWND						SEHCatcher::mNoButtonWindow = NULL;
-HWND						SEHCatcher::mDebugButtonWindow = NULL;
-HWND						SEHCatcher::mEditWindow = NULL;
-HMODULE						SEHCatcher::mImageHelpLib = NULL;
-SYMINITIALIZEPROC			SEHCatcher::mSymInitialize = NULL;
-SYMSETOPTIONSPROC			SEHCatcher::mSymSetOptions = NULL;
-UNDECORATESYMBOLNAMEPROC	SEHCatcher::mUnDecorateSymbolName = NULL;
-SYMCLEANUPPROC				SEHCatcher::mSymCleanup = NULL;
-STACKWALKPROC				SEHCatcher::mStackWalk = NULL;
-SYMFUNCTIONTABLEACCESSPROC	SEHCatcher::mSymFunctionTableAccess = NULL;
-SYMGETMODULEBASEPROC		SEHCatcher::mSymGetModuleBase = NULL;
-SYMGETSYMFROMADDRPROC		SEHCatcher::mSymGetSymFromAddr = NULL;
 HTTPTransfer				SEHCatcher::mSubmitReportTransfer;
 bool						SEHCatcher::mExiting = false;
 bool						SEHCatcher::mShowUI = true;
 bool						SEHCatcher::mAllowSubmit = true;
 
-std::wstring					SEHCatcher::mCrashMessage = L"An unexpected error has occured!\r\n Submit an issue to the framework's github page.\r\nPlease help out by providing as much information as you can about this crash.\r\nThe crash log has been copied to the clipboard.";
+std::wstring					SEHCatcher::mCrashMessage = L"An unexpected error has occured!\nSubmit an issue to the framework's GitHub page.\nPlease help out by providing as much information as you can about this crash.\nThe crash log has been copied to the clipboard.";
 std::string						SEHCatcher::mIssueWebsite = "https://github.com/teampopwork/PopLib/issues";
 std::wstring					SEHCatcher::mSubmitErrorMessage = L"Failed to open the URL: https://github.com/teampopwork/PopLib/issues.";
 
 static bool gUseDefaultFonts = true;
 
+#ifdef _WIN32
 struct 
 {
     DWORD   dwExceptionCode;
@@ -101,18 +103,57 @@ struct
    { STATUS_CONTROL_C_EXIT,           "Ctrl+C Exit" },
    { 0xFFFFFFFF,                      "" }
 };
+#else
+struct {
+    int sig;
+    const char* msg;
+} gSignalMsgTable[] = {
+    { SIGSEGV, "Segmentation Fault" },
+    { SIGABRT, "Abort Signal" },
+    { SIGFPE,  "Floating Point Exception" },
+    { SIGILL,  "Illegal Instruction" },
+    { SIGBUS,  "Bus Error" },
+    { SIGTERM, "Termination Signal" },
+    { 0, nullptr }
+};
+#endif
 
+SDL_Renderer *mRenderer;
+SDL_Window *mWindow;
 
 SEHCatcher::SEHCatcher() 
 { 	
+#ifdef _WIN32
 	mPreviousFilter = SetUnhandledExceptionFilter(UnhandledExceptionFilter); 
+#else
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_sigaction = signalHandler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_SIGINFO;
+    int signals[] = { SIGSEGV, SIGABRT, SIGFPE, SIGILL, SIGBUS, SIGTERM };
+    for (int sig : signals) sigaction(sig, &sa, nullptr);
+#endif
 }
 
-SEHCatcher::~SEHCatcher() 
+SEHCatcher::~SEHCatcher() noexcept
 { 
+#ifdef _WIN32
 	SetUnhandledExceptionFilter(mPreviousFilter); 
+#else
+    int signals[] = { SIGSEGV, SIGABRT, SIGFPE, SIGILL, SIGBUS, SIGTERM };
+    for (int sig : signals) sigaction(sig, nullptr, nullptr);
+#endif
+
+    try { ImGui_ImplSDLRenderer3_Shutdown(); } catch(...) {}
+    try { ImGui_ImplSDL3_Shutdown(); }        catch(...) {}
+    try { ImGui::DestroyContext(); }          catch(...) {}
+    try { if (mRenderer) SDL_DestroyRenderer(mRenderer); } catch(...) {}
+    try { if (mWindow)   SDL_DestroyWindow(mWindow);   } catch(...) {}
+    try { SDL_Quit(); }                        catch(...) {}
 }
 
+#ifdef _WIN32
 long __stdcall SEHCatcher::UnhandledExceptionFilter(LPEXCEPTION_POINTERS lpExceptPtr)
 {
 	if (mApp != NULL)
@@ -125,70 +166,31 @@ long __stdcall SEHCatcher::UnhandledExceptionFilter(LPEXCEPTION_POINTERS lpExcep
 	
 	return EXCEPTION_CONTINUE_SEARCH;	
 }
-
-bool SEHCatcher::LoadImageHelp()
+#else
+void SEHCatcher::signalHandler(int sig, siginfo_t* info, void* ucontext)
 {
-	mImageHelpLib = LoadLibraryA("IMAGEHLP.DLL");
-    if (!mImageHelpLib)
-        return false;
+    const int maxFrames = 64;
+    void* frames[maxFrames];
+    int count = backtrace(frames, maxFrames);
+    char** symbols = backtrace_symbols(frames, count);
 
-    mSymInitialize = (SYMINITIALIZEPROC) GetProcAddress(mImageHelpLib, "SymInitialize");
-    if (!mSymInitialize)
-        return false;
-
-	mSymSetOptions = (SYMSETOPTIONSPROC) GetProcAddress(mImageHelpLib, "SymSetOptions");
-    if (!mSymSetOptions)
-        return false;
-
-    mSymCleanup = (SYMCLEANUPPROC) GetProcAddress(mImageHelpLib, "SymCleanup");
-    if (!mSymCleanup)
-        return false;
-
-	mUnDecorateSymbolName = (UNDECORATESYMBOLNAMEPROC) GetProcAddress(mImageHelpLib, "UnDecorateSymbolName");
-    if (!mUnDecorateSymbolName)
-        return false;
-
-    mStackWalk = (STACKWALKPROC) GetProcAddress(mImageHelpLib, "StackWalk");
-    if (!mStackWalk)
-        return false;
-
-    mSymFunctionTableAccess = (SYMFUNCTIONTABLEACCESSPROC) GetProcAddress(mImageHelpLib, "SymFunctionTableAccess");
-    if (!mSymFunctionTableAccess)
-        return false;
-
-    mSymGetModuleBase = (SYMGETMODULEBASEPROC) GetProcAddress(mImageHelpLib, "SymGetModuleBase");
-    if (!mSymGetModuleBase)
-        return false;
-
-    mSymGetSymFromAddr = (SYMGETSYMFROMADDRPROC) GetProcAddress(mImageHelpLib, "SymGetSymFromAddr" );
-    if (!mSymGetSymFromAddr)
-        return false;    
-
-	mSymSetOptions(SYMOPT_DEFERRED_LOADS);
-
-	// Get image filename of the main executable
-	char filepath[MAX_PATH], *lastdir, *pPath;
-	DWORD filepathlen = GetModuleFileNameA ( NULL, filepath, sizeof(filepath));
-        
-    lastdir = strrchr (filepath, '/');
-    if (lastdir == NULL) lastdir = strrchr (filepath, '\\');
-    if (lastdir != NULL) lastdir[0] = '\0';
-
-    // Initialize the symbol table routines, supplying a pointer to the path
-    pPath = filepath;
-    if (strlen (filepath) == 0) pPath = NULL;
-
-     if (!mSymInitialize (GetCurrentProcess(), pPath, TRUE))
-		return false;
-
-    return true;
+    std::ostringstream oss;
+    oss << "Signal " << sig << " (" << strsignal(sig) << ")\n";
+    for (int i = 0; i < count; ++i) {
+        Dl_info dli;
+        if (dladdr(frames[i], &dli) && dli.dli_sname)
+            oss << "  " << dli.dli_sname << "+0x" << std::hex
+                << ((char*)frames[i] - (char*)dli.dli_saddr) << std::dec << "\n";
+        else
+            oss << "  " << symbols[i] << "\n";
+    }
+    free(symbols);
+    std::string dump = oss.str();
+    WriteToFile(dump);
+    ShowErrorDialog("Crash Detected", dump);
+    _exit(1);
 }
-
-void SEHCatcher::UnloadImageHelp()
-{
-	if (mImageHelpLib != NULL)
-		FreeLibrary(mImageHelpLib);
-}
+#endif
 
 static bool StrToLongHex(const std::string& aString, DWORD* theValue)
 {	
@@ -216,6 +218,7 @@ static bool StrToLongHex(const std::string& aString, DWORD* theValue)
 
 void SEHCatcher::GetSymbolsFromMapFile(std::string &theDebugDump)
 {
+#ifdef _WIN32
     DWORD aTick = GetTickCount();
 	WIN32_FIND_DATAA aFindData;
 	HANDLE aFindHandle = FindFirstFileA("*.map",&aFindData);
@@ -361,8 +364,10 @@ void SEHCatcher::GetSymbolsFromMapFile(std::string &theDebugDump)
 	}
 
 //	MessageBox(NULL,StrFormat("%d",GetTickCount()-aTick).c_str(),"Time",MB_OK);
+#endif
 }
 
+#ifdef _WIN32
 void SEHCatcher::DoHandleDebugEvent(LPEXCEPTION_POINTERS lpEP)
 {
 	bool hasImageHelp = LoadImageHelp();
@@ -462,152 +467,11 @@ void SEHCatcher::DoHandleDebugEvent(LPEXCEPTION_POINTERS lpEP)
 
 	UnloadImageHelp();	
 }
-
-std::string SEHCatcher::IntelWalk(PCONTEXT theContext, int theSkipCount)
-{
-	std::string aDebugDump;
-	char aBuffer[2048];
-
-
-#ifdef _WIN64
-	DWORD64 pc = theContext->Eip; 
-	PDWORD64 pFrame, pPrevFrame; 
-
-	pFrame = (PDWORD64)theContext->Ebp;
-#else
-	DWORD pc = theContext->Eip;
-	PDWORD pFrame, pPrevFrame;
-
-	pFrame = (PDWORD)theContext->Ebp;
 #endif
-
-    for (;;)
-    {
-        char szModule[MAX_PATH] = "";
-        DWORD section = 0, offset = 0;
-
-        GetLogicalAddress((PVOID)pc, szModule, sizeof(szModule), section, offset);
-
-        sprintf(aBuffer, "%08X  %08X  %04X:%08X %s\r\n",
-                  pc, pFrame, section, offset, GetFilename(szModule).c_str());
-		aDebugDump += aBuffer;
-
-#ifdef _WIN64
-		pc = pFrame[1];
-		pPrevFrame = pFrame;
-		pFrame = (PDWORD64)pFrame[0];// proceed to next higher frame on stack
-#else
-		pc = pFrame[1]; 
-		pPrevFrame = pFrame;
-		pFrame = (PDWORD)pFrame[0];
-#endif
-
-
-#ifdef _WIN64		
-		if ((DWORD64)pFrame & 3)    // Frame pointer must be aligned on a
-			break;                     // Bail if not aligned.
-#else
-		if ((DWORD)pFrame & 3)    // Frame pointer must be aligned on a
-			break;                  // DWORD boundary.  Bail if not so.
-#endif
-
-        if (pFrame <= pPrevFrame)
-            break;
-
-        // Can two DWORDs be read from the supposed frame address?          
-        if (IsBadWritePtr(pFrame, sizeof(PVOID)*2))
-            break;
-    };
-
-	return aDebugDump;
-}
-
-std::string SEHCatcher::ImageHelpWalk(PCONTEXT theContext, int theSkipCount)
-{
-	char aBuffer[2048];
-	std::string aDebugDump;
-
-	STACKFRAME sf;
-	memset( &sf, 0, sizeof(sf) );	
-
-	// Initialize the STACKFRAME structure for the first call.  This is only
-	// necessary for Intel CPUs, and isn't mentioned in the documentation.
-	sf.AddrPC.Offset       = theContext->Eip;
-	sf.AddrPC.Mode         = AddrModeFlat;
-	sf.AddrStack.Offset    = theContext->Esp;
-	sf.AddrStack.Mode      = AddrModeFlat;
-	sf.AddrFrame.Offset    = theContext->Ebp;
-	sf.AddrFrame.Mode      = AddrModeFlat;
-	
-	int aLevelCount = 0;
-
-	for (;;)
-	{
-		if (!mStackWalk(IMAGE_FILE_MACHINE_I386, GetCurrentProcess(), GetCurrentThread(),
-						&sf, NULL  /*theContext*/, NULL, mSymFunctionTableAccess, mSymGetModuleBase, 0))
-		{
-			DWORD lastErr = GetLastError();
-			sprintf(aBuffer, "StackWalk failed (error %d)\r\n", lastErr);
-			aDebugDump += aBuffer;
-			break;
-		}
-
-		if ((sf.AddrFrame.Offset == 0) || (sf.AddrPC.Offset == 0))
-			break;
-
-		if (theSkipCount > 0)
-		{
-			theSkipCount--;
-			continue;
-		}
-
-		BYTE symbolBuffer[sizeof(IMAGEHLP_SYMBOL) + 512];
-		PIMAGEHLP_SYMBOL pSymbol = (PIMAGEHLP_SYMBOL)symbolBuffer;
-		pSymbol->SizeOfStruct = sizeof(symbolBuffer);
-		pSymbol->MaxNameLength = 512;
-			
-		DWORD symDisplacement = 0;  // Displacement of the input address,
-									// relative to the start of the symbol
-			
-		if (mSymGetSymFromAddr(GetCurrentProcess(), sf.AddrPC.Offset, &symDisplacement, pSymbol))
-		{
-			char aUDName[256];
-			mUnDecorateSymbolName(pSymbol->Name, aUDName, 256, 
-								 UNDNAME_NO_ALLOCATION_MODEL | UNDNAME_NO_ALLOCATION_LANGUAGE | 
-								 UNDNAME_NO_MS_THISTYPE | UNDNAME_NO_ACCESS_SPECIFIERS | 
-								 UNDNAME_NO_THISTYPE | UNDNAME_NO_MEMBER_TYPE | 
-								 UNDNAME_NO_RETURN_UDT_MODEL | UNDNAME_NO_THROW_SIGNATURES |
-								 UNDNAME_NO_SPECIAL_SYMS);
-				
-			sprintf(aBuffer, "%08X %08X %hs+%X\r\n", 
-					sf.AddrFrame.Offset, sf.AddrPC.Offset, aUDName, symDisplacement);
-		}
-		else // No symbol found.  Print out the logical address instead.
-		{
-			char szModule[MAX_PATH];            
-			DWORD section = 0, offset = 0;
-
-			GetLogicalAddress((PVOID)sf.AddrPC.Offset, szModule, sizeof(szModule), section, offset);				
-			sprintf(aBuffer, "%08X %08X %04X:%08X %s\r\n", sf.AddrFrame.Offset, sf.AddrPC.Offset, section, offset, GetFilename(szModule).c_str());
-		}
-		aDebugDump += aBuffer;
-		
-		sprintf(aBuffer, "Params: %08X %08X %08X %08X\r\n", sf.Params[0], sf.Params[1], sf.Params[2], sf.Params[3]);
-		aDebugDump += aBuffer;		
-		aDebugDump += "\r\n";
-
-		aLevelCount++;
-    
-        // check for loop
-        if (aLevelCount > 1000)
-            break;
-	}
-
-	return aDebugDump;
-}
 
 bool SEHCatcher::GetLogicalAddress(void* addr, char* szModule, DWORD len, DWORD& section, DWORD& offset)
 {
+#ifdef _WIN32
     MEMORY_BASIC_INFORMATION mbi;
 
     if (!VirtualQuery(addr, &mbi, sizeof(mbi)))
@@ -646,6 +510,7 @@ bool SEHCatcher::GetLogicalAddress(void* addr, char* szModule, DWORD len, DWORD&
             return true;
         }
     }
+#endif
 
     return false; // Should never get here!
 }
@@ -662,42 +527,17 @@ std::string SEHCatcher::GetFilename(const std::string& thePath)
 		return thePath;
 }
 
-HWND gEditWindow = NULL;
 int aCount = 0;
 
-LRESULT CALLBACK SEHCatcher::SEHWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+void SEHCatcher::SEHWindowProc()
 {
-	switch (uMsg)
+	SDL_Event e;
+    while (SDL_PollEvent(&e))
 	{
-	case WM_COMMAND:
-		{
-			HWND hwndCtl = (HWND) lParam;
-			if (hwndCtl == mYesButtonWindow)
-			{
-				if (!mApp || !mApp->OpenURL(mIssueWebsite))
-				{
-					MessageBoxW(hWnd, mSubmitErrorMessage.c_str(), NULL ,MB_OK);
-				}
-				mExiting = true;
-				ShowWindow(hWnd, SW_HIDE);
-			}			
-			else if (hwndCtl == mNoButtonWindow)
-			{
-				mExiting = true;
-			}
-			else if (hwndCtl == mDebugButtonWindow)
-			{
-				mDebugError = true;
-				mExiting = true;
-			}
-		}
-		break;
-	case WM_CLOSE:
-		mExiting = true;
-		return 0;
-	}
-
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+        if (e.type == SDL_EVENT_QUIT)
+            mExiting = true;
+        ImGui_ImplSDL3_ProcessEvent(&e);
+    }
 }
 
 void SEHCatcher::WriteToFile(const std::string& theErrorText)
@@ -807,187 +647,128 @@ void SEHCatcher::SubmitReportThread(void *theArg)
 
 void SEHCatcher::ShowErrorDialog(const std::string& theErrorTitle, const std::string& theErrorText)
 {
-	OSVERSIONINFO aVersionInfo;
-	aVersionInfo.dwOSVersionInfoSize = sizeof(aVersionInfo);
-	GetVersionEx(&aVersionInfo);
+    mExiting = false;
+    mErrorTitle = theErrorTitle;
+    mErrorText  = theErrorText;
 
-	// Setting fonts on 98 causes weirdo crash things in GDI upon the second crash.
-	//  That's no good.	
-	gUseDefaultFonts = aVersionInfo.dwPlatformId != VER_PLATFORM_WIN32_NT;
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	std::string narrowStr = converter.to_bytes(mCrashMessage);
+	const char* cstr = narrowStr.c_str();
 
-	int aHeight = -MulDiv(8, 96, 72);
-	mDialogFont = ::CreateFontA(aHeight, 0, 0, 0, FW_NORMAL, FALSE, FALSE,
-			false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-			DEFAULT_PITCH | FF_DONTCARE, "Tahoma");
+	SDL_Init(SDL_INIT_VIDEO);
+    mWindow = SDL_CreateWindow(mErrorTitle.c_str(),
+        600, 400,
+        0);
+    mRenderer = SDL_CreateRenderer(mWindow, NULL);
 
-	aHeight = -MulDiv(10, 96, 72);
-	mBoldFont = ::CreateFontA(aHeight, 0, 0, 0, FW_BOLD, FALSE, FALSE,
-			false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-			DEFAULT_PITCH | FF_DONTCARE, "Tahoma");	
+    IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO &io = ImGui::GetIO();
+	(void)io; // uhhhhhh
+	ImGui::StyleColorsDark();
 
-	::SetCursor(::LoadCursor(NULL, IDC_ARROW));
+    ImGui_ImplSDL3_InitForSDLRenderer(mWindow, mRenderer);
+    ImGui_ImplSDLRenderer3_Init(mRenderer);
 
-	mErrorTitle = theErrorTitle;
-	mErrorText = theErrorText;	
+	SDL_SetClipboardText(cstr); // we're not lying.
 
+    while (!mExiting)
+    {
+        SEHWindowProc();
 
-	WNDCLASSA wc;
-	wc.style = 0;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hbrBackground = ::GetSysColorBrush(COLOR_BTNFACE);
-	wc.hCursor = ::LoadCursor(NULL, IDC_ARROW);
-	wc.hIcon = ::LoadIcon(NULL, IDI_ERROR);
-    HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(SDL_GetKeyboardFocus()), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
-    HINSTANCE hInstance = (HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE);
-	wc.hInstance = hInstance;
-	wc.lpfnWndProc = SEHWindowProc;
-	wc.lpszClassName = "SEHWindow";
-	wc.lpszMenuName = NULL;	
-	RegisterClassA(&wc);
+        ImGui_ImplSDLRenderer3_NewFrame();
+        ImGui_ImplSDL3_NewFrame();
+        ImGui::NewFrame();
 
-	RECT aRect;
-		aRect.left = 0;
-		aRect.top = 0;
-		aRect.right = 400;
-		aRect.bottom = 300;
+        int windowWidth;
+        int windowHeight;
+		SDL_GetWindowSize(mWindow, &windowWidth, &windowHeight);
 
-	DWORD aWindowStyle = WS_CLIPCHILDREN | WS_POPUP | WS_BORDER | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+        ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight), ImGuiCond_Always);
+        ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 
-	BOOL worked = AdjustWindowRect(&aRect, aWindowStyle, FALSE);
+        ImGui::Begin("Fatal Error!", nullptr,
+                     ImGuiWindowFlags_NoResize |
+                     ImGuiWindowFlags_NoCollapse |
+                     ImGuiWindowFlags_NoMove |
+                     ImGuiWindowFlags_NoSavedSettings);
 
-	HWND aHWnd = CreateWindowW(L"SEHWindow", L"Fatal Error!",
-		aWindowStyle,
-		64, 64,
-		aRect.right - aRect.left, 
-		aRect.bottom - aRect.top,
-		NULL,
-		NULL,
-		hInstance,
-		0);
+        ImGui::TextWrapped("%s", cstr);
+        ImGui::Spacing();
 
-	HWND aLabelWindow = CreateWindowW(L"EDIT", 
-		mCrashMessage.c_str(),
-		WS_VISIBLE | WS_CHILD | ES_MULTILINE | ES_READONLY, 
-		8, 8,
-		400-8-8,
-		84,
-		aHWnd,
-		NULL,
-		hInstance,
-		0);
-	
-	int aFontHeight = -MulDiv(9, 96, 72);	
-	HFONT aBoldArialFont = CreateFontA(aFontHeight, 0, 0, 0, FW_BOLD, 0, 0,
-			false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-			DEFAULT_PITCH | FF_DONTCARE, "Arial");
+        float contentHeight = ImGui::GetContentRegionAvail().y;
+        float logHeight = 180.0f;
+        float buttonHeight = 30.0f;
+        float spacingE = 10.0f;
+        float reservedBottom = logHeight + buttonHeight + spacingE * 3;
+        ImGui::Dummy(ImVec2(0.0f, contentHeight - reservedBottom));
 
-	if (!gUseDefaultFonts)
-		SendMessage(aLabelWindow, WM_SETFONT, (WPARAM) aBoldArialFont, 0);		
+        ImGui::BeginChild("ErrorDetails", ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
+        ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+        ImGui::TextWrapped("%s", mErrorText.c_str());
+        ImGui::PopFont();
+        ImGui::EndChild();
 
-	HWND anEditWindow = CreateWindowA("EDIT", theErrorText.c_str(), 
-		WS_VISIBLE | WS_CHILD | ES_MULTILINE | WS_BORDER | WS_VSCROLL | ES_READONLY, 
-		8, 300-168-24-8-8,
-		400-8-8,
-		168,
-		aHWnd,
-		NULL,
-		hInstance,
-		0);	
-	
-	aFontHeight = -MulDiv(8, 96, 72);	
-	HFONT aCourierNewFont = CreateFontA(aFontHeight, 0, 0, 0, FW_NORMAL, 0, 0,
-			false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-			DEFAULT_PITCH | FF_DONTCARE, "Courier New");
-	if (!gUseDefaultFonts)
-		SendMessage(anEditWindow, WM_SETFONT, (WPARAM) aCourierNewFont, 0);
+        ImGui::Spacing();
 
-	aWindowStyle = WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_PUSHBUTTON;
+        float buttonWidth = 120.0f;
+        float spacing = ImGui::GetStyle().ItemSpacing.x;
 
-	if (mApp == NULL)
-		aWindowStyle |= WS_DISABLED;
+        int numButtons = 1;
+    #if defined(_DEBUG) || !defined(NDEBUG)
+        numButtons += 1;
+    #endif
+        numButtons += 1;
 
-#ifdef _DEBUG
-	bool doDebugButton = true;
-#else
-	bool doDebugButton = false;
+        float totalWidth = numButtons * buttonWidth + (numButtons - 1) * spacing;
+        float availWidth = ImGui::GetContentRegionAvail().x;
+        float startX = (availWidth - totalWidth) * 0.5f;
+        ImGui::SetCursorPosX(startX);
+
+		if (ImGui::Button("Send Issue", ImVec2(buttonWidth, 0)))
+		{
+			if (!mApp || !mApp->OpenURL(mIssueWebsite))
+			{
+				std::wstring_convert<std::codecvt_utf8<wchar_t>> converter2;
+				std::string narrowStr2 = converter.to_bytes(mSubmitErrorMessage);
+				const char* cstr2 = narrowStr2.c_str();
+
+				SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", cstr2, mWindow);
+			}
+			
+			mExiting = true;
+        }
+#if defined(_DEBUG) || !defined(NDEBUG)
+        ImGui::SameLine();
+        if (ImGui::Button("Debug", ImVec2(buttonWidth, 0)))
+		{
+			mDebugError = true;
+			mExiting = true;
+        }
 #endif
+        ImGui::SameLine();
+        if (ImGui::Button("Close Now", ImVec2(buttonWidth, 0)))
+		{
+            mExiting = true;
+        }
 
-	bool canSubmit = mAllowSubmit && !mIssueWebsite.empty();	
-	int aNumButtons = 1 + (doDebugButton ? 1 : 0) + (canSubmit ? 1 : 0);
-	
-	int aButtonWidth = (400 - 8 - 8 - (aNumButtons - 1)*8) / aNumButtons;		
-		
-	int aCurX = 8;
+        ImGui::End();
 
-	if (canSubmit)
-	{
-		mYesButtonWindow = CreateWindowA("BUTTON", "Open issue", 
-			aWindowStyle, 
-			aCurX, 300-24-8,
-			aButtonWidth,
-			24,
-			aHWnd,
-			NULL,
-			hInstance,
-			0);
-		if (!gUseDefaultFonts)
-			SendMessage(mYesButtonWindow, WM_SETFONT, (WPARAM) aBoldArialFont, 0);
+        ImGui::Render();
+        SDL_SetRenderDrawColor(mRenderer, 240, 240, 240, 255);
+        SDL_RenderClear(mRenderer);
+        ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), mRenderer);
+        SDL_RenderPresent(mRenderer);
 
-		aCurX += aButtonWidth + 8;	
-	}
-
-	if (doDebugButton)
-	{
-		mDebugButtonWindow = CreateWindowA("BUTTON", "Debug", 
-			aWindowStyle, 
-			aCurX, 300-24-8,
-			aButtonWidth,
-			24,
-			aHWnd,
-			NULL,
-			hInstance,
-			0);		
-		if (!gUseDefaultFonts)
-			SendMessage(mDebugButtonWindow, WM_SETFONT, (WPARAM) aBoldArialFont, 0);		
-
-		aCurX += aButtonWidth + 8;
-	}
-
-	mNoButtonWindow = CreateWindowA("BUTTON", "Close Now", 
-		WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_PUSHBUTTON, 
-		aCurX, 300-24-8,
-		aButtonWidth,
-		24,
-		aHWnd,
-		NULL,
-		hInstance,
-		0);
-
-	if (!gUseDefaultFonts)
-		SendMessage(mNoButtonWindow, WM_SETFONT, (WPARAM) aBoldArialFont, 0);
-
-	ShowWindow(aHWnd, SW_NORMAL);
-
-	MSG msg;
-	while ((GetMessage(&msg, NULL, 0, 0) > 0) && (!mExiting))
-	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}	
-
-	DestroyWindow(aHWnd);
-
-	DeleteObject(mDialogFont);
-	DeleteObject(mBoldFont);
-	DeleteObject(aBoldArialFont);
-	DeleteObject(aCourierNewFont);
+        SDL_Delay(16);
+    }
 }
 
 std::string SEHCatcher::GetSysInfo()
 {
 	std::string aDebugDump;
 
+#ifdef _WIN32
 	OSVERSIONINFOA aVersionInfo;
 	aVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	GetVersionExA(&aVersionInfo); 
@@ -1008,8 +789,10 @@ std::string SEHCatcher::GetSysInfo()
 	aDebugDump += "Build ";
 	aDebugDump += aVersionStr;
 	aDebugDump += "\r\n";
+#else
+	aDebugDump += "Linux Ver: Unknown";
+#endif
 
-	HMODULE aMod;
 	char aPath[256];
 	char aSDLStr[20];
 	char aPopLibStr[40];
@@ -1038,6 +821,4 @@ std::string SEHCatcher::GetSysInfo()
 	}	
 
 	return aDebugDump;
-}	
-
-#endif
+}

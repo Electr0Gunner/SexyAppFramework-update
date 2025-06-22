@@ -14,8 +14,8 @@
 #include "debug/perftimer.hpp"
 #include "math/mtrand.hpp"
 #include "readwrite/modval.hpp"
-#ifdef _WIN32
 #include "debug/sehcatcher.hpp"
+#ifdef _WIN32
 #include <direct.h>
 #else
 #include <unistd.h>

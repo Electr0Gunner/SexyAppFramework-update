@@ -26,6 +26,10 @@ examples/bin/*
 !examples/bin/*.*
 !examples/bin/**/
 
+crash.txt
+mem_leaks.txt
+temp/
+
 examples/bin/*.exe
 examples/bin/*.dll
 examples/bin/*.pdb
