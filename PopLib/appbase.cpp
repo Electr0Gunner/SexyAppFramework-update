@@ -59,7 +59,9 @@ namespace fs = std::filesystem;
 
 AppBase *PopLib::gAppBase = nullptr;
 
+#ifdef _WIN32
 SEHCatcher PopLib::gSEHCatcher;
+#endif
 
 static bool gScreenSaverActive = false;
 
@@ -250,7 +252,9 @@ AppBase::AppBase()
 	else*/
 	mTabletPC = false;
 
+	#ifdef _WIN32
 	gSEHCatcher.mApp = this;
+	#endif
 
 	// std::wifstream stringsFile(_wfopen(L".\\properties\\fstrings", L"rb"));
 	//
