@@ -60,6 +60,10 @@ AppBase *PopLib::gAppBase = nullptr;
 
 SEHCatcher PopLib::gSEHCatcher;
 
+#ifdef _WIN32
+HMODULE gVersionDLL = NULL;
+#endif
+
 static bool gScreenSaverActive = false;
 
 #ifndef SPI_GETSCREENSAVERRUNNING
@@ -86,11 +90,13 @@ AppBase::AppBase()
 	mOnlyAllowOneCopyToRun = true;
 #endif
 
+#ifdef _WIN32
 	// Extract product version
-	// char aPath[_MAX_PATH];
-	// GetModuleFileNameA(nullptr, aPath, 256);
-	// mProductVersion = GetProductVersion(aPath);
-	// mChangeDirTo = GetFileDir(aPath);
+	char aPath[_MAX_PATH];
+	GetModuleFileNameA(nullptr, aPath, 256);
+	mProductVersion = GetProductVersion(aPath);
+	mChangeDirTo = GetFileDir(aPath);
+#endif
 
 	mNoDefer = false;
 	mFullScreenPageFlip = true; // should we page flip in fullscreen?
@@ -394,6 +400,11 @@ AppBase::~AppBase()
 	SDL_DestroyCursor(mDraggingCursor);
 
 	gAppBase = nullptr;
+
+
+#ifdef _WIN32
+	FreeLibrary(gVersionDLL);
+#endif
 }
 
 void AppBase::ClearUpdateBacklog(bool relaxForASecond)
@@ -594,9 +605,12 @@ bool AppBase::OpenURL(const std::string &theURL, bool shutdownOnOpen)
 
 std::string AppBase::GetProductVersion(const std::string &thePath)
 {
-	/*
+#ifdef _WIN32
+	if (gVersionDLL == NULL)
+		gVersionDLL = LoadLibraryA("version.dll");
+
 	// Dynamically Load Version.dll
-	typedef uint32_t (APIENTRY *GetFileVersionInfoSizeFunc)(LPSTR lptstrFilename, LPuint32_t lpdwHandle);
+	typedef uint32_t (APIENTRY *GetFileVersionInfoSizeFunc)(LPSTR lptstrFilename, LPDWORD lpdwHandle);
 	typedef BOOL (APIENTRY *GetFileVersionInfoFunc)(LPSTR lptstrFilename, uint32_t dwHandle, uint32_t dwLen, LPVOID lpData);
 	typedef BOOL (APIENTRY *VerQueryValueFunc)(const LPVOID pBlock, LPSTR lpSubBlock, LPVOID * lplpBuffer, PUINT puLen);
 
@@ -621,24 +635,27 @@ std::string AppBase::GetProductVersion(const std::string &thePath)
 		aGetFileVersionInfoFunc((char*) thePath.c_str(), 0, aSize, aVersionBuffer);
 		char* aBuffer;
 		if (aVerQueryValueFunc(aVersionBuffer,
-				  "\\StringFileInfo\\040904B0\\ProductVersion",
-				  (void**) &aBuffer,
-				  &aSize))
+				(char*)"\\StringFileInfo\\040904B0\\ProductVersion",
+				(void**) &aBuffer,
+				&aSize))
 		{
 			aProductVersion = aBuffer;
 		}
 		else if (aVerQueryValueFunc(aVersionBuffer,
-				  "\\StringFileInfo\\040904E4\\ProductVersion",
-				  (void**) &aBuffer,
-				  &aSize))
+				(char*)"\\StringFileInfo\\040904E4\\ProductVersion",
+				(void**) &aBuffer,
+				&aSize))
 		{
 			aProductVersion = aBuffer;
 		}
 
 		delete aVersionBuffer;
 	}
-	*/
-	return "0";
+	
+	return aProductVersion;
+#else
+	return "unknown";
+#endif
 }
 
 void AppBase::WaitForLoadingThread()
