@@ -8,11 +8,11 @@
 //							GameApp.h
 //
 //	This is what drives the whole game. In here, you derive your class
-//	from AppBase and implement common game tasks, such as
+//	from PopApp and implement common game tasks, such as
 //	responding to widgets (covered later), initializing and loading
 //	resources, setting up the various game screens, etc.
 //	All applications at minimum must have a class that derives from
-//	AppBase.
+//	PopApp.
 //
 //	The GameApp class is used to do such things as create the main
 //	menu screen, create the main game class (where all drawing/updating/
@@ -25,7 +25,7 @@
 //	either in this demo, or in previous ones if they've already been covered.
 //////////////////////////////////////////////////////////////////////////
 
-#include "PopLib/appbase.hpp"
+#include "PopLib/popapp.hpp"
 
 namespace PopLib
 {
@@ -33,9 +33,8 @@ namespace PopLib
 class Board;
 class TitleScreen;
 
-class GameApp : public AppBase
+class GameApp : public PopApp
 {
-
   private:
 	Board *mBoard;
 	TitleScreen *mTitleScreen;

@@ -4,13 +4,13 @@
 #pragma once
 #endif
 
-#include "PopLib/appbase.hpp"
+#include "PopLib/popapp.hpp"
 
 namespace PopLib
 {
 class Board;
 
-class GameApp : public AppBase
+class GameApp : public PopApp
 {
   public:
 	GameApp();

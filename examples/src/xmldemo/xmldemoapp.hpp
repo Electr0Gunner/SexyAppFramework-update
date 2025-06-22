@@ -4,7 +4,7 @@
 #pragma once
 #endif
 
-#include "PopLib/appbase.hpp"
+#include "PopLib/popapp.hpp"
 
 namespace PopLib
 {
@@ -40,7 +40,7 @@ struct s_Section2
 	PopString mSubsectionItem2;
 };
 
-class XMLDemoApp : public AppBase
+class XMLDemoApp : public PopApp
 {
 
   public:

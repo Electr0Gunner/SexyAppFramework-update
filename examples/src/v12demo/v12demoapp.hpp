@@ -4,14 +4,14 @@
 #pragma once
 #endif
 
-#include "PopLib/appbase.hpp"
+#include "PopLib/popapp.hpp"
 
 namespace PopLib
 {
 
 class Board;
 
-class V12DemoApp : public AppBase
+class V12DemoApp : public PopApp
 {
 
   public:

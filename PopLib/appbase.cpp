@@ -30,7 +30,6 @@
 #include <bass.h>
 #include "misc/autocrit.hpp"
 #include "debug/debug.hpp"
-#include "debug/errorhandler.hpp"
 #include "paklib/pakinterface.hpp"
 #include "imgui/imguimanager.hpp"
 
@@ -113,7 +112,6 @@ AppBase::AppBase()
 	mAllowMonitorPowersave = true;
 	mSDLInterface = nullptr;
 	mMusicInterface = nullptr;
-	mErrorHandler = nullptr;
 	mIGUIManager = nullptr;
 	mFrameTime = 10;
 	mNonDrawCount = 0;
@@ -386,7 +384,6 @@ AppBase::~AppBase()
 	delete mSDLInterface;
 	delete mMusicInterface;
 	delete mSoundManager;
-	delete mErrorHandler;
 	delete mIGUIManager;
 
 	BASS_Stop();
@@ -3409,7 +3406,6 @@ void AppBase::InitHook()
 void AppBase::Init()
 {
 	mPrimaryThreadId = SDL_GetCurrentThreadID();
-	mErrorHandler = new ErrorHandler(this);
 
 	if (mShutdown)
 		return;

@@ -11,24 +11,21 @@
 
 namespace fs = std::filesystem;
 
-
 using namespace PopLib;
 
-PopApp* PopLib::gPopApp = nullptr;
+PopApp *PopLib::gPopApp = nullptr;
 
 // Groups of 80-byte data
-const char DYNAMIC_DATA_BLOCK[400] =
-	"DYN00000PACPOPPOPCAPPACPOPPOPCAPBUILDINFOMARKERPACPOPPOPCAPPACPOPPOPCAPXXXXXXXXX"
-	"00000000PACPOPPOPCAPPACPOPPOPCAPBUILDINFOMARKERPACPOPPOPCAPPACPOPPOPCAPXXXXXXXXX";
-									
-const char* BUILD_INFO_MARKER		= DYNAMIC_DATA_BLOCK + 80;
-const char* SIGNATURE_CODE_MARKER	= DYNAMIC_DATA_BLOCK + 80*2;
-const char* BETA_ID_MARKER			= DYNAMIC_DATA_BLOCK + 80*3;
+const char DYNAMIC_DATA_BLOCK[400] = "DYN00000PACPOPPOPCAPPACPOPPOPCAPBUILDINFOMARKERPACPOPPOPCAPPACPOPPOPCAPXXXXXXXXX"
+									 "00000000PACPOPPOPCAPPACPOPPOPCAPBUILDINFOMARKERPACPOPPOPCAPPACPOPPOPCAPXXXXXXXXX";
 
-    
+const char *BUILD_INFO_MARKER = DYNAMIC_DATA_BLOCK + 80;
+const char *SIGNATURE_CODE_MARKER = DYNAMIC_DATA_BLOCK + 80 * 2;
+const char *BETA_ID_MARKER = DYNAMIC_DATA_BLOCK + 80 * 3;
+
 PopApp::PopApp()
 {
-    gPopApp = this;
+	gPopApp = this;
 
 	mTimesPlayed = 0;
 	mTimesExecuted = 0;
@@ -43,59 +40,58 @@ PopApp::PopApp()
 	mLastVerCheckQueryTime = 0;
 
 	mCompanyName = "PLACEHOLDER";
-	mFullCompanyName= "PLACEHOLDER";
+	mFullCompanyName = "PLACEHOLDER";
 	mBetaValidate = true;
 
 	char aStr[9] = {0};
 	strncpy(aStr, BUILD_INFO_MARKER, 8);
 	mBuildNum = atoi(aStr);
 
-    if (mBuildNum != 0)
+	if (mBuildNum != 0)
 		mBuildDate = BUILD_INFO_MARKER + 8;
 
-    #ifdef _FEATURE_DISCORD_RPC
-    mRPCAppID = "1369297870456488057";
-    mDiscordRPC = nullptr;
-    #endif
-}
-    
-PopApp::~PopApp()
-{
-    #ifdef _FEATURE_DISCORD_RPC
-    if (mDiscordRPC)
-        delete mDiscordRPC;
-    #endif
+#ifdef _FEATURE_DISCORD_RPC
+	mRPCAppID = "1369297870456488057";
+	mDiscordRPC = nullptr;
+#endif
 }
 
+PopApp::~PopApp()
+{
+#ifdef _FEATURE_DISCORD_RPC
+	if (mDiscordRPC)
+		delete mDiscordRPC;
+#endif
+}
 
 void PopApp::Init()
 {
 	AppBase::Init();
 
-	if (IsScreenSaver())	
-		mSkipAd = true;	
+	if (IsScreenSaver())
+		mSkipAd = true;
 
 	mTimesExecuted++;
 }
 
 void PopApp::InitHook()
 {
-	#if _FEATURE_DISCORD_RPC
-    InitDiscordRPC();
-    #endif
+#if _FEATURE_DISCORD_RPC
+	InitDiscordRPC();
+#endif
 }
 
 void PopApp::UpdateFrames()
 {
 	AppBase::UpdateFrames();
 
-	#ifdef _FEATURE_DISCORD_RPC
-    if (mDiscordRPC && mDiscordRPC->mHasInitialized)
-        mDiscordRPC->UpdateRPC();
-    #endif
+#ifdef _FEATURE_DISCORD_RPC
+	if (mDiscordRPC && mDiscordRPC->mHasInitialized)
+		mDiscordRPC->UpdateRPC();
+#endif
 }
 
-bool PopApp::CheckSignature(const Buffer& theBuffer, const std::string& theFileName)
+bool PopApp::CheckSignature(const Buffer &theBuffer, const std::string &theFileName)
 {
 #ifdef _DEBUG
 	// Don't check signatures on debug version because it's annoying and the build number
@@ -119,7 +115,7 @@ bool PopApp::CheckSignature(const Buffer& theBuffer, const std::string& theFileN
 
 	char* aFileData = new char[theBuffer.GetDataLen()+4];
 	int aFileDataPos = 0;
-	
+
 	char aStr[9] = {0};
 	strncpy(aStr, SIGNATURE_CODE_MARKER, 8);
 	int aSignatureCode = atoi(aStr);
@@ -136,15 +132,15 @@ bool PopApp::CheckSignature(const Buffer& theBuffer, const std::string& theFileN
 		fread(&c, 1, 1, aFP);
 		if (!::isspace(c))
 			aFileData[aFileDataPos++] = c;
-	}	
+	}
 
 	// Public RSA stuff
 	BigInt n("D99BC76AB7B2578738E606F7");
 	BigInt e("11");
-			
+
 	BigInt aHash = HashData(aFileData, aFileDataPos, 94);
 	delete aFileData;
-	
+
 	BigInt aSignature(aSigStr);
 	BigInt aHashTest = aSignature.ModPow(e, n);
 
@@ -166,22 +162,21 @@ void PopApp::InitPropertiesHook()
 	}
 
 	mProdName = GetString("ProdName", mProdName);
-	mIsWindowed = GetBoolean("DefaultWindowed", mIsWindowed);	
+	mIsWindowed = GetBoolean("DefaultWindowed", mIsWindowed);
 
 	PopString aNewTitle = GetString("Title", "");
 	if (aNewTitle.length() > 0)
-		mTitle = aNewTitle + " " + mProductVersion;	
-		
+		mTitle = aNewTitle + " " + mProductVersion;
 }
 
-bool PopApp::Validate(const std::string& theUserName, const std::string& theRegCode)
+bool PopApp::Validate(const std::string &theUserName, const std::string &theRegCode)
 {
 	/*BigInt n("42BF94023BBA6D040C8B81D9");
 	BigInt e("11");
 
 	ulong i;
 	std::string aDataString;
-	bool space = false;	
+	bool space = false;
 	for (i = 0; i < theUserName.size(); i++)
 	{
 		if (theUserName[i] == ' ')
@@ -213,8 +208,8 @@ bool PopApp::Validate(const std::string& theUserName, const std::string& theRegC
 
 	aDataString += "\n";
 	aDataString += aProduct;
-	BigInt aHash = HashString(aDataString, 94);	
-	
+	BigInt aHash = HashString(aDataString, 94);
+
 	BigInt aSignature = KeyToInt(theRegCode);
 	BigInt aHashTest = aSignature.ModPow(e, n);
 
@@ -222,66 +217,63 @@ bool PopApp::Validate(const std::string& theUserName, const std::string& theRegC
 	return true;
 }
 
-
 void PopApp::WriteToRegistry()
 {
 	AppBase::WriteToRegistry();
 
-    std::string jsonFileName = GetAppDataFolder() + "popcinfo.json";
+	std::string jsonFileName = GetAppDataFolder() + "popcinfo.json";
 
-    JsonParser parser;
+	JsonParser parser;
 
-    bool loaded = parser.OpenFile(jsonFileName);
-    nlohmann::json &jData = parser.mJson;
+	bool loaded = parser.OpenFile(jsonFileName);
+	nlohmann::json &jData = parser.mJson;
 
-    if (!loaded)
-    {
-        // Failed to load or file doesn't exist: start fresh JSON
-        jData = nlohmann::json::object();
-    }
+	if (!loaded)
+	{
+		// Failed to load or file doesn't exist: start fresh JSON
+		jData = nlohmann::json::object();
+	}
 
-    if (!jData.contains("products") || !jData["products"].is_array())
-    {
-        jData["products"] = nlohmann::json::array();
-    }
+	if (!jData.contains("products") || !jData["products"].is_array())
+	{
+		jData["products"] = nlohmann::json::array();
+	}
 
-    bool productFound = false;
-    for (auto& product : jData["products"])
-    {
-        if (product.contains("name") && product["name"].is_string() && product["name"] == mProdName)
-        {
-            product["timesPlayed"] = mTimesPlayed;
-            product["timesExecuted"] = mTimesExecuted;
-            productFound = true;
-            break;
-        }
-    }
+	bool productFound = false;
+	for (auto &product : jData["products"])
+	{
+		if (product.contains("name") && product["name"].is_string() && product["name"] == mProdName)
+		{
+			product["timesPlayed"] = mTimesPlayed;
+			product["timesExecuted"] = mTimesExecuted;
+			productFound = true;
+			break;
+		}
+	}
 
-    if (!productFound)
-    {
-        nlohmann::json newProduct;
-        newProduct["name"] = mProdName;
-        newProduct["timesPlayed"] = mTimesPlayed;
-        newProduct["timesExecuted"] = mTimesExecuted;
-        jData["products"].push_back(newProduct);
-    }
+	if (!productFound)
+	{
+		nlohmann::json newProduct;
+		newProduct["name"] = mProdName;
+		newProduct["timesPlayed"] = mTimesPlayed;
+		newProduct["timesExecuted"] = mTimesExecuted;
+		jData["products"].push_back(newProduct);
+	}
 
-    // Write updated JSON back to file
-    std::ofstream outFile(jsonFileName, std::ios::trunc | std::ios::binary);
-    if (outFile.is_open())
-    {
-        outFile << jData.dump(4);  // pretty print
-        outFile.close();
-    }
+	// Write updated JSON back to file
+	std::ofstream outFile(jsonFileName, std::ios::trunc | std::ios::binary);
+	if (outFile.is_open())
+	{
+		outFile << jData.dump(4); // pretty print
+		outFile.close();
+	}
 
 	RegistryWriteInteger("LastVerCheckQueryTime", mLastVerCheckQueryTime);
 	RegistryWriteInteger("TimesPlayed", mTimesPlayed);
 	RegistryWriteInteger("TimesExecuted", mTimesExecuted);
 
 	// This is for "compatibility"
-	if ((mRegUserName.length() == 0) &&
-		(mUserName.length() > 0) &&
-		(mRegCode.length() > 0))
+	if ((mRegUserName.length() == 0) && (mUserName.length() > 0) && (mRegCode.length() > 0))
 		mRegUserName = mUserName;
 
 	if (mRegUserName.length() > 0)
@@ -295,41 +287,41 @@ void PopApp::ReadFromRegistry()
 {
 	AppBase::ReadFromRegistry();
 
-    mTimesPlayed = 0;
+	mTimesPlayed = 0;
 	mTimesExecuted = 0;
 
-    std::string jsonFileName = GetAppDataFolder() + "popcinfo.json";
+	std::string jsonFileName = GetAppDataFolder() + "popcinfo.json";
 
-    JsonParser parser;
+	JsonParser parser;
 
-    if (parser.OpenFile(jsonFileName))
-    {
-        nlohmann::json &jData = parser.mJson;
+	if (parser.OpenFile(jsonFileName))
+	{
+		nlohmann::json &jData = parser.mJson;
 
-        if (jData.contains("products") && jData["products"].is_array())
-        {
-            const std::string prodNameStr = mProdName; // assuming std::string
+		if (jData.contains("products") && jData["products"].is_array())
+		{
+			const std::string prodNameStr = mProdName; // assuming std::string
 
-            for (const auto& product : jData["products"])
-            {
-                if (product.contains("name") && product["name"].is_string() && product["name"] == prodNameStr)
-                {
-                    if (product.contains("timesPlayed") && product["timesPlayed"].is_number_integer())
-                        mTimesPlayed = product["timesPlayed"].get<int>();
+			for (const auto &product : jData["products"])
+			{
+				if (product.contains("name") && product["name"].is_string() && product["name"] == prodNameStr)
+				{
+					if (product.contains("timesPlayed") && product["timesPlayed"].is_number_integer())
+						mTimesPlayed = product["timesPlayed"].get<int>();
 
-                    if (product.contains("timesExecuted") && product["timesExecuted"].is_number_integer())
-                        mTimesExecuted = product["timesExecuted"].get<int>();
+					if (product.contains("timesExecuted") && product["timesExecuted"].is_number_integer())
+						mTimesExecuted = product["timesExecuted"].get<int>();
 
-                    break;
-                }
-            }
-        }
-    }
-    // if file does not exist or parse failed, keep default values (0)
+					break;
+				}
+			}
+		}
+	}
+	// if file does not exist or parse failed, keep default values (0)
 
 	RegistryReadString("ReferId", &mReferId);
 	mReferId = GetString("ReferId", mReferId);
-	mRegisterLink = "http://www.popcap.com/register.php?theGame=" + mProdName + "&referid=" + mReferId;	
+	mRegisterLink = "http://www.popcap.com/register.php?theGame=" + mProdName + "&referid=" + mReferId;
 	RegistryReadString("RegisterLink", &mRegisterLink);
 
 	int anInt;
@@ -344,8 +336,8 @@ void PopApp::ReadFromRegistry()
 
 	if (RegistryReadInteger("TimesPlayed", &anInt))
 	{
-        if (mTimesPlayed != anInt)
-                        mTimesPlayed = 100;
+		if (mTimesPlayed != anInt)
+			mTimesPlayed = 100;
 	}
 
 	if (RegistryReadInteger("TimesExecuted", &anInt))
@@ -353,7 +345,7 @@ void PopApp::ReadFromRegistry()
 		if (mTimesExecuted != anInt)
 			mTimesExecuted = 100;
 	}
-	
+
 	if (RegistryReadInteger("LastVerCheckQueryTime", &anInt))
 	{
 		mLastVerCheckQueryTime = anInt;
@@ -367,9 +359,9 @@ void PopApp::ReadFromRegistry()
 	}
 
 	RegistryReadString("RegName", &mRegUserName);
-	RegistryReadString("RegCode", &mRegCode);		
+	RegistryReadString("RegCode", &mRegCode);
 
-	mIsRegistered |= Validate(mRegUserName, mRegCode);	
+	mIsRegistered |= Validate(mRegUserName, mRegCode);
 
 	// Override registry values with partner.xml values
 	mRegisterLink = GetString("RegisterLink", mRegisterLink);
@@ -379,27 +371,23 @@ void PopApp::ReadFromRegistry()
 #ifdef _FEATURE_DISCORD_RPC
 void PopApp::InitDiscordRPC()
 {
-    if (mDiscordRPC)
-        delete mDiscordRPC;
+	if (mDiscordRPC)
+		delete mDiscordRPC;
 
-    mDiscordRPC = new DiscordRPC(mRPCAppID.c_str());
-
+	mDiscordRPC = new DiscordRPC(mRPCAppID.c_str());
 }
 #endif
 
-void PopApp::HandleCmdLineParam(const std::string& theParamName, const std::string& theParamValue)
+void PopApp::HandleCmdLineParam(const std::string &theParamName, const std::string &theParamValue)
 {
 	if (theParamName == "-version")
 	{
 		// Just print version info and then quit
-		
-		std::string aVersionString = 
-			"Product: " + mProdName + "\n" +
-			"Version: " + mProductVersion + "\n" +
-			"Build Num: " + StrFormat("%d", mBuildNum) + "\n" +
-			"Build Date: " + mBuildDate;
 
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Version Info",  aVersionString.c_str(), NULL);
+		std::string aVersionString = "Product: " + mProdName + "\n" + "Version: " + mProductVersion + "\n" +
+									 "Build Num: " + StrFormat("%d", mBuildNum) + "\n" + "Build Date: " + mBuildDate;
+
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Version Info", aVersionString.c_str(), NULL);
 		DoExit(0);
 	}
 	else
@@ -411,37 +399,36 @@ void PopApp::OpenUpdateURL()
 	Shutdown();
 }
 
-bool PopApp::OpenHTMLTemplate(const std::string& theTemplateFile, const DefinesMap& theDefinesMap)
+bool PopApp::OpenHTMLTemplate(const std::string &theTemplateFile, const DefinesMap &theDefinesMap)
 {
 	std::fstream anInStream(theTemplateFile.c_str(), std::ios::in);
 
 	if (!anInStream.is_open())
 		return false;
 
-    std::filesystem::path tempDir = "temp";
-    if (fs::exists(tempDir) && fs::is_directory(tempDir))
-    {
-        for (auto& entry : fs::directory_iterator(tempDir))
-        {
-            if (entry.is_regular_file())
-            {
-                std::string filename = entry.path().filename().string();
-                // Check if filename matches tpl*.html pattern
-                if (filename.size() >= 8 &&
-                    filename.substr(0, 3) == "tpl" &&
-                    filename.substr(filename.size() - 5) == ".html")
-                {
-                    fs::remove(entry.path());
-                }
-            }
-        }
-    }
+	std::filesystem::path tempDir = "temp";
+	if (fs::exists(tempDir) && fs::is_directory(tempDir))
+	{
+		for (auto &entry : fs::directory_iterator(tempDir))
+		{
+			if (entry.is_regular_file())
+			{
+				std::string filename = entry.path().filename().string();
+				// Check if filename matches tpl*.html pattern
+				if (filename.size() >= 8 && filename.substr(0, 3) == "tpl" &&
+					filename.substr(filename.size() - 5) == ".html")
+				{
+					fs::remove(entry.path());
+				}
+			}
+		}
+	}
 
 	MkDir("temp");
 
-	std::string anOutFilename = StrFormat("temp\\tpl%04d.html", PopLib::Rand()%10000);
+	std::string anOutFilename = StrFormat("temp\\tpl%04d.html", PopLib::Rand() % 10000);
 
-	//TODO: A better failover case?
+	// TODO: A better failover case?
 	std::fstream anOutStream(anOutFilename.c_str(), std::ios::out);
 	if (!anOutStream.is_open())
 		return false;
@@ -450,20 +437,20 @@ bool PopApp::OpenHTMLTemplate(const std::string& theTemplateFile, const DefinesM
 	while (!anInStream.eof())
 	{
 		anInStream.getline(aStr, 4096);
-		
+
 		std::string aNewString = Evaluate(aStr, theDefinesMap);
 
 		anOutStream << aNewString.c_str() << std::endl;
 	}
-	
+
 	return OpenURL(GetFullPath(anOutFilename));
 }
 
 bool PopApp::OpenRegisterPage(DefinesMap theStatsMap)
 {
-	// Insert standard defines 
+	// Insert standard defines
 	DefinesMap aDefinesMap;
-	
+
 	aDefinesMap.insert(DefinesMap::value_type("Src", mRegSource));
 	aDefinesMap.insert(DefinesMap::value_type("ProdName", mProdName));
 	aDefinesMap.insert(DefinesMap::value_type("Version", mProductVersion));
@@ -474,7 +461,7 @@ bool PopApp::OpenRegisterPage(DefinesMap theStatsMap)
 	aDefinesMap.insert(DefinesMap::value_type("TimesExecuted", StrFormat("%d", mTimesExecuted).c_str()));
 	aDefinesMap.insert(DefinesMap::value_type("TimedOut", mTimedOut ? "Y" : "N"));
 
-	// Insert game specific stats 
+	// Insert game specific stats
 	std::string aStatsString;
 	DefinesMap::iterator anItr = theStatsMap.begin();
 	while (anItr != theStatsMap.end())
@@ -482,10 +469,8 @@ bool PopApp::OpenRegisterPage(DefinesMap theStatsMap)
 		std::string aKeyString = anItr->first;
 		std::string aValueString = anItr->second;
 
-		aStatsString += 
-			StrFormat("%04X", aKeyString.length()).c_str() + aKeyString +
-			"S" +
-			StrFormat("%04X", aValueString.length()).c_str() + aValueString;
+		aStatsString += StrFormat("%04X", aKeyString.length()).c_str() + aKeyString + "S" +
+						StrFormat("%04X", aValueString.length()).c_str() + aValueString;
 
 		++anItr;
 	}
@@ -499,7 +484,7 @@ bool PopApp::OpenRegisterPage(DefinesMap theStatsMap)
 	else
 	{
 		return OpenURL(mRegisterLink);
-	}	
+	}
 }
 
 bool PopApp::ShouldCheckForUpdate()
@@ -510,10 +495,8 @@ bool PopApp::ShouldCheckForUpdate()
 	time(&aTimeNow);
 
 	// It is set to 0 if we crash, otherwise ask every week
-	return ((mLastVerCheckQueryTime == 0) || 
-		(!mLastShutdownWasGraceful) ||
-		((mLastVerCheckQueryTime != 0) && 
-		(aTimeNow - mLastVerCheckQueryTime > 7*24*60*60)));
+	return ((mLastVerCheckQueryTime == 0) || (!mLastShutdownWasGraceful) ||
+			((mLastVerCheckQueryTime != 0) && (aTimeNow - mLastVerCheckQueryTime > 7 * 24 * 60 * 60)));
 }
 
 void PopApp::UpdateCheckQueried()
@@ -524,7 +507,7 @@ void PopApp::UpdateCheckQueried()
 	mLastVerCheckQueryTime = aTimeNow;
 }
 
-void PopApp::URLOpenSucceeded(const std::string& theURL)
+void PopApp::URLOpenSucceeded(const std::string &theURL)
 {
 	AppBase::URLOpenSucceeded(theURL);
 

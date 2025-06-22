@@ -82,6 +82,11 @@ cpBodySetMoment(cpBody *body, cpFloat i)
 	body->i_inv = 1.0f/i;
 }
 
+// VC6 workaround
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 void
 cpBodySetAngle(cpBody *body, cpFloat a)
 {

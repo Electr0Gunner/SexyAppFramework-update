@@ -8,73 +8,75 @@
 
 namespace PopLib
 {
-    class DiscordRPC;
+class DiscordRPC;
 
-    class PopApp: public AppBase
-    {
-    public:
-        #if _FEATURE_DISCORD_RPC
-        DiscordRPC* mDiscordRPC;
+class PopApp : public AppBase
+{
+  public:
+#ifdef _FEATURE_DISCORD_RPC
+	DiscordRPC *mDiscordRPC;
 
-        std::string mRPCAppID;
-        #endif
+	std::string mRPCAppID;
+#endif
 
-        std::string mBetaSupportSiteOverride;
-        std::string mBetaSupportProdNameOverride;
-        std::string mReferId;
-        std::string mVariation;
-        ulong mDownloadId;
-        std::string mRegSource;
-        ulong mLastVerCheckQueryTime;
-        bool mSkipAd;
-        bool mDontUpdate;	
+	std::string mBetaSupportSiteOverride;
+	std::string mBetaSupportProdNameOverride;
+	std::string mReferId;
+	std::string mVariation;
+	ulong mDownloadId;
+	std::string mRegSource;
+	ulong mLastVerCheckQueryTime;
+	bool mSkipAd;
+	bool mDontUpdate;
 
-        int mBuildNum;
-        std::string mBuildDate;
+	int mBuildNum;
+	std::string mBuildDate;
 
-        std::string mUserName;
-        std::string mRegUserName;
-        std::string mRegCode;
-        bool mIsRegistered;	
-        bool mBuildUnlocked;
+	std::string mUserName;
+	std::string mRegUserName;
+	std::string mRegCode;
+	bool mIsRegistered;
+	bool mBuildUnlocked;
 
-        int mTimesPlayed;
-        int mTimesExecuted;
-        bool mTimedOut;
-    public:
-        virtual void UpdateFrames();
+	int mTimesPlayed;
+	int mTimesExecuted;
+	bool mTimedOut;
 
-        virtual void WriteToRegistry();
-        virtual void ReadFromRegistry();	
+  public:
+	virtual void UpdateFrames();
 
-        virtual bool CheckSignature(const Buffer& theBuffer, const std::string& theFileName);
-        
-        virtual bool ShouldCheckForUpdate();
-        virtual void UpdateCheckQueried();
+	virtual void WriteToRegistry();
+	virtual void ReadFromRegistry();
 
-        virtual void URLOpenSucceeded(const std::string& theURL);
-    public:
-        PopApp();
-        virtual ~PopApp();
+	virtual bool CheckSignature(const Buffer &theBuffer, const std::string &theFileName);
 
-    	virtual void Init();
-	    virtual void InitHook();
-	    virtual void InitPropertiesHook();
-    	virtual void OpenUpdateURL();
+	virtual bool ShouldCheckForUpdate();
+	virtual void UpdateCheckQueried();
 
-        bool Validate(const std::string& theUserName, const std::string& theRegCode);
+	virtual void URLOpenSucceeded(const std::string &theURL);
 
-        virtual bool OpenRegisterPage(DefinesMap theDefinesMap);
-        virtual bool OpenRegisterPage();
+  public:
+	PopApp();
+	virtual ~PopApp();
 
-        virtual void HandleCmdLineParam(const std::string& theParamName, const std::string& theParamValue);
-        virtual bool OpenHTMLTemplate(const std::string& theTemplateFile, const DefinesMap& theDefinesMap);
-        #if _FEATURE_DISCORD_RPC
-        virtual void InitDiscordRPC();
-        #endif
-    };
+	virtual void Init();
+	virtual void InitHook();
+	virtual void InitPropertiesHook();
+	virtual void OpenUpdateURL();
 
-extern PopApp* gPopApp;
-}
+	bool Validate(const std::string &theUserName, const std::string &theRegCode);
+
+	virtual bool OpenRegisterPage(DefinesMap theDefinesMap);
+	virtual bool OpenRegisterPage();
+
+	virtual void HandleCmdLineParam(const std::string &theParamName, const std::string &theParamValue);
+	virtual bool OpenHTMLTemplate(const std::string &theTemplateFile, const DefinesMap &theDefinesMap);
+#if _FEATURE_DISCORD_RPC
+	virtual void InitDiscordRPC();
+#endif
+};
+
+extern PopApp *gPopApp;
+} // namespace PopLib
 
 #endif
