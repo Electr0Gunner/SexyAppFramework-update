@@ -27,6 +27,23 @@ PopLib includes the following third-party libraries:
    - License: BSD-style License
    - Source: https://xiph.org/vorbis/
 
+7. Chipmunk2D
+   - License: MIT License
+   - Source: https://github.com/slembcke/Chipmunk2D
+   - Implementation: https://github.com/keestux/tuxcap
+
+8. TinyXML2
+   - License: zlib License
+   - Source: https://github.com/leethomason/tinyxml2
+
+9. Discord RPC (EclipseMenu)
+   - License: MIT License
+   - Source: https://github.com/EclipseMenu/discord-presence
+
+10. ImGui
+    - License: MIT License
+    - Source: https://github.com/ocornut/imgui
+
 ---
 
 For full license texts, please refer to the respective projects or the LICENSE files included in their distributions.
