@@ -2,72 +2,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Demo1 (MSVC)",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/Demo1.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/examples/bin/",
-      "environment": [],
-      "console": "internalConsole"
-    },
-    {
-      "name": "Debug Demo2 (MSVC)",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/Demo2.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/examples/bin/",
-      "environment": [],
-      "console": "internalConsole"
-    },
-    {
-      "name": "Debug Demo3 (MSVC)",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/Demo3.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/examples/bin/",
-      "environment": [],
-      "console": "internalConsole"
-    },
-    {
-      "name": "Debug Demo4 (MSVC)",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/Demo4.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/examples/bin/",
-      "environment": [],
-      "console": "internalConsole"
-    },
-    {
-      "name": "Debug Demo5 (MSVC)",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/Demo5.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/examples/bin/",
-      "environment": [],
-      "console": "internalConsole"
-    },
-    {
-      "name": "Debug V12Demo (MSVC)",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/V12Demo.exe",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/examples/bin/",
-      "environment": [],
-      "console": "internalConsole"
-    },
-    {
       "name": "Debug V14Demo (MSVC)",
       "type": "cppvsdbg",
       "request": "launch",
@@ -78,177 +12,38 @@
       "environment": [],
       "console": "internalConsole"
     },
-    {
-      "name": "Debug Hun-garr (MSVC)",
+	{
+      "name": "Debug PhysicsDemo (MSVC)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/Hun-garr.exe",
-      "args": [],
-      "cwd": "${workspaceFolder}/examples/bin/",
-      "stopAtEntry": false,
-      "environment": [],
-      "console": "internalConsole"
-    },
-    {
-      "name": "Debug XMLDemo (MSVC)",
-      "type": "cppvsdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/XMLDemo.exe",
+      "program": "${workspaceFolder}/examples/bin/PhysicsDemo.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/examples/bin/",
       "environment": [],
       "console": "internalConsole"
     },
-    {
-      "name": "Debug Demo1 (GDB)",
-      "type": "cppdbg",
+	{
+      "name": "Debug Barebones (MSVC)",
+      "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/Demo1",
+      "program": "${workspaceFolder}/examples/bin/Barebones.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/examples/bin/",
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "environment": [
-        {
-          "name": "LD_LIBRARY_PATH",
-          "value": "${workspaceFolder}/examples/bin:${env:LD_LIBRARY_PATH}"
-        }
-      ],
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for GDB",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
+      "environment": [],
+      "console": "internalConsole"
     },
-    {
-      "name": "Debug Demo2 (GDB)",
-      "type": "cppdbg",
+	{
+      "name": "Debug Tetris (MSVC)",
+      "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/Demo2",
+      "program": "${workspaceFolder}/examples/bin/Tetris.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/examples/bin/",
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "environment": [
-        {
-          "name": "LD_LIBRARY_PATH",
-          "value": "${workspaceFolder}/examples/bin:${env:LD_LIBRARY_PATH}"
-        }
-      ],
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for GDB",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
-    },
-    {
-      "name": "Debug Demo3 (GDB)",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/Demo3",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/examples/bin/",
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "environment": [
-        {
-          "name": "LD_LIBRARY_PATH",
-          "value": "${workspaceFolder}/examples/bin:${env:LD_LIBRARY_PATH}"
-        }
-      ],
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for GDB",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
-    },
-    {
-      "name": "Debug Demo4 (GDB)",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/Demo4",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/examples/bin/",
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "environment": [
-        {
-          "name": "LD_LIBRARY_PATH",
-          "value": "${workspaceFolder}/examples/bin:${env:LD_LIBRARY_PATH}"
-        }
-      ],
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for GDB",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
-    },
-    {
-      "name": "Debug Demo5 (GDB)",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/Demo5",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/examples/bin/",
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "environment": [
-        {
-          "name": "LD_LIBRARY_PATH",
-          "value": "${workspaceFolder}/examples/bin:${env:LD_LIBRARY_PATH}"
-        }
-      ],
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for GDB",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
-    },
-    {
-      "name": "Debug V12Demo (GDB)",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/V12Demo",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/examples/bin/",
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "environment": [
-        {
-          "name": "LD_LIBRARY_PATH",
-          "value": "${workspaceFolder}/examples/bin:${env:LD_LIBRARY_PATH}"
-        }
-      ],
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for GDB",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
+      "environment": [],
+      "console": "internalConsole"
     },
     {
       "name": "Debug V14Demo (GDB)",
@@ -275,11 +70,11 @@
         }
       ]
     },
-    {
-      "name": "Debug Hun-garr (GDB)",
+	{
+      "name": "Debug PhysicsDemo (GDB)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/Hun-garr",
+      "program": "${workspaceFolder}/examples/bin/PhysicsDemo",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/examples/bin/",
@@ -300,11 +95,11 @@
         }
       ]
     },
-    {
-      "name": "Debug XMLDemo (GDB)",
+	{
+      "name": "Debug Barebones (GDB)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/examples/bin/XMLDemo",
+      "program": "${workspaceFolder}/examples/bin/Barebones",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/examples/bin/",
@@ -324,6 +119,31 @@
           "ignoreFailures": true
         }
       ]
-    }
+    },
+	{
+      "name": "Debug Tetris (GDB)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/examples/bin/Tetris",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/examples/bin/",
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "environment": [
+        {
+          "name": "LD_LIBRARY_PATH",
+          "value": "${workspaceFolder}/examples/bin:${env:LD_LIBRARY_PATH}"
+        }
+      ],
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for GDB",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
   ]
 }

@@ -88,9 +88,8 @@ if(BUILD_EXAMPLES OR BUILD_TOOLS)
 
     if(BUILD_EXAMPLES)
         list(APPEND demo_deps
-            Demo1 Demo2 Demo3 Demo4 Demo5
-            Hun-garr V12Demo V14Demo XMLDemo
-			PhysicsDemo Barebones
+            V14Demo PhysicsDemo Barebones
+			Tetris
         )
     endif()
 
