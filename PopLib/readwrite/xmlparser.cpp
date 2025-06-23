@@ -34,9 +34,6 @@ void XMLParser::Init()
 
 bool XMLParser::AddAttribute(XMLElement *theElement, const PopString &theAttributeKey, const PopString &theAttributeValue)
 {
-    if (theAttributeValue == "SUNFLOWER_HEAD_SING1")
-        int asd = 2;
-
 	std::pair<XMLParamMap::iterator, bool> aRet;
 
 	aRet = theElement->mAttributes.insert(XMLParamMap::value_type(theAttributeKey, theAttributeValue));
