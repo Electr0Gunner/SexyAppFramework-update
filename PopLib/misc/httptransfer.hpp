@@ -4,7 +4,9 @@
 #pragma once
 #endif
 
+#ifndef CURL_STATICLIB
 #define CURL_STATICLIB
+#endif
 
 #include "common.hpp"
 #include "curl/curl.h"

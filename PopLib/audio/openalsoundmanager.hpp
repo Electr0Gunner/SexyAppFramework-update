@@ -7,7 +7,9 @@
 #include "soundmanager.hpp"
 #include "bass.h"
 
+#ifndef AL_LIBTYPE_STATIC
 #define AL_LIBTYPE_STATIC
+#endif
 #include <AL/al.h>
 #include <AL/alc.h>
 

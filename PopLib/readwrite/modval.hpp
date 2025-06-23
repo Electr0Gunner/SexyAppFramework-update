@@ -51,7 +51,7 @@ namespace PopLib
 #define MODVAL_STR_COUNTER2(x, y, z) x #y "," #z
 #define MODVAL_STR_COUNTER1(x, y, z) MODVAL_STR_COUNTER2(x, y, z)
 #define MODVAL_STR_COUNTER(x) MODVAL_STR_COUNTER1(x, __COUNTER__, __LINE__)
-#define M(val) ModVal(0, MODVAL_STR_COUNTER("POPLIB_POPLIBMODVAL"__FILE__), (val))
+#define M(val) ModVal(0, MODVAL_STR_COUNTER("POPLIB_POPLIBMODVAL" __FILE__), (val))
 #define M1(val) M(val)
 #define M2(val) M(val)
 #define M3(val) M(val)

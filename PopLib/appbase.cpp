@@ -1467,7 +1467,7 @@ std::string AppBase::GetGameSEHInfo()
 	sprintf(aTimeStr, "%02d:%02d:%02d", (aSecLoaded / 60 / 60), (aSecLoaded / 60) % 60, aSecLoaded % 60);
 
 	char aThreadIdStr[16];
-	sprintf(aThreadIdStr, "%X", mPrimaryThreadId);
+	sprintf(aThreadIdStr, "%lX", mPrimaryThreadId);
 
 	std::string anInfoString = "Product: " + mProdName + "\r\n" + "Version: " + mProductVersion + "\r\n";
 
@@ -1827,7 +1827,7 @@ void AppBase::LogScreenSaverError(const std::string &theError)
 		time_t now = time(nullptr);
 		strftime(aBuf, sizeof(aBuf), "%H:%M:%S", localtime(&now));
 
-		fprintf(aFile, "%s %s %u\n", theError.c_str(), aBuf, SDL_GetTicks());
+		fprintf(aFile, "%s %s %lu\n", theError.c_str(), aBuf, SDL_GetTicks());
 #endif
 		fclose(aFile);
 	}
@@ -1869,7 +1869,7 @@ int AppBase::MsgBox(const std::string &theText, const std::string &theTitle, int
 	}
 
 	SDL_MessageBoxData messageBoxData = {
-		SDL_MESSAGEBOX_INFORMATION, NULL, theTitle.c_str(), theText.c_str(), NULL, NULL, NULL};
+		SDL_MESSAGEBOX_INFORMATION, NULL, theTitle.c_str(), theText.c_str(), 0, NULL, NULL};
 
 	if (theFlags & MsgBoxFlags::MsgBox_OK)
 	{
@@ -2445,8 +2445,8 @@ int AppBase::LoadingThreadProcStub(void *theArg)
 	aPopLibApp->LoadingThreadProc();
 
 	char aStr[256];
-	sprintf(aStr, "Resource Loading Time: %d\r\n", (SDL_GetTicks() - aPopLibApp->mTimeLoaded));
-	SDL_Log(aStr);
+	sprintf(aStr, "Resource Loading Time: %lu\n", (SDL_GetTicks() - aPopLibApp->mTimeLoaded));
+	SDL_Log("%s", aStr);
 
 	aPopLibApp->mLoadingThreadCompleted = true;
 
