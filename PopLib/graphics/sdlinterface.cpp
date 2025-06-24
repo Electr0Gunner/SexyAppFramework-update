@@ -52,9 +52,9 @@ void SDLInterface::Cleanup()
 	for (anItr = mImageSet.begin(); anItr != mImageSet.end(); ++anItr)
 	{
 		MemoryImage *anImage = *anItr;
-		SDLTextureData *aData = (SDLTextureData *)anImage->mD3DData;
+		SDLTextureData *aData = (SDLTextureData *)anImage->mTextureData;
 		delete aData;
-		anImage->mD3DData = nullptr;
+		anImage->mTextureData = nullptr;
 	}
 	mImageSet.clear();
 
@@ -81,10 +81,10 @@ void SDLInterface::RemoveSDLImage(SDLImage *theSDLImage)
 
 void SDLInterface::Remove3DData(MemoryImage *theImage)
 {
-	if (theImage->mD3DData != nullptr)
+	if (theImage->mTextureData != nullptr)
 	{
-		delete (SDLTextureData *)theImage->mD3DData;
-		theImage->mD3DData = nullptr;
+		delete (SDLTextureData *)theImage->mTextureData;
+		theImage->mTextureData = nullptr;
 
 		AutoCrit aCrit(mCritSect); // Make images thread safe
 		mImageSet.erase(theImage);
@@ -340,9 +340,9 @@ bool SDLInterface::CreateImageTexture(MemoryImage *theImage)
 {
 	bool wantPurge = false;
 
-	if (theImage->mD3DData == nullptr)
+	if (theImage->mTextureData == nullptr)
 	{
-		theImage->mD3DData = new SDLTextureData(mRenderer);
+		theImage->mTextureData = new SDLTextureData(mRenderer);
 
 		// The actual purging was deferred
 		wantPurge = theImage->mPurgeBits;
@@ -351,7 +351,7 @@ bool SDLInterface::CreateImageTexture(MemoryImage *theImage)
 		mImageSet.insert(theImage);
 	}
 
-	SDLTextureData *aData = static_cast<SDLTextureData *>(theImage->mD3DData);
+	SDLTextureData *aData = static_cast<SDLTextureData *>(theImage->mTextureData);
 	aData->CheckCreateTextures(theImage);
 
 	if (wantPurge)
@@ -362,10 +362,10 @@ bool SDLInterface::CreateImageTexture(MemoryImage *theImage)
 
 bool SDLInterface::RecoverBits(MemoryImage *theImage)
 {
-	if (theImage->mD3DData == nullptr)
+	if (theImage->mTextureData == nullptr)
 		return false;
 
-	SDLTextureData *aData = (SDLTextureData *)theImage->mD3DData;
+	SDLTextureData *aData = (SDLTextureData *)theImage->mTextureData;
 	if (aData->mBitsChangedCount != theImage->mBitsChangedCount) // bits have changed since texture was created
 		return false;
 
@@ -515,7 +515,7 @@ void SDLInterface::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRe
 	if (!CreateImageTexture(memImg))
 		return;
 
-	SDLTextureData *texData = static_cast<SDLTextureData *>(memImg->mD3DData);
+	SDLTextureData *texData = static_cast<SDLTextureData *>(memImg->mTextureData);
 	SDL_Texture *texture = texData->mTexture;
 
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
@@ -542,7 +542,7 @@ void SDLInterface::BltClipF(Image *theImage, float theX, float theY, const Rect 
 	if (!CreateImageTexture(aSrcMemoryImage))
 		return;
 
-	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mD3DData;
+	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mTextureData;
 
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
 
@@ -575,7 +575,7 @@ void SDLInterface::BltMirror(Image *theImage, float theX, float theY, const Rect
 	if (!CreateImageTexture(aSrcMemoryImage))
 		return;
 
-	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mD3DData;
+	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mTextureData;
 
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
 
@@ -599,7 +599,7 @@ void SDLInterface::StretchBlt(Image *theImage, const Rect &theDestRect, const Re
 	if (!CreateImageTexture(aSrcMemoryImage))
 		return;
 
-	SDLTextureData *aData = static_cast<SDLTextureData *>(aSrcMemoryImage->mD3DData);
+	SDLTextureData *aData = static_cast<SDLTextureData *>(aSrcMemoryImage->mTextureData);
 	SDL_Texture *aTexture = aData->mTexture;
 
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
@@ -635,7 +635,7 @@ void SDLInterface::BltRotated(Image *theImage, float theX, float theY, const Rec
 	if (!CreateImageTexture(aSrcMemoryImage))
 		return;
 
-	SDLTextureData *aData = static_cast<SDLTextureData *>(aSrcMemoryImage->mD3DData);
+	SDLTextureData *aData = static_cast<SDLTextureData *>(aSrcMemoryImage->mTextureData);
 	SDL_Texture *aTexture = aData ? aData->mTexture : nullptr;
 	if (!aTexture)
 		return;
@@ -673,7 +673,7 @@ void SDLInterface::BltTransformed(Image *theImage, const Rect *theClipRect, cons
 	if (!CreateImageTexture(aSrcMemoryImage))
 		return;
 
-	SDLTextureData *aData = static_cast<SDLTextureData *>(aSrcMemoryImage->mD3DData);
+	SDLTextureData *aData = static_cast<SDLTextureData *>(aSrcMemoryImage->mTextureData);
 	if (!aData || !aData->mTexture)
 		return;
 
@@ -786,7 +786,7 @@ void SDLInterface::DrawTriangleTex(const TriVertex &p1, const TriVertex &p2, con
 	if (!CreateImageTexture(aSrcMemoryImage))
 		return;
 
-	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mD3DData;
+	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mTextureData;
 
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
 
@@ -815,7 +815,7 @@ void SDLInterface::DrawTrianglesTex(const TriVertex theVertices[][3], int theNum
 	if (!CreateImageTexture(aSrcMemoryImage))
 		return;
 
-	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mD3DData;
+	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mTextureData;
 
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
 
@@ -874,7 +874,7 @@ void SDLInterface::DrawTrianglesTexStrip(const TriVertex theVertices[], int theN
 	MemoryImage *aSrcMemoryImage = (MemoryImage *)theTexture;
 	if (!CreateImageTexture(aSrcMemoryImage))
 		return;
-	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mD3DData;
+	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mTextureData;
 	SDL_Texture *aTexture = aData->mTexture;
 
 	std::vector<float> positions;
