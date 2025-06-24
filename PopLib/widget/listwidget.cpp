@@ -121,8 +121,8 @@ void ListWidget::Sort(bool ascending)
 		aListWidget = aListWidget->mChild;
 	}
 
-	delete aMap;
-	delete aKeys;
+	delete[] aMap;
+	delete[] aKeys;
 }
 
 PopString ListWidget::GetStringAt(int theIdx)

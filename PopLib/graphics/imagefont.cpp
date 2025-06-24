@@ -1121,7 +1121,7 @@ ImageFont::ImageFont(Image *theFontImage)
 	mFontData->mFontLayerList.push_back(FontLayer(mFontData));
 	FontLayer *aFontLayer = &mFontData->mFontLayerList.back();
 
-	mFontData->mFontLayerMap.insert(FontLayerMap::value_type("", aFontLayer)).first;
+	mFontData->mFontLayerMap.insert(FontLayerMap::value_type("", aFontLayer));
 	aFontLayer->mImage = (MemoryImage *)theFontImage;
 	aFontLayer->mDefaultHeight = aFontLayer->mImage->GetHeight();
 	aFontLayer->mAscent = aFontLayer->mImage->GetHeight();
@@ -1478,7 +1478,7 @@ void ImageFont::DrawStringEx(Graphics *g, int theX, int theY, const PopString &t
 
 			double aScale = mScale;
 			if (aLayerPointSize != 0)
-				aScale *= mPointSize / aLayerPointSize;
+				aScale *= (double)mPointSize / aLayerPointSize;
 
 			if (aScale == 1.0)
 			{

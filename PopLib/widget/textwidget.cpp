@@ -45,7 +45,7 @@ void TextWidget::DrawColorString(Graphics *g, const PopString &theString, int x,
 	PopString aCurString = "";
 	for (int i = 0; i < (int)theString.length(); i++)
 	{
-		if (theString[i] == 0x100)
+		if ((unsigned char)theString[i] == 0xFF)
 		{
 			if (aCurString.length() > 0)
 				g->DrawString(aCurString, x + aWidth, y);
@@ -111,7 +111,7 @@ int TextWidget::GetColorStringWidth(const PopString &theString)
 
 	for (int i = 0; i < (int)theString.length(); i++)
 	{
-		if (theString[i] == 0x100)
+		if ((unsigned char)theString[i] == 0xFF)
 		{
 			aWidth += mFont->StringWidth(aTempString);
 			aTempString = "";
@@ -204,7 +204,7 @@ void TextWidget::AddToPhysicalLines(int theIdx, const PopString &theLine)
 				mPhysicalLines.push_back(aCurString);
 				mLineMap.push_back(theIdx);
 				Color aColor = GetLastColor(aCurString);
-				aCurString = "  " + PopChar(0xFF) + (PopChar)aColor.mRed + (PopChar)aColor.mGreen +
+				aCurString = PopString(1, (PopChar)0xFF) + (PopChar)aColor.mRed + (PopChar)aColor.mGreen +
 							 (PopChar)aColor.mBlue + theLine.substr(aNextCheckPos, aSpacePos - aNextCheckPos);
 			}
 			else
@@ -398,7 +398,7 @@ PopString TextWidget::GetSelection()
 		for (int aStrIdx = aSelIndices[0]; aStrIdx < aSelIndices[1]; aStrIdx++)
 		{
 			PopChar aChar = aString[aStrIdx];
-			if (aChar != 0x100)
+			if ((unsigned char)aChar != 0xFF)
 				aSelString += aChar;
 			else
 				aStrIdx += 3;

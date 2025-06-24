@@ -223,7 +223,7 @@ void Board::KeyChar(PopChar theChar)
 
 void Board::KeyDown(KeyCode theKey)
 {
-	SDL_Log(GetKeyNameFromCode(theKey).c_str());
+	SDL_Log("%s", GetKeyNameFromCode(theKey).c_str());
 }
 
 

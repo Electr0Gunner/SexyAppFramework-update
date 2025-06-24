@@ -9,8 +9,8 @@
 
 #include "memmgr.hpp"
 
-extern bool gInAssert = false;
-extern bool gDumpLeakedMem = false;
+bool gInAssert = false;
+bool gDumpLeakedMem = false;
 
 static FILE *gTraceFile = nullptr;
 static int gTraceFileLen = 0;
@@ -161,14 +161,14 @@ void DumpUnfreed()
 
 	time_t aTime = time(nullptr);
 	sprintf(buf, "Memory Leak Report for %s\n", asctime(localtime(&aTime)));
-	fprintf(f, buf);
+	fprintf(f, "%s", buf);
 	SDL_Log("\n%s", buf);
 	for (i = gAllocMap.begin(); i != gAllocMap.end(); i++)
 	{
 		sprintf(buf, "%s(%d) : Leak %d byte%s\n", i->second.file, i->second.line, i->second.size,
 				i->second.size > 1 ? "s" : "");
 		SDL_Log("%s", buf);
-		fprintf(f, buf);
+		fprintf(f, "%s", buf);
 
 #ifdef DUMP_LEAKED_MEM
 		unsigned char *data = (unsigned char *)i->first;
@@ -226,11 +226,11 @@ void DumpUnfreed()
 	}
 
 	sprintf(buf, "-----------------------------------------------------------\n");
-	fprintf(f, buf);
+	fprintf(f, "%s", buf);
 	SDL_Log("%s", buf);
 	sprintf(buf, "Total Unfreed: %d bytes (%dKB)\n\n", totalSize, totalSize / 1024);
 	SDL_Log("%s", buf);
-	fprintf(f, buf);
+	fprintf(f, "%s", buf);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

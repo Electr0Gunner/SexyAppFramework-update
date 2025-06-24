@@ -20,10 +20,8 @@ void TraceFmt(const PopChar *fmt, ...);
 void OutputDebug(const PopChar *fmt, ...);
 
 #ifdef NDEBUG
-
 #define DBG_ASSERTE(exp) ((void)0)
 #define DBG_ASSERT(exp) ((void)0)
-
 #else
 
 #define DBG_ASSERTE(exp)                                                                                               \

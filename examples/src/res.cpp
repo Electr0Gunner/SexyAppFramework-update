@@ -171,7 +171,7 @@ PopLib::ResourceId PopLib::GetIdByFont(Font *theFont)
 
 PopLib::ResourceId PopLib::GetIdBySound(int theSound)
 {
-	return GetIdByVariable((void *)theSound);
+	return GetIdByVariable((void *)(uintptr_t)theSound);
 }
 
 const char *PopLib::GetStringIdById(int theId)

@@ -178,8 +178,7 @@ bool XMLParser::NextElement(XMLElement *theElement)
     {
         mCurrentNode = mDocument->FirstChild();
         mFirstStart = false;
-    }
-    else if (!mCurrentNode && !mFirstStart)
+    } else if (!mCurrentNode && !mFirstStart)
     {
         // No more nodes to process, end of document reached
         return false;

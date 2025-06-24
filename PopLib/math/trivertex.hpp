@@ -4,6 +4,8 @@
 #pragma once
 #endif
 
+#include <cstdint>
+
 namespace PopLib
 {
 

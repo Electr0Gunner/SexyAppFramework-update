@@ -51,8 +51,8 @@ BassMusicInfo::BassMusicInfo()
 	mVolumeAdd = 0.0;
 	mVolumeCap = 1.0;
 	mStopOnFade = false;
-	mHMusic = NULL;
-	mStream = {NULL, NULL};
+	mHMusic = 0;
+	mStream = {NULL, 0};
 }
 
 BassMusicInterface::BassMusicInterface()
@@ -72,8 +72,8 @@ BassMusicInterface::~BassMusicInterface()
 
 bool BassMusicInterface::LoadMusic(int theSongId, const std::string &theFileName)
 {
-	HMUSIC aHMusic = NULL;
-	HSTREAM aStream = NULL;
+	HMUSIC aHMusic = 0;
+	HSTREAM aStream = 0;
 
 	std::string anExt;
 	int aDotPos = theFileName.find_last_of('.');

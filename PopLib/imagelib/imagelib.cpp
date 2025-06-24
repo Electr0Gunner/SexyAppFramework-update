@@ -55,7 +55,7 @@ Image *GetImageSTB(const std::string &theFileName)
 	p_fclose(fp);
 
 	int width, height, num_channels;
-	unsigned char *stb_image = stbi_load_from_memory(data.data(), fileSize, &width, &height, &num_channels, NULL);
+	unsigned char *stb_image = stbi_load_from_memory(data.data(), fileSize, &width, &height, &num_channels, 0);
 
 	ulong *aBits = new ulong[width * height];
 	for (int i = 0; i < width * height; ++i)
@@ -572,7 +572,7 @@ Image *GetGIFImage(const std::string &theFileName)
 		delete prefix;
 		delete packet;
 
-		delete colortable;
+		delete[] colortable;
 
 		// if (y < image->rows)
 		// failed = true;

@@ -4,6 +4,8 @@
 #pragma once
 #endif
 
+#include <cstddef>
+
 static size_t LiberationSans_Regular_Size = 133829;
 
 static unsigned char LiberationSans_Regular[133829] = {

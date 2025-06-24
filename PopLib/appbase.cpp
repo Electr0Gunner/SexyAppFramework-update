@@ -3885,11 +3885,11 @@ void AppBase::RotateImageHue(PopLib::MemoryImage *theImage, int theDelta)
 		int y = (int)(2 * l - v);
 
 		int aColorDiv = (6 * h) / 256;
-		int x = (int)(y + (v - y) * ((h - (aColorDiv * 256 / 6)) * 6) / 255);
+		int x = (int)(y + (v - y) * ((h - (aColorDiv * 256.0 / 6)) * 6) / 255);
 		if (x > 255)
 			x = 255;
 
-		int z = (int)(v - (v - y) * ((h - (aColorDiv * 256 / 6)) * 6) / 255);
+		int z = (int)(v - (v - y) * ((h - (aColorDiv * 256.0 / 6)) * 6) / 255);
 		if (z < 0)
 			z = 0;
 
@@ -3949,11 +3949,11 @@ ulong AppBase::HSLToRGB(int h, int s, int l)
 	int y = (int)(2 * l - v);
 
 	int aColorDiv = (6 * h) / 256;
-	int x = (int)(y + (v - y) * ((h - (aColorDiv * 256 / 6)) * 6) / 255);
+	int x = (int)(y + (v - y) * ((h - (aColorDiv * 256.0 / 6)) * 6) / 255);
 	if (x > 255)
 		x = 255;
 
-	int z = (int)(v - (v - y) * ((h - (aColorDiv * 256 / 6)) * 6) / 255);
+	int z = (int)(v - (v - y) * ((h - (aColorDiv * 256.0 / 6)) * 6) / 255);
 	if (z < 0)
 		z = 0;
 

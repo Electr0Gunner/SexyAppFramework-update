@@ -1,7 +1,6 @@
 ﻿#include "openalsoundmanager.hpp"
 #include "openalsoundinstance.hpp"
 #include "paklib/pakinterface.hpp"
-#include "common.hpp"
 #include "aureader.hpp"
 
 // Vorbis
@@ -58,7 +57,7 @@ OpenALSoundManager::OpenALSoundManager()
 
 	for (i = 0; i < MAX_SOURCE_SOUNDS; i++)
 	{
-		mSourceSounds[i] = NULL;
+		mSourceSounds[i] = 0;
 		mBaseVolumes[i] = 1;
 		mBasePans[i] = 0;
 	}
@@ -357,7 +356,7 @@ void OpenALSoundManager::ReleaseSound(unsigned int theSfxID)
 		ForceReleaseSources(mSourceSounds[theSfxID]);
 		alDeleteBuffers(1, &mSourceSounds[theSfxID]);
 		AL_CHECK_ERROR();
-		mSourceSounds[theSfxID] = NULL;
+		mSourceSounds[theSfxID] = 0;
 		mSourceFileNames[theSfxID] = "";
 	}
 }
@@ -461,7 +460,7 @@ void OpenALSoundManager::ReleaseSounds()
 		if (mSourceSounds[i])
 		{
 			alDeleteBuffers(1, &mSourceSounds[i]);
-			mSourceSounds[i] = NULL;
+			mSourceSounds[i] = 0;
 		}
 }
 
