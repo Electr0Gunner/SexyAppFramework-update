@@ -25,6 +25,3 @@
 [submodule "external/discordrpc"]
 	path = external/discordrpc
 	url = https://github.com/EclipseMenu/discord-presence
-[submodule "external/tinyxml2"]
-	path = external/tinyxml2
-	url = https://github.com/leethomason/tinyxml2

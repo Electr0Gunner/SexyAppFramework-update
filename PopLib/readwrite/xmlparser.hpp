@@ -6,9 +6,7 @@
 
 #include "common.hpp"
 #include "debug/perftimer.hpp"
-#include <tinyxml2.h>
 
-using namespace tinyxml2;
 struct PFILE;
 
 namespace PopLib
@@ -16,19 +14,19 @@ namespace PopLib
 
 class XMLParam
 {
-  public:
-	std::string mKey;
-	std::string mValue;
+public:
+	std::string				mKey;
+	std::string				mValue;
 };
 
-typedef std::map<PopString, PopString> XMLParamMap;
-typedef std::list<XMLParamMap::iterator> XMLParamMapIteratorList;
+typedef std::map<PopString, PopString>	XMLParamMap;
+typedef std::list<XMLParamMap::iterator>	XMLParamMapIteratorList;
 
-typedef std::vector<uchar> XMLParserBuffer;
+typedef std::vector<wchar_t> XMLParserBuffer;
 
 class XMLElement
 {
-  public:
+public:
 	enum
 	{
 		TYPE_NONE,
@@ -38,57 +36,71 @@ class XMLElement
 		TYPE_INSTRUCTION,
 		TYPE_COMMENT
 	};
-
-  public:
-	int mType;
-	PopString mSection;
-	PopString mValue;
-	PopString mInstruction;
-	XMLParamMap mAttributes;
-	XMLParamMapIteratorList mAttributeIteratorList; // stores attribute iterators in their original order
+public:
+	
+	int						mType;
+	PopString				mSection;
+	PopString				mValue;
+	PopString				mInstruction;
+	XMLParamMap				mAttributes;
+	XMLParamMapIteratorList	mAttributeIteratorList; // stores attribute iterators in their original order
 };
 
 class XMLParser
 {
-  protected:
-	std::string mFileName;
-	PopString mErrorText;
-	int mLineNum;
-	PFILE *mFile;
-	bool mHasFailed;
-	bool mFirstChar;
-	bool mByteSwap;
-    XMLDocument* mDocument;
-    XMLNode* mCurrentNode;
-	/// @brief current elements
-	std::vector<PopString> mSectionStack;
-	/// @brief names of elements that await TYPE_END
-	std::vector<PopString> mEndPending;
-	
-	/// @brief the processed children
-	std::vector<PopString> mProcessedChildren;
-	/// @brief stack of parent elements
-	std::vector<XMLNode*> mNodeStack;
-	bool mFirstStart;
+protected:
+	std::string				mFileName;
+	PopString				mErrorText;
+	int						mLineNum;
+	PFILE*					mFile;
+	bool					mHasFailed;
+	bool					mAllowComments;
+	XMLParserBuffer			mBufferedText;
+	PopString				mSection;
+	bool					(XMLParser::*mGetCharFunc)(wchar_t* theChar, bool* error);
+	bool					mForcedEncodingType;
+	bool					mFirstChar;
+	bool					mByteSwap;
 
-  protected:
-	void Fail(const PopString &theErrorText);
-	void Init();
+protected:
+	void					Fail(const PopString& theErrorText);
+	void					Init();
 
-	bool AddAttribute(XMLElement *theElement, const PopString &aAttributeKey, const PopString &aAttributeValue);
+	bool					AddAttribute(XMLElement* theElement, const PopString& aAttributeKey, const PopString& aAttributeValue);
 
-  public:
+	bool					GetAsciiChar(wchar_t* theChar, bool* error);
+	bool					GetUTF8Char(wchar_t* theChar, bool* error);
+	bool					GetUTF16Char(wchar_t* theChar, bool* error);
+	bool					GetUTF16LEChar(wchar_t* theChar, bool* error);
+	bool					GetUTF16BEChar(wchar_t* theChar, bool* error);
+
+public:
+	enum XMLEncodingType
+	{
+		ASCII,
+		UTF_8,
+		UTF_16,
+		UTF_16_LE,
+		UTF_16_BE
+	};
+
+public:
 	XMLParser();
 	virtual ~XMLParser();
 
-	bool OpenFile(const std::string &theFilename, const std::string &custom_root = "");
-	bool OpenBuffer(const std::string &theBuffer, const std::string &custom_root = "");
-	bool NextElement(XMLElement *theElement);
-	PopString GetErrorText();
-	int GetCurrentLineNum();
-	std::string GetFileName();
+	void					SetEncodingType(XMLEncodingType theEncoding);
+	bool					OpenFile(const std::string& theFilename);
+	void					SetStringSource(const std::wstring& theString);
+	void					SetStringSource(const std::string& theString);
+	bool					NextElement(XMLElement* theElement);
+	PopString				GetErrorText();
+	int						GetCurrentLineNum();
+	std::string				GetFileName();
 
-	bool HasFailed();
+	inline void				AllowComments(bool doAllow) { mAllowComments = doAllow; }
+
+	bool					HasFailed();
+	bool					EndOfFile();
 };
 
 }; // namespace PopLib

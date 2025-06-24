@@ -246,16 +246,7 @@ bool PropertiesParser::DoParseProperties()
 bool PropertiesParser::ParsePropertiesBuffer(const Buffer &theBuffer)
 {
 	mXMLParser = new XMLParser();
-
-	// mXMLParser->SetStringSource(theBuffer.UTF8ToWideString());
-
-	// HACK: see framework 1.22
-	// here we disable converting from UTF-8, and alway load file as plain ANSI
-	std::string aString;
-	aString.insert(aString.begin(), (char *)theBuffer.GetDataPtr(),
-				   (char *)theBuffer.GetDataPtr() + theBuffer.GetDataLen());
-	mXMLParser->OpenBuffer(aString);
-
+	mXMLParser->SetStringSource(theBuffer.UTF8ToWideString());
 	return DoParseProperties();
 }
 

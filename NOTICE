@@ -32,15 +32,11 @@ PopLib includes the following third-party libraries:
    - Source: https://github.com/slembcke/Chipmunk2D
    - Implementation: https://github.com/keestux/tuxcap
 
-8. TinyXML2
-   - License: zlib License
-   - Source: https://github.com/leethomason/tinyxml2
-
-9. Discord RPC (EclipseMenu)
+8. Discord RPC (EclipseMenu)
    - License: MIT License
    - Source: https://github.com/EclipseMenu/discord-presence
 
-10. ImGui
+9. ImGui
     - License: MIT License
     - Source: https://github.com/ocornut/imgui
 

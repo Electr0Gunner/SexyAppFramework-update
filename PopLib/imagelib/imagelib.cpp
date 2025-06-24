@@ -76,7 +76,7 @@ Image *GetImageSTB(const std::string &theFileName)
 	anImage->mBits = aBits;
 	anImage->mNumChannels = num_channels;
 
-	delete stb_image;
+	stbi_image_free(stb_image);
 
 	return anImage;
 }
