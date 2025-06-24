@@ -13,16 +13,16 @@ GameApp::GameApp()
 {
 	mProdName = "Tetris";
 
-	mProductVersion = "1.0";
+	mProductVersion = "1.1";
 
 	mTitle = "PopLib: " + mProdName + " - " + mProductVersion;
 
-	mRegKey = "PopCap\\PopLib\\Tetris";
+	mRegKey = "PopCap/PopLib/Tetris";
 
 	mWidth = 800;
 	mHeight = 600;
 
-	mBoard = NULL;
+	mBoard = nullptr;
 }
 
 GameApp::~GameApp()

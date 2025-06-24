@@ -251,11 +251,15 @@ void Board::Update()
 
 void Board::Draw(Graphics *g)
 {
-	const int brickSize = 24;
-	const int gridX = 24;
-	const int gridY = 24;
+	const int brickSize = 20;
+	const int gridX = 20 * 15;
+	const int gridY = 20 * 2;
 	const int gridWidthPx = BoardWidth * brickSize;
 	const int gridHeightPx = BoardHeight * brickSize;
+
+	// black background slop
+	g->SetColor(Color(0, 0, 0)); // black
+	g->FillRect(0, 0, mApp->mWidth, mApp->mHeight);
 
 	g->SetColor(Color(255, 255, 255));
 	g->SetColorizeImages(false);
@@ -266,16 +270,13 @@ void Board::Draw(Graphics *g)
 		{
 			// skip drawing bricks in the grid area
 			bool inGridArea = (x >= gridX && x < gridX + gridWidthPx && y >= gridY && y < gridY + gridHeightPx);
-			if (!inGridArea)
+			bool isUiArea = (x >= gridX + gridWidthPx + brickSize * 2 && x < gridX + gridWidthPx + brickSize * 12 && y >= gridY && y < gridY + gridHeightPx);
+			if (!inGridArea && !isUiArea)
 			{
 				g->DrawImage(IMAGE_BRICK, x, y);
 			}
 		}
 	}
-
-	// black background slop
-	g->SetColor(Color(0, 0, 0)); // black
-	g->FillRect(gridX, gridY, gridWidthPx, gridHeightPx);
 
 	g->SetColor(Color(50, 50, 50)); // light gray grid lines
 	for (int r = 0; r <= BoardHeight; r++)
@@ -350,10 +351,36 @@ void Board::Draw(Graphics *g)
 		}
 	}
 
+	for (int r = 0; r < 4; r++)
+	{
+		for (int c = 0; c < 4; c++)
+		{
+			if (sShapes[mNextType][0][r][c]) // Always show rotation 0
+			{
+				int x = 600 + c * brickSize;
+				int y = 200 + r * brickSize;
+				g->SetColor(blockColors[mNextType]);
+				g->SetColorizeImages(true);
+				g->DrawImage(IMAGE_BRICK, x, y);
+				g->SetColorizeImages(false);
+			}
+		}
+	}
+
 	// draw text
-	DrawStringWithOutline(g, "Score: " + std::to_string(mScore), 300, 30, Color(0, 0, 0), Color(255, 255, 255));
-	DrawStringWithOutline(g, "Level: " + std::to_string(mLevel), 300, 60, Color(0, 0, 0), Color(255, 255, 255));
-	DrawStringWithOutline(g, "Lines: " + std::to_string(mLinesCleared), 300, 90, Color(0, 0, 0), Color(255, 255, 255));
+	DrawStringWithOutline(g, "Score: " + std::to_string(mScore), 600, 80, Color(0, 0, 0), Color(255, 255, 255));
+	DrawStringWithOutline(g, "Level: " + std::to_string(mLevel), 600, 100, Color(0, 0, 0), Color(255, 255, 255));
+	DrawStringWithOutline(g, "Lines: " + std::to_string(mLinesCleared), 600, 120, Color(0, 0, 0), Color(255, 255, 255));
+	DrawStringWithOutline(g, "Next piece:", 600, 140, Color(0, 0, 0), Color(255, 255, 255));
+
+	g->SetColor(Color(255, 255, 255));
+#ifdef _DEBUG
+	g->SetColor(Color(0, 0, 0, 140));
+	std::string watermark = StrFormat("Made using PopLib v%s", POPLIB_VERSION);
+	g->FillRect(Rect(0, (mY + mHeight) - FONT_DEFAULT->mHeight - 4, FONT_DEFAULT->StringWidth(watermark) + 8, FONT_DEFAULT->mHeight));
+	g->SetColor(Color(255, 255, 255));
+	g->DrawString(watermark, 4, (mY + mHeight) - (FONT_DEFAULT->mHeight - 12));
+#endif
 }
 
 void Board::KeyDown(KeyCode key)
