@@ -4,6 +4,7 @@
 #pragma once
 #endif
 
+#include "graphics/memoryimage.hpp"
 #include "graphics/graphics.hpp"
 #include "math/rect.hpp"
 #include "graphics/color.hpp"
@@ -15,7 +16,21 @@
 
 namespace PopLib
 {
-  class Image;
+  class AppBase;
+
+  enum RenderAPI
+  {
+    API_SDL3,
+    API_GPU,
+    API_UNKNOWN,
+  };
+
+  static const std::vector<std::pair<RenderAPI, std::string>> APIStrings =
+  {
+    {API_SDL3, "SDL3"},
+    {API_GPU, "GPU"},
+    {API_UNKNOWN, "UNKNOWN"}
+  };
 
   enum FlipMode
   {
@@ -40,7 +55,7 @@ namespace PopLib
     Rect src;
     Color color;
     int drawMode;
-    Rect clip;
+    Rect clip = Rect(-1, -1, -1, -1);
     double rotation;
     Point center;
     FlipMode flipMode;
@@ -79,27 +94,80 @@ namespace PopLib
   class Renderer
   {
     public:
+
+      AppBase* mApp;
+      RenderAPI mAPI = API_UNKNOWN;
+      std::string mWantedAPI = "UNKNOWN";
       RendererError mError = ERR_NONE;
       CritSect mCritSect;
+
+      int mRGBBits;
+      ulong mRedMask;
+      ulong mGreenMask;
+      ulong mBlueMask;
+      int mRedBits;
+      int mGreenBits;
+      int mBlueBits;
+      int mRedShift;
+      int mGreenShift;
+      int mBlueShift;
+
+      float mRefreshRate = 60.0f;
+	    float mMillisecondsPerFrame = 1000.0f/mRefreshRate;
+
+      int mNextCursorX;
+      int mNextCursorY;
+      int mCursorX;
+      int mCursorY;
   
     public:
-      Renderer();
-      virtual ~Renderer();
+      Renderer(AppBase* theApp): mApp(theApp) {}
+      virtual ~Renderer() = default;
 
-        virtual bool Init(const RendererInitData& initData);
-        virtual void Cleanup();
+      virtual bool Init(const RendererInitData& initData);
+      virtual void Cleanup();
 
-        virtual void Render();
+      virtual void Render();
 
-        virtual void UpdateViewport();
+      virtual void UpdateViewport();
 
-        virtual Image* GetScreenImage();
+      virtual GPUImage* GetScreenImage();
 
-        virtual void Draw(RenderCommand command);
-        virtual void DrawTriangles(TriangleCommand command);
+      virtual void AddGPUImage(GPUImage* theImage);
+      virtual void RemoveGPUImage(GPUImage* theImage);
+      virtual bool RecoverBits(MemoryImage* theImage);
 
-        inline virtual RendererError GetError() {return mError;}
+      virtual void Draw(RenderCommand command);
+      virtual void DrawTriangles(TriangleCommand command);
+
+      inline virtual RendererError GetError() {return mError;}
+
+      static inline bool Is3DAccelerated(Renderer* theRenderer)
+      {
+        return theRenderer->mAPI == API_GPU;
+      }
+        
+      static inline std::string GetRenderAPIStr(RenderAPI api)
+      {
+        for (const auto& pair : APIStrings)
+        {
+            if (pair.first == api)
+                return pair.second;
+        }
+        return "UNKNOWN";
+      }
+
+      static inline RenderAPI GetRenderAPIFromStr(const std::string& api)
+      {
+        for (const auto& pair : APIStrings)
+        {
+            if (pair.second == api)
+                return pair.first;
+        }
+        return API_UNKNOWN;
+      }
   };
+
 
 } // namespace PopLib
 

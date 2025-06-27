@@ -42,9 +42,9 @@ namespace PopLib
 {
 
 class WidgetManager;
-class SDLInterface;
+class Renderer;
 class Image;
-class SDLImage;
+class GPUImage;
 class Widget;
 class SoundManager;
 class MusicInterface;
@@ -236,8 +236,8 @@ class AppBase : public ButtonListener, public DialogListener
 	bool mFullScreenPageFlip;
 	/// @brief true if tablet pc
 	bool mTabletPC;
-	/// @brief (SDLInterface) the window interface
-	SDLInterface *mSDLInterface;
+	/// @brief rendering backend
+	Renderer *mRenderer;
 	/// @brief TBA
 	bool mAlphaDisabled;
 	/// @brief (MusicInterface) the music interface, uses BASS
@@ -489,6 +489,8 @@ class AppBase : public ButtonListener, public DialogListener
 	virtual void MakeWindow();
 	/// @brief enforces the cursor
 	virtual void EnforceCursor();
+	/// @brief sets the cursor type
+	virtual void SetCursor(SDL_SystemCursor theCursorType);
 	/// @brief reinitialize images
 	virtual void ReInitImages();
 	/// @brief deletes native images data
@@ -736,8 +738,8 @@ class AppBase : public ButtonListener, public DialogListener
 	/// @brief gets an image
 	/// @param theFileName 
 	/// @param commitBits 
-	/// @return SDLImage
-	virtual SDLImage *GetImage(const std::string &theFileName, bool commitBits = true);
+	/// @return GPUImage
+	virtual GPUImage *GetImage(const std::string &theFileName, bool commitBits = true);
 	/// @brief gets a shared image
 	/// @param theFileName 
 	/// @param theVariant 
@@ -772,8 +774,8 @@ class AppBase : public ButtonListener, public DialogListener
 	/// @param theImage2 
 	/// @param theRect2 
 	/// @param theFadeFactor 
-	/// @return SDLImage
-	SDLImage *CreateCrossfadeImage(Image *theImage1, const Rect &theRect1, Image *theImage2, const Rect &theRect2,
+	/// @return GPUImage
+	GPUImage *CreateCrossfadeImage(Image *theImage1, const Rect &theRect1, Image *theImage2, const Rect &theRect2,
 								   double theFadeFactor);
 	/// @brief TBA
 	/// @param theImage 
@@ -782,17 +784,17 @@ class AppBase : public ButtonListener, public DialogListener
 	/// @brief creates a colorized image
 	/// @param theImage 
 	/// @param theColor 
-	/// @return SDLImage
-	SDLImage *CreateColorizedImage(Image *theImage, const Color &theColor);
+	/// @return GPUImage
+	GPUImage *CreateColorizedImage(Image *theImage, const Color &theColor);
 	/// @brief copies an image
 	/// @param theImage 
 	/// @param theRect 
-	/// @return SDLImage
-	SDLImage *CopyImage(Image *theImage, const Rect &theRect);
+	/// @return GPUImage
+	GPUImage *CopyImage(Image *theImage, const Rect &theRect);
 	/// @brief copies an image
 	/// @param theImage 
-	/// @return SDLImage
-	SDLImage *CopyImage(Image *theImage);
+	/// @return GPUImage
+	GPUImage *CopyImage(Image *theImage);
 	/// @brief mirrors an image
 	/// @param theImage 
 	void MirrorImage(Image *theImage);

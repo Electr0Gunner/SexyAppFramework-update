@@ -23,12 +23,16 @@ class SDLInterface : public Renderer
 		ImageSet mImageSet;
 
     public:
+		SDLInterface(AppBase* theApp);
+		virtual ~SDLInterface();
+
 		virtual void UpdateViewport();
 		virtual void Cleanup();
         virtual void Draw(RenderCommand command);
         virtual void DrawTriangles(TriangleCommand command);
 		virtual bool CreateImageTexture(MemoryImage *theImage);
 		virtual void RemoveMemoryImage(MemoryImage *theImage);
+		virtual bool RecoverBits(MemoryImage* theImage);
 };
 
 enum PixelFormat
@@ -78,6 +82,8 @@ public:
 	void Blt(SDL_Renderer* theRenderer, float theX, float theY, const Rect& theSrcRect, const Color& theColor);
 	void BltTransformed(SDL_Renderer* theRenderer, const Matrix3 &theTrans, const Rect& theSrcRect, const Color& theColor, const Rect *theClipRect = NULL, float theX = 0, float theY = 0, bool center = false);	
 	void BltTriangles(SDL_Renderer* theRenderer, const TriVertex theVertices[][3], int theNumTriangles, ulong theColor, float tx = 0, float ty = 0);
+
+	int GetMemSize();
 };
 } // namespace PopLib
 

@@ -1,4 +1,5 @@
 #include "sdlinterface.hpp"
+#include "appbase.hpp"
 #include "renderutils.hpp"
 #include "misc/autocrit.hpp"
 
@@ -24,6 +25,16 @@ SDL_PixelFormat ToSDLPixelFormat(PixelFormat format)
         default:
             return SDL_PIXELFORMAT_UNKNOWN;
     }
+}
+
+SDLInterface::SDLInterface(AppBase* theApp) : Renderer(theApp)
+{
+	mAPI = API_SDL3;
+}
+
+SDLInterface::~SDLInterface()
+{
+
 }
 
 void SDLInterface::UpdateViewport()
@@ -61,8 +72,17 @@ void SDLInterface::Draw(RenderCommand command)
 
 	SDLTextureData *aData = (SDLTextureData*)aSrcMemoryImage->mTextureData;
 
+	if (command.clip != Rect(-1, -1, -1, -1))
+	{
+		SDL_Rect clipRect;
+		clipRect = {command.clip.mX, command.clip.mY, command.clip.mWidth, command.clip.mHeight};
+		SDL_SetRenderClipRect(mBackendRenderer, &clipRect);
+	}
+
 	aData->Blt(mBackendRenderer, command.dst.mX, command.dst.mY, command.src, command.color);
 
+	
+	SDL_SetRenderClipRect(mBackendRenderer, nullptr);
 	SDL_SetRenderTarget(mBackendRenderer, nullptr);
 }
 
@@ -105,6 +125,49 @@ void SDLInterface::RemoveMemoryImage(MemoryImage *theImage)
 		AutoCrit aCrit(mCritSect); // Make images thread safe
 		mImageSet.erase(theImage);
 	}
+}
+
+bool SDLInterface::RecoverBits(MemoryImage* theImage)
+{
+	if (theImage->mTextureData == NULL)
+		return false;
+
+	SDLTextureData* aData = (SDLTextureData*) theImage->mTextureData;
+	if (aData->mBitsChangedCount != theImage->mBitsChangedCount) // bits have changed since texture was created
+		return false;
+	
+	for (int aPieceRow = 0; aPieceRow < aData->mTexVecHeight; aPieceRow++)
+	{
+		for (int aPieceCol = 0; aPieceCol < aData->mTexVecWidth; aPieceCol++)
+		{
+			TextureDataPiece* aPiece = &aData->mTextures[aPieceRow*aData->mTexVecWidth + aPieceCol];
+
+			if (SDL_LockSurface(aPiece->mSurface))
+				return false;
+
+			int offx = aPieceCol*aData->mTexPieceWidth;
+			int offy = aPieceRow*aData->mTexPieceHeight;
+			int aWidth = std::min(theImage->mWidth-offx, aPiece->mWidth);
+			int aHeight = std::min(theImage->mHeight-offy, aPiece->mHeight);
+
+			switch (aData->mPixelFormat)
+			{
+			case PixelFormat_A8R8G8B8:	CopyTexture8888ToImage(aPiece->mSurface, theImage, offx, offy, aWidth, aHeight); break;
+			case PixelFormat_A4R4G4B4:	CopyTexture4444ToImage(aPiece->mSurface, theImage, offx, offy, aWidth, aHeight); break;
+			case PixelFormat_R5G6B5: CopyTexture565ToImage(aPiece->mSurface,theImage, offx, offy, aWidth, aHeight); break;
+			case PixelFormat_Palette8:	CopyTexturePalette8ToImage(aPiece->mSurface,theImage, offx, offy, aWidth, aHeight, aData->mPalette); break;
+			}
+
+			SDL_UnlockSurface(aPiece->mSurface);
+
+			if (aPiece->mTexture)
+				SDL_DestroyTexture(aPiece->mTexture);
+			
+			aPiece->mTexture = SDL_CreateTextureFromSurface(mBackendRenderer, aPiece->mSurface);
+		}
+	}
+
+	return true;
 }
 
 static void CopyImageToTexture8888(SDL_Surface* theSurface, MemoryImage *theImage, int offx, int offy, int theWidth, int theHeight, bool rightPad)
@@ -347,7 +410,7 @@ static void CopyImageToTexturePalette8(SDL_Surface* theSurface, MemoryImage *the
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-static void CopySurfacePalette8ToImage(SDL_Surface* theSurface, MemoryImage *theImage, int offx, int offy, int theWidth, int theHeight, SDL_Palette* thePalette)
+static void CopyTexturePalette8ToImage(SDL_Surface* theSurface, MemoryImage *theImage, int offx, int offy, int theWidth, int theHeight, SDL_Palette* thePalette)
 {
     SDL_Color* paletteEntries = thePalette->colors;
     int pitch = theSurface->pitch;
@@ -664,6 +727,17 @@ void SDLTextureData::CheckCreateTextures(MemoryImage *theImage, SDL_Renderer* th
 {
 	if(mPixelFormat==PixelFormat_Unknown || theImage->mWidth != mWidth || theImage->mHeight != mHeight || theImage->mBitsChangedCount != mBitsChangedCount || theImage->mImageFlags != mImageFlags)
 		CreateTextures(theImage, theRenderer);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+int SDLTextureData::GetMemSize()
+{
+	int aSize = 0;
+
+	aSize = (SDL_BYTESPERPIXEL(ToSDLPixelFormat(mPixelFormat)) / 8) * mWidth * mHeight;
+
+	return aSize;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

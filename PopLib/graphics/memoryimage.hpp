@@ -16,7 +16,7 @@ namespace PopLib
 
 const ulong MEMORYCHECK_ID = 0x4BEEFADE;
 
-class NativeDisplay;
+class Renderer;
 class AppBase;
 
 class MemoryImage : public Image
@@ -24,8 +24,9 @@ class MemoryImage : public Image
   public:
 	ulong *mBits;
 	int mBitsChangedCount;
-	void *mTextureData;
-	uint32_t mImageFlags; // see D3DInterface.h for possible values
+    void *mTextureData; //Fill this with a custom struct containing texture info for your current rendering backend. (ex: SDLTextureData)
+
+	uint32_t mImageFlags; // see renderer.hpp for possible values
 
 	ulong *mColorTable;
 	uchar *mColorIndices;
@@ -48,9 +49,9 @@ class MemoryImage : public Image
 	void Init();
 
   public:
-	virtual void *GetNativeAlphaData(NativeDisplay *theNative);
+	virtual void *GetNativeAlphaData(Renderer *theNative);
 	virtual uchar *GetRLAlphaData();
-	virtual uchar *GetRLAdditiveData(NativeDisplay *theNative);
+	virtual uchar *GetRLAdditiveData(Renderer *theNative);
 	virtual void PurgeBits();
 	virtual void DeleteSWBuffers();
 	virtual void Delete3DBuffers();
