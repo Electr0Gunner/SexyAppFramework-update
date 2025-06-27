@@ -24,7 +24,7 @@ class MemoryImage : public Image
   public:
 	ulong *mBits;
 	int mBitsChangedCount;
-	void *mTextureData;
+	void *mD3DData;
 	uint32_t mImageFlags; // see D3DInterface.h for possible values
 
 	ulong *mColorTable;

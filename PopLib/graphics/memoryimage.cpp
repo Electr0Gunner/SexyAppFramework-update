@@ -37,7 +37,7 @@ MemoryImage::MemoryImage(const MemoryImage &theMemoryImage)
 	: Image(theMemoryImage), mApp(theMemoryImage.mApp), mHasAlpha(theMemoryImage.mHasAlpha),
 	  mHasTrans(theMemoryImage.mHasTrans), mBitsChanged(theMemoryImage.mBitsChanged),
 	  mIsVolatile(theMemoryImage.mIsVolatile), mPurgeBits(theMemoryImage.mPurgeBits), mWantPal(theMemoryImage.mWantPal),
-	  mImageFlags(theMemoryImage.mImageFlags), mBitsChangedCount(theMemoryImage.mBitsChangedCount), mTextureData(nullptr)
+	  mImageFlags(theMemoryImage.mImageFlags), mBitsChangedCount(theMemoryImage.mBitsChangedCount), mD3DData(nullptr)
 {
 	bool deleteBits = false;
 
@@ -144,7 +144,7 @@ void MemoryImage::Init()
 	mForcedMode = false;
 	mIsVolatile = false;
 
-	mTextureData = nullptr;
+	mD3DData = nullptr;
 	mImageFlags = 0;
 	mBitsChangedCount = 0;
 
@@ -1084,7 +1084,7 @@ void MemoryImage::PurgeBits()
 	{
 		// Due to potential D3D threading issues we have to defer the texture creation
 		//  and therefore the actual purging
-		if (mTextureData == nullptr)
+		if (mD3DData == nullptr)
 			return;
 	}
 	else
@@ -1098,7 +1098,7 @@ void MemoryImage::PurgeBits()
 	delete[] mBits;
 	mBits = nullptr;
 
-	if (mTextureData != nullptr)
+	if (mD3DData != nullptr)
 	{
 		delete[] mColorIndices;
 		mColorIndices = nullptr;
@@ -1249,7 +1249,7 @@ ulong *MemoryImage::GetBits()
 				*(aDestPtr++) = (r << 16) | (g << 8) | (b) | (anAlpha << 24);
 			}
 		}
-		else if ((mTextureData == nullptr) || (!mApp->mSDLInterface->RecoverBits(this)))
+		else if ((mD3DData == nullptr) || (!mApp->mSDLInterface->RecoverBits(this)))
 		{
 			memset(mBits, 0, aSize * sizeof(ulong));
 		}

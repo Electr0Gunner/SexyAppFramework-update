@@ -794,7 +794,7 @@ void AppBase::DumpProgramInfo()
 		int aMemorySize = 0;
 		if (aMemoryImage->mBits != nullptr)
 			aBitsMemory = aNumPixels * 4;
-		if ((aSDLImage != nullptr) && (aSDLImage->mTextureData != nullptr))
+		if ((aSDLImage != nullptr) && (aSDLImage->mD3DData != nullptr))
 			aSurfaceMemory = aNumPixels * 4; // Assume 32bit screen...
 		if (aMemoryImage->mColorTable != nullptr)
 			aPalletizedMemory = aNumPixels + 256 * 4;
@@ -809,8 +809,8 @@ void AppBase::DumpProgramInfo()
 			aRLAlphaMemory = aNumPixels;
 		if (aMemoryImage->mRLAdditiveData != nullptr)
 			aRLAdditiveMemory = aNumPixels;
-		if (aMemoryImage->mTextureData != nullptr)
-			aTextureMemory += ((SDLTextureData *)aMemoryImage->mTextureData)->GetMemSize();
+		if (aMemoryImage->mD3DData != nullptr)
+			aTextureMemory += ((SDLTextureData *)aMemoryImage->mD3DData)->GetMemSize();
 
 		aMemorySize = aBitsMemory + aSurfaceMemory + aPalletizedMemory + aNativeAlphaMemory + aRLAlphaMemory +
 					  aRLAdditiveMemory + aTextureMemory;
@@ -867,7 +867,7 @@ void AppBase::DumpProgramInfo()
 
 		if (aMemoryImage->mBits != nullptr)
 			aBitsMemory = aNumPixels * 4;
-		if ((aSDLImage != nullptr) && (aSDLImage->mTextureData != nullptr))
+		if ((aSDLImage != nullptr) && (aSDLImage->mD3DData != nullptr))
 			aSurfaceMemory = aNumPixels * 4; // Assume 32bit screen...
 		if (aMemoryImage->mColorTable != nullptr)
 			aPalletizedMemory = aNumPixels + 256 * 4;
@@ -882,9 +882,9 @@ void AppBase::DumpProgramInfo()
 			aRLAlphaMemory = aNumPixels;
 		if (aMemoryImage->mRLAdditiveData != nullptr)
 			aRLAdditiveMemory = aNumPixels;
-		if (aMemoryImage->mTextureData != nullptr)
+		if (aMemoryImage->mD3DData != nullptr)
 		{
-			aTextureMemory += ((SDLTextureData *)aMemoryImage->mTextureData)->GetMemSize();
+			aTextureMemory += ((SDLTextureData *)aMemoryImage->mD3DData)->GetMemSize();
 
 			aTextureFormatName = "ARGB8888"; // They are always like this
 		}
@@ -918,7 +918,7 @@ void AppBase::DumpProgramInfo()
 					<< "</TD>" << std::endl;
 
 		aDumpStream << "<TD>"
-					<< ((aMemoryImage->mTextureData != nullptr)
+					<< ((aMemoryImage->mD3DData != nullptr)
 							? "Texture<BR>" + aTextureFormatName + "<BR>" + CommaSeperate(aTextureMemory)
 							: "&nbsp;")
 					<< "</TD>" << std::endl;
@@ -2025,9 +2025,9 @@ void AppBase::ShowMemoryUsage()
 	while (anItr != mMemoryImageSet.end())
 	{
 		MemoryImage* aMemoryImage = *anItr;
-		if (aMemoryImage->mTextureData != nullptr)
+		if (aMemoryImage->mD3DData != nullptr)
 		{
-			SDLTextureData *aData = (SDLTextureData*)aMemoryImage->mTextureData;
+			TextureData *aData = (TextureData*)aMemoryImage->mD3DData;
 			aTextureMemory += aData->mTexMemSize;
 
 			FormatUsage &aUsage = aFormatMap[aData->mPixelFormat];
