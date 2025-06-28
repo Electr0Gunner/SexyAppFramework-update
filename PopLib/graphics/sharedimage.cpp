@@ -1,5 +1,5 @@
 #include "sharedimage.hpp"
-#include "sdlimage.hpp"
+#include "gpuimage.hpp"
 #include "appbase.hpp"
 
 using namespace PopLib;
@@ -93,10 +93,10 @@ SharedImageRef::operator MemoryImage *()
 	if (mUnsharedImage != nullptr)
 		return mUnsharedImage;
 	else
-		return (SDLImage *)*this;
+		return (GPUImage *)*this;
 }
 
-SharedImageRef::operator SDLImage *()
+SharedImageRef::operator GPUImage *()
 {
 	if (mSharedImage != nullptr)
 		return mSharedImage->mImage;

@@ -4,20 +4,17 @@
 #pragma once
 #endif
 
-#include "memoryimage.hpp"
+#include "../gpuimage.hpp"
 
 namespace PopLib
 {
-class SDLInterface;
+class Interface;
 class SysFont;
 
-class SDLImage : public MemoryImage
+class SDLImage : public GPUImage
 {
   protected:
 	friend class SysFont;
-
-  public:
-	SDLInterface *mInterface;
 
   public:
 	virtual void FillScanLinesWithCoverage(Span *theSpans, int theSpanCount, const Color &theColor, int theDrawMode,
@@ -29,7 +26,7 @@ class SDLImage : public MemoryImage
 
   public:
 	SDLImage();
-	SDLImage(SDLInterface *theInterface);
+	SDLImage(Interface *theInterface);
 	virtual ~SDLImage();
 
 	virtual void Create(int theWidth, int theHeight);

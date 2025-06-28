@@ -23,6 +23,7 @@ class XMLElement;
 class Image;
 class SoundInstance;
 class AppBase;
+class GPUImage;
 class Font;
 
 typedef std::map<std::string, std::string> StringToStringMap;
@@ -163,8 +164,8 @@ class ResourceManager
 	void DeleteMap(ResMap &theMap);
 	virtual void DeleteResources(ResMap &theMap, const std::string &theGroup);
 
-	bool LoadAlphaGridImage(ImageRes *theRes, SDLImage *theImage);
-	bool LoadAlphaImage(ImageRes *theRes, SDLImage *theImage);
+	bool LoadAlphaGridImage(ImageRes *theRes, GPUImage *theImage);
+	bool LoadAlphaImage(ImageRes *theRes, GPUImage *theImage);
 	virtual bool DoLoadImage(ImageRes *theRes);
 	virtual bool DoLoadFont(FontRes *theRes);
 	virtual bool DoLoadSound(SoundRes *theRes);

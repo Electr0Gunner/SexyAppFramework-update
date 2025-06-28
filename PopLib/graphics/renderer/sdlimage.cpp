@@ -3,25 +3,25 @@
 #include "debug/debug.hpp"
 #include "sdlinterface.hpp"
 #include "appbase.hpp"
-#include "image.hpp"
+#include "../image.hpp"
 
 using namespace PopLib;
 
-SDLImage::SDLImage() : MemoryImage(gAppBase)
+SDLImage::SDLImage() : GPUImage()
 {
-	mInterface = gAppBase->mSDLInterface;
-	mInterface->AddSDLImage(this);
+	mInterface = gAppBase->mInterface;
+	mInterface->AddImage(this);
 }
 
-SDLImage::SDLImage(SDLInterface *theInterface) : MemoryImage(theInterface->mApp)
+SDLImage::SDLImage(Interface *theInterface) : GPUImage()
 {
 	mInterface = theInterface;
-	mInterface->AddSDLImage(this);
+	mInterface->AddImage(this);
 }
 
 SDLImage::~SDLImage()
 {
-	mInterface->RemoveSDLImage(this);
+	mInterface->RemoveImage(this);
 }
 
 void SDLImage::Create(int theWidth, int theHeight)

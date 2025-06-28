@@ -2,7 +2,7 @@
 #include "widget.hpp"
 #include "graphics/graphics.hpp"
 #include "graphics/image.hpp"
-#include "graphics/sdlimage.hpp"
+#include "graphics/gpuimage.hpp"
 #include "appbase.hpp"
 #include "debug/perftimer.hpp"
 #include "debug/debug.hpp"
@@ -419,7 +419,7 @@ bool WidgetManager::DrawScreen()
 	Graphics aScrG(mImage);
 	mCurG = &aScrG;
 
-	SDLImage *aSDLImage = dynamic_cast<SDLImage *>(mImage);
+	GPUImage *aGPUImage = dynamic_cast<GPUImage *>(mImage);
 	bool surfaceLocked = false;
 
 	if (aDirtyCount > 0)

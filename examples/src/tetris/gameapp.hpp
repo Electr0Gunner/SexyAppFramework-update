@@ -9,7 +9,6 @@
 namespace PopLib
 {
 class Board;
-class SDLImage;
 
 class GameApp : public PopApp
 {

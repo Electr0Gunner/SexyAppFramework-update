@@ -1,6 +1,8 @@
 #include "imguimanager.hpp"
-#include "graphics/sdlinterface.hpp"
 #include "appbase.hpp"
+
+// interfaces
+#include "graphics/renderer/sdlinterface.hpp"
 
 using namespace PopLib;
 
@@ -28,7 +30,7 @@ void RegisterImGuiWindows()
 
 ////////////////////////////
 
-ImGuiManager::ImGuiManager(SDLInterface *theInterface)
+ImGuiManager::ImGuiManager(Interface *theInterface)
 {
 	mInterface = theInterface;
 
@@ -38,8 +40,15 @@ ImGuiManager::ImGuiManager(SDLInterface *theInterface)
 	(void)io; // uhhhhhh
 	ImGui::StyleColorsDark();
 
-	ImGui_ImplSDL3_InitForSDLRenderer(mInterface->mWindow, mInterface->mRenderer);
-	ImGui_ImplSDLRenderer3_Init(mInterface->mRenderer);
+	switch (gAppBase->mInterfaceType)
+	{
+		default:
+		{
+			SDLInterface *aInterface = (SDLInterface*)mInterface;
+			ImGui_ImplSDL3_InitForSDLRenderer(gAppBase->mWindow, aInterface->mRenderer);
+			ImGui_ImplSDLRenderer3_Init(aInterface->mRenderer);
+		}
+	}
 }
 
 void ImGuiManager::RenderAll(void)
@@ -54,8 +63,14 @@ void ImGuiManager::RenderAll(void)
 
 void ImGuiManager::Frame(void)
 {
-	ImGui_ImplSDLRenderer3_NewFrame();
-	ImGui_ImplSDL3_NewFrame();
+	switch (gAppBase->mInterfaceType)
+	{
+		default:
+		{
+			ImGui_ImplSDLRenderer3_NewFrame();
+			ImGui_ImplSDL3_NewFrame();
+		}
+	}
 	ImGui::NewFrame();
 
 	if (demoWind)
@@ -68,7 +83,14 @@ void ImGuiManager::Frame(void)
 
 ImGuiManager::~ImGuiManager()
 {
-	ImGui_ImplSDLRenderer3_Shutdown();
-	ImGui_ImplSDL3_Shutdown();
+	switch (gAppBase->mInterfaceType)
+	{
+		default:
+		{
+			ImGui_ImplSDLRenderer3_Shutdown();
+			ImGui_ImplSDL3_Shutdown();
+		}
+	}
+
 	ImGui::DestroyContext();
 }

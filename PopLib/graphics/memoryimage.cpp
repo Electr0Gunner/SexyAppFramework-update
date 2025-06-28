@@ -2,8 +2,8 @@
 
 #include "appbase.hpp"
 #include "graphics.hpp"
-#include "nativedisplay.hpp"
-#include "sdlinterface.hpp"
+#include "interface.hpp"
+#include "interface.hpp"
 #include "debug/debug.hpp"
 #include "quantize.hpp"
 #include "debug/perftimer.hpp"
@@ -45,7 +45,7 @@ MemoryImage::MemoryImage(const MemoryImage &theMemoryImage)
 
 	if ((theMemoryImage.mBits == nullptr) && (theMemoryImage.mColorTable == nullptr))
 	{
-		// Must be a SDLImage with only a DDSurface
+		// Must be a Image with only a Surface
 		aNonConstMemoryImage->GetBits();
 		deleteBits = true;
 	}
@@ -114,12 +114,12 @@ MemoryImage::MemoryImage(const MemoryImage &theMemoryImage)
 	else
 		mRLAdditiveData = nullptr;
 
-	mApp->AddMemoryImage(this);
+	mApp->AddGPUImage((GPUImage*)this);
 }
 
 MemoryImage::~MemoryImage()
 {
-	mApp->RemoveMemoryImage(this);
+	mApp->RemoveGPUImage((GPUImage*)this);
 
 	delete[] mBits;
 	delete[] mNativeAlphaData;
@@ -151,7 +151,7 @@ void MemoryImage::Init()
 	mPurgeBits = false;
 	mWantPal = false;
 
-	mApp->AddMemoryImage(this);
+	mApp->AddGPUImage((GPUImage*)this);
 }
 
 void MemoryImage::BitsChanged()
@@ -848,7 +848,7 @@ void MemoryImage::SetVolatile(bool isVolatile)
 	mIsVolatile = isVolatile;
 }
 
-void *MemoryImage::GetNativeAlphaData(NativeDisplay *theDisplay)
+void *MemoryImage::GetNativeAlphaData(Interface *theDisplay)
 {
 	if (mNativeAlphaData != nullptr)
 		return mNativeAlphaData;
@@ -957,7 +957,7 @@ uchar *MemoryImage::GetRLAlphaData()
 	return mRLAlphaData;
 }
 
-uchar *MemoryImage::GetRLAdditiveData(NativeDisplay *theNative)
+uchar *MemoryImage::GetRLAdditiveData(Interface *theNative)
 {
 	if (mRLAdditiveData == nullptr)
 	{
@@ -1092,7 +1092,7 @@ void MemoryImage::PurgeBits()
 		if ((mBits == nullptr) && (mColorIndices == nullptr))
 			return;
 
-		GetNativeAlphaData(gAppBase->mSDLInterface);
+		GetNativeAlphaData(gAppBase->mInterface);
 	}
 
 	delete[] mBits;
@@ -1125,7 +1125,7 @@ void MemoryImage::DeleteSWBuffers()
 
 void MemoryImage::Delete3DBuffers()
 {
-	mApp->Remove3DData(this);
+	mApp->Remove3DData((GPUImage*)this);
 }
 
 void MemoryImage::DeleteExtraBuffers()
@@ -1222,7 +1222,7 @@ ulong *MemoryImage::GetBits()
 		}
 		else if (mNativeAlphaData != nullptr)
 		{
-			NativeDisplay *aDisplay = gAppBase->mSDLInterface;
+			Interface *aDisplay = gAppBase->mInterface;
 
 			const int rMask = aDisplay->mRedMask;
 			const int gMask = aDisplay->mGreenMask;
@@ -1249,7 +1249,7 @@ ulong *MemoryImage::GetBits()
 				*(aDestPtr++) = (r << 16) | (g << 8) | (b) | (anAlpha << 24);
 			}
 		}
-		else if ((mD3DData == nullptr) || (!mApp->mSDLInterface->RecoverBits(this)))
+		else if ((mD3DData == nullptr) || (!mApp->mInterface->RecoverBits((GPUImage*)this)))
 		{
 			memset(mBits, 0, aSize * sizeof(ulong));
 		}

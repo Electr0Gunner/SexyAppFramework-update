@@ -1,7 +1,5 @@
 #include "v14demoapp.hpp"
 #include "PopLib/widget/widgetmanager.hpp"
-#include "PopLib/graphics/sdlimage.hpp"
-#include "PopLib/graphics/sdlinterface.hpp"
 #include "PopLib/imagelib/imagelib.hpp"
 #include "PopLib/resources/resourcemanager.hpp"
 #include "PopLib/widget/dialog.hpp"

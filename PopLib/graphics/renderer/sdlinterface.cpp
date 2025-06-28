@@ -1,10 +1,12 @@
 #include "sdlinterface.hpp"
+#include "SDL3/SDL_mouse.h"
+#include "SDL3/SDL_render.h"
+#include "graphics/graphics.hpp"
+#include "graphics/interface.hpp"
 #include "sdlimage.hpp"
 #include "appbase.hpp"
 #include "misc/autocrit.hpp"
 #include "misc/critsect.hpp"
-#include "graphics.hpp"
-#include "memoryimage.hpp"
 #include "imgui/imguimanager.hpp"
 #include <SDL3_ttf/SDL_ttf.h>
 
@@ -37,7 +39,6 @@ SDLInterface::SDLInterface(AppBase *theApp)
 	mRefreshRate = 0;
 	mRenderer = nullptr;
 	mScreenTexture = nullptr;
-	mWindow = nullptr;
 }
 
 SDLInterface::~SDLInterface()
@@ -46,12 +47,35 @@ SDLInterface::~SDLInterface()
 	SDL_Quit();
 }
 
+void SDLInterface::DrawText(int theY, int theX, const PopString &theText, const Color &theColor, TTF_Font *theFont)
+{
+    SDL_Color aColor = {(Uint8)theColor.mRed, (Uint8)theColor.mGreen, (Uint8)theColor.mBlue, (Uint8)theColor.mAlpha};
+    SDL_Surface *textSurface = TTF_RenderText_Blended(theFont, theText.c_str(), 0, aColor);
+    if (!textSurface)
+    {
+        MakeSimpleMessageBox("Failed to render text: ", SDL_GetError(), MsgBox_OK);
+        return;
+    }
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(mRenderer, textSurface);
+    SDL_FRect dstRect = {(float)theX, (float)theY, (float)textSurface->w, (float)textSurface->h};
+    SDL_DestroySurface(textSurface);
+
+    if (!textTexture)
+    {
+        MakeSimpleMessageBox("Failed to create texture from surface: ", SDL_GetError(), MsgBox_OK);
+        return;
+    }
+
+    SDL_RenderTexture(mRenderer, textTexture, nullptr, &dstRect);
+    SDL_DestroyTexture(textTexture);
+}
+
 void SDLInterface::Cleanup()
 {
 	ImageSet::iterator anItr;
 	for (anItr = mImageSet.begin(); anItr != mImageSet.end(); ++anItr)
 	{
-		MemoryImage *anImage = *anItr;
+		SDLImage *anImage = *anItr;
 		SDLTextureData *aData = (SDLTextureData *)anImage->mD3DData;
 		delete aData;
 		anImage->mD3DData = nullptr;
@@ -59,27 +83,26 @@ void SDLInterface::Cleanup()
 	mImageSet.clear();
 
 	SDL_DestroyRenderer(mRenderer);
-	SDL_DestroyWindow(mWindow);
 	mHasInitiated = false;
 }
 
-void SDLInterface::AddSDLImage(SDLImage *theSDLImage)
+void SDLInterface::AddImage(Image *theImage)
 {
 	AutoCrit anAutoCrit(mCritSect);
 
-	mSDLImageSet.insert(theSDLImage);
+	mSDLImageSet.insert((SDLImage*)theImage);
 }
 
-void SDLInterface::RemoveSDLImage(SDLImage *theSDLImage)
+void SDLInterface::RemoveImage(Image *theImage)
 {
 	AutoCrit anAutoCrit(mCritSect);
 
-	SDLImageSet::iterator anItr = mSDLImageSet.find(theSDLImage);
+	GPUImageSet::iterator anItr = mSDLImageSet.find((SDLImage*)theImage);
 	if (anItr != mSDLImageSet.end())
 		mSDLImageSet.erase(anItr);
 }
 
-void SDLInterface::Remove3DData(MemoryImage *theImage)
+void SDLInterface::Remove3DData(GPUImage *theImage)
 {
 	if (theImage->mD3DData != nullptr)
 	{
@@ -87,11 +110,41 @@ void SDLInterface::Remove3DData(MemoryImage *theImage)
 		theImage->mD3DData = nullptr;
 
 		AutoCrit aCrit(mCritSect); // Make images thread safe
-		mImageSet.erase(theImage);
+		mImageSet.erase(static_cast<SDLImage*>(theImage));
 	}
 }
 
-SDLImage *SDLInterface::GetScreenImage()
+void SDLInterface::GetOutputSize(int *outWidth, int *outHeight)
+{
+    SDL_GetCurrentRenderOutputSize(mRenderer, outWidth, outHeight);
+}
+
+std::unique_ptr<ImageData> SDLInterface::CaptureFrameBuffer()
+{
+	SDL_Surface* surface = SDL_RenderReadPixels(mRenderer, nullptr);
+	if (!surface)
+		return nullptr;
+
+	auto image = std::make_unique<ImageData>();
+	image->width = surface->w;
+	image->height = surface->h;
+	image->pixels.resize(surface->w * surface->h * 4);
+
+	uint8_t* src = static_cast<uint8_t*>(surface->pixels);
+	uint8_t* dst = image->pixels.data();
+
+	for (int i = 0; i < surface->w * surface->h * 4; i += 4) {
+		dst[i + 0] = src[i + 2]; // R
+		dst[i + 1] = src[i + 1]; // G
+		dst[i + 2] = src[i + 0]; // B
+		dst[i + 3] = src[i + 3]; // A
+	}
+
+	SDL_DestroySurface(surface);
+	return image;
+}
+
+GPUImage *SDLInterface::GetScreenImage()
 {
 	return mScreenImage;
 }
@@ -102,7 +155,7 @@ void SDLInterface::UpdateViewport()
 		return;
 
 	int windowWidth, windowHeight;
-	if (!SDL_GetWindowSize(mWindow, &windowWidth, &windowHeight))
+	if (!SDL_GetWindowSize(mApp->mWindow, &windowWidth, &windowHeight))
 		return;
 
 	if (!SDL_SetRenderLogicalPresentation(mRenderer, windowWidth, windowHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX))
@@ -139,28 +192,14 @@ int SDLInterface::Init(bool IsWindowed)
 
 bool SDLInterface::InitSDLWindow(bool IsWindowed)
 {
-	int aWindowFlags = IsWindowed ? 0 : SDL_WINDOW_FULLSCREEN;
-
-	mWindow = SDL_CreateWindow(mApp->mTitle.c_str(), mWidth, mHeight, aWindowFlags);
-	if (mWindow == nullptr)
-	{
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Window Creation Failed", SDL_GetError(), nullptr);
-		return false;
-	}
-
-	if (!IsWindowed)
-		SDL_SetWindowFullscreen(mWindow, true);
-
 	UpdateWindowIcon(mApp->mTitleBarIcon);
-
-	SDL_StartTextInput(mWindow);
 
 	return InitSDLRenderer();
 }
 
 bool SDLInterface::InitSDLRenderer()
 {
-	mRenderer = SDL_CreateRenderer(mWindow, nullptr);
+	mRenderer = SDL_CreateRenderer(mApp->mWindow, nullptr);
 	if (mRenderer == nullptr)
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Renderer Creation Failed", SDL_GetError(), nullptr);
@@ -175,7 +214,7 @@ bool SDLInterface::InitSDLRenderer()
 		return false;
 	}
 
-	const SDL_DisplayMode *aMode = SDL_GetCurrentDisplayMode(SDL_GetDisplayForWindow(mWindow));
+	const SDL_DisplayMode *aMode = SDL_GetCurrentDisplayMode(SDL_GetDisplayForWindow(mApp->mWindow));
 	mRefreshRate = aMode->refresh_rate;
 	if (!mRefreshRate)
 		mRefreshRate = 60;
@@ -228,7 +267,8 @@ void SDLInterface::SetVideoOnlyDraw(bool videoOnly)
 {
 	if (mScreenImage)
 		delete mScreenImage;
-	mScreenImage = new SDLImage(this);
+	mScreenImage = new SDLImage();
+	mScreenImage->Create(mWidth, mHeight);
 	// mScreenImage->SetSurface(useSecondary ? mSecondarySurface : mDrawSurface);
 	// mScreenImage->mNoLock = mVideoOnlyDraw;
 	// mScreenImage->mVideoMemory = mVideoOnlyDraw;
@@ -264,7 +304,7 @@ bool SDLInterface::SetCursorImage(Image *theImage)
 			return true;
 		SDL_Surface *aSurface =
 			SDL_CreateSurfaceFrom(theImage->mWidth, theImage->mHeight, SDL_PIXELFORMAT_ARGB8888,
-								  ((MemoryImage *)mCursorImage)->GetBits(), theImage->mWidth * sizeof(ulong));
+								  ((SDLImage *)mCursorImage)->GetBits(), theImage->mWidth * sizeof(ulong));
 
 		SDL_Cursor *aCursor = SDL_CreateColorCursor(aSurface, mCursorImage->mWidth / 2, mCursorImage->mHeight / 2);
 
@@ -284,9 +324,9 @@ bool SDLInterface::UpdateWindowIcon(Image *theImage)
 	{
 		SDL_Surface *aSurface =
 			SDL_CreateSurfaceFrom(theImage->mWidth, theImage->mHeight, SDL_PIXELFORMAT_ARGB8888,
-								  ((MemoryImage *)theImage)->GetBits(), theImage->mWidth * sizeof(ulong));
+								  ((SDLImage *)theImage)->GetBits(), theImage->mWidth * sizeof(ulong));
 
-		SDL_SetWindowIcon(mWindow, aSurface);
+		SDL_SetWindowIcon(mApp->mWindow, aSurface);
 
 		SDL_DestroySurface(aSurface);
 		return true;
@@ -294,22 +334,65 @@ bool SDLInterface::UpdateWindowIcon(Image *theImage)
 	return false;
 }
 
-void SDLInterface::SetCursor(SDL_SystemCursor theCursorType)
+void SDLInterface::SetCursor(CursorType theCursorType)
 {
-	SDL_Cursor *aCursor = SDL_CreateSystemCursor(theCursorType);
+    SDL_SystemCursor sdlCursorType;
+
+    switch (theCursorType)
+    {
+        case CURSOR_POINTER:
+        case CURSOR_HAND:
+            sdlCursorType = SDL_SYSTEM_CURSOR_POINTER;
+            break;
+        case CURSOR_DRAGGING:
+            sdlCursorType = SDL_SYSTEM_CURSOR_MOVE;
+            break;
+        case CURSOR_TEXT:
+            sdlCursorType = SDL_SYSTEM_CURSOR_TEXT;
+            break;
+        case CURSOR_CIRCLE_SLASH:
+            sdlCursorType = SDL_SYSTEM_CURSOR_NOT_ALLOWED;
+            break;
+		case CURSOR_SIZEALL:
+			sdlCursorType = SDL_SYSTEM_CURSOR_MOVE;
+			break;
+        case CURSOR_SIZENESW:
+            sdlCursorType = SDL_SYSTEM_CURSOR_NESW_RESIZE;
+            break;
+        case CURSOR_SIZENS:
+            sdlCursorType = SDL_SYSTEM_CURSOR_NS_RESIZE;
+            break;
+        case CURSOR_SIZENWSE:
+            sdlCursorType = SDL_SYSTEM_CURSOR_NWSE_RESIZE;
+            break;
+        case CURSOR_SIZEWE:
+            sdlCursorType = SDL_SYSTEM_CURSOR_EW_RESIZE;
+            break;
+        case CURSOR_WAIT:
+            sdlCursorType = SDL_SYSTEM_CURSOR_WAIT;
+            break;
+        case CURSOR_NONE:
+            SDL_HideCursor();
+            return;
+        default:
+            sdlCursorType = SDL_SYSTEM_CURSOR_DEFAULT;
+            break;
+    }
+
+	SDL_Cursor *aCursor = SDL_CreateSystemCursor(sdlCursorType);
 	SDL_SetCursor(aCursor);
 	//SDL_DestroyCursor(aCursor);
 }
 
-void SDLInterface::MakeSimpleMessageBox(const char *theTitle, const char *theMessage, SDL_MessageBoxFlags flags)
+void SDLInterface::MakeSimpleMessageBox(const char *theTitle, const char *theMessage, MsgBoxFlags flags)
 {
-	SDL_ShowSimpleMessageBox(flags, theTitle, theMessage, mWindow);
+	SDL_ShowSimpleMessageBox(static_cast<SDL_MessageBoxFlags>(flags), theTitle, theMessage, mApp->mWindow);
 }
 
-int SDLInterface::MakeResultMessageBox(SDL_MessageBoxData data)
+int SDLInterface::MakeResultMessageBox(MsgBoxData data)
 {
 	int buttonid;
-	SDL_ShowMessageBox(&data, &buttonid);
+	SDL_ShowMessageBox(reinterpret_cast<const SDL_MessageBoxData*>(&data), &buttonid);
 
 	return buttonid;
 }
@@ -336,7 +419,7 @@ bool SDLInterface::PreDraw()
 	return true;
 }
 
-bool SDLInterface::CreateImageTexture(MemoryImage *theImage)
+bool SDLInterface::CreateImageTexture(GPUImage *theImage)
 {
 	bool wantPurge = false;
 
@@ -348,11 +431,11 @@ bool SDLInterface::CreateImageTexture(MemoryImage *theImage)
 		wantPurge = theImage->mPurgeBits;
 
 		AutoCrit aCrit(mCritSect); // Make images thread safe
-		mImageSet.insert(theImage);
+		mImageSet.insert(static_cast<SDLImage*>(theImage));
 	}
 
 	SDLTextureData *aData = static_cast<SDLTextureData *>(theImage->mD3DData);
-	aData->CheckCreateTextures(theImage);
+	aData->CheckCreateTextures(static_cast<SDLImage*>(theImage));
 
 	if (wantPurge)
 		theImage->PurgeBits();
@@ -360,7 +443,7 @@ bool SDLInterface::CreateImageTexture(MemoryImage *theImage)
 	return true;
 }
 
-bool SDLInterface::RecoverBits(MemoryImage *theImage)
+bool SDLInterface::RecoverBits(GPUImage *theImage)
 {
 	if (theImage->mD3DData == nullptr)
 		return false;
@@ -385,20 +468,20 @@ bool SDLInterface::RecoverBits(MemoryImage *theImage)
 	return true;
 }
 
-SDL_BlendMode SDLInterface::ChooseBlendMode(int theBlendMode)
+BlendMode SDLInterface::ChooseBlendMode(int theBlendMode)
 {
-	SDL_BlendMode theSDLBlendMode;
+	BlendMode theBBlendMode;
 	switch (theBlendMode)
 	{
 	case Graphics::DRAWMODE_ADDITIVE:
-		theSDLBlendMode = SDL_BLENDMODE_ADD;
+		theBBlendMode = BLENDMODE_ADD;
 		break;
 	default:
 	case Graphics::DRAWMODE_NORMAL:
-		theSDLBlendMode = SDL_BLENDMODE_BLEND;
+		theBBlendMode = BLENDMODE_BLEND;
 		break;
 	}
-	return theSDLBlendMode;
+	return theBBlendMode;
 }
 
 SDLTextureData::SDLTextureData(SDL_Renderer *theRenderer)
@@ -421,7 +504,7 @@ void SDLTextureData::ReleaseTextures()
 		SDL_DestroyTexture(mTexture);
 }
 
-void SDLTextureData::CreateTextures(MemoryImage *theImage)
+void SDLTextureData::CreateTextures(SDLImage *theImage)
 {
 	theImage->DeleteSWBuffers(); // we don't need the software buffers anymore
 	theImage->CommitBits();
@@ -483,7 +566,7 @@ void SDLTextureData::CreateTextures(MemoryImage *theImage)
 	mBitsChangedCount = theImage->mBitsChangedCount;
 }
 
-void SDLTextureData::CheckCreateTextures(MemoryImage *theImage)
+void SDLTextureData::CheckCreateTextures(SDLImage *theImage)
 {
 	if (mTexture != nullptr)
 	{
@@ -511,7 +594,7 @@ int SDLTextureData::GetMemSize()
 void SDLInterface::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor,
 					   int theDrawMode, bool linearFilter)
 {
-	MemoryImage *memImg = static_cast<MemoryImage *>(theImage);
+	SDLImage *memImg = static_cast<SDLImage *>(theImage);
 	if (!CreateImageTexture(memImg))
 		return;
 
@@ -537,12 +620,12 @@ void SDLInterface::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRe
 void SDLInterface::BltClipF(Image *theImage, float theX, float theY, const Rect &theSrcRect, const Rect *theClipRect,
 							const Color &theColor, int theDrawMode)
 {
-	MemoryImage *aSrcMemoryImage = (MemoryImage *)theImage;
+	SDLImage *aSrcSDLImage = (SDLImage *)theImage;
 
-	if (!CreateImageTexture(aSrcMemoryImage))
+	if (!CreateImageTexture(aSrcSDLImage))
 		return;
 
-	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mD3DData;
+	SDLTextureData *aData = (SDLTextureData *)aSrcSDLImage->mD3DData;
 
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
 
@@ -570,12 +653,12 @@ void SDLInterface::BltClipF(Image *theImage, float theX, float theY, const Rect 
 void SDLInterface::BltMirror(Image *theImage, float theX, float theY, const Rect &theSrcRect, const Color &theColor,
 							 int theDrawMode, bool linearFilter)
 {
-	MemoryImage *aSrcMemoryImage = (MemoryImage *)theImage;
+	SDLImage *aSrcSDLImage = (SDLImage *)theImage;
 
-	if (!CreateImageTexture(aSrcMemoryImage))
+	if (!CreateImageTexture(aSrcSDLImage))
 		return;
 
-	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mD3DData;
+	SDLTextureData *aData = (SDLTextureData *)aSrcSDLImage->mD3DData;
 
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
 
@@ -595,11 +678,11 @@ void SDLInterface::BltMirror(Image *theImage, float theX, float theY, const Rect
 void SDLInterface::StretchBlt(Image *theImage, const Rect &theDestRect, const Rect &theSrcRect, const Rect *theClipRect,
 							  const Color &theColor, int theDrawMode, bool fastStretch, bool mirror)
 {
-	MemoryImage *aSrcMemoryImage = static_cast<MemoryImage *>(theImage);
-	if (!CreateImageTexture(aSrcMemoryImage))
+	SDLImage *aSrcSDLImage = static_cast<SDLImage *>(theImage);
+	if (!CreateImageTexture(aSrcSDLImage))
 		return;
 
-	SDLTextureData *aData = static_cast<SDLTextureData *>(aSrcMemoryImage->mD3DData);
+	SDLTextureData *aData = static_cast<SDLTextureData *>(aSrcSDLImage->mD3DData);
 	SDL_Texture *aTexture = aData->mTexture;
 
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
@@ -631,11 +714,11 @@ void SDLInterface::BltRotated(Image *theImage, float theX, float theY, const Rec
 							  int theDrawMode, double theRot, float theRotCenterX, float theRotCenterY,
 							  const Rect &theSrcRect)
 {
-	MemoryImage *aSrcMemoryImage = static_cast<MemoryImage *>(theImage);
-	if (!CreateImageTexture(aSrcMemoryImage))
+	SDLImage *aSrcSDLImage = static_cast<SDLImage *>(theImage);
+	if (!CreateImageTexture(aSrcSDLImage))
 		return;
 
-	SDLTextureData *aData = static_cast<SDLTextureData *>(aSrcMemoryImage->mD3DData);
+	SDLTextureData *aData = static_cast<SDLTextureData *>(aSrcSDLImage->mD3DData);
 	SDL_Texture *aTexture = aData ? aData->mTexture : nullptr;
 	if (!aTexture)
 		return;
@@ -668,12 +751,12 @@ void SDLInterface::BltTransformed(Image *theImage, const Rect *theClipRect, cons
 								  const Rect &theSrcRect, const Matrix3 &theTransform, bool linearFilter,
 								  float theX, float theY, bool center)
 {
-	MemoryImage *aSrcMemoryImage = static_cast<MemoryImage *>(theImage);
+	SDLImage *aSrcSDLImage = static_cast<SDLImage *>(theImage);
 
-	if (!CreateImageTexture(aSrcMemoryImage))
+	if (!CreateImageTexture(aSrcSDLImage))
 		return;
 
-	SDLTextureData *aData = static_cast<SDLTextureData *>(aSrcMemoryImage->mD3DData);
+	SDLTextureData *aData = static_cast<SDLTextureData *>(aSrcSDLImage->mD3DData);
 	if (!aData || !aData->mTexture)
 		return;
 
@@ -781,12 +864,12 @@ void SDLInterface::DrawTriangle(const TriVertex &p1, const TriVertex &p2, const 
 void SDLInterface::DrawTriangleTex(const TriVertex &p1, const TriVertex &p2, const TriVertex &p3, const Color &theColor,
 								   int theDrawMode, Image *theTexture, bool blend)
 {
-	MemoryImage *aSrcMemoryImage = (MemoryImage *)theTexture;
+	SDLImage *aSrcSDLImage = (SDLImage *)theTexture;
 
-	if (!CreateImageTexture(aSrcMemoryImage))
+	if (!CreateImageTexture(aSrcSDLImage))
 		return;
 
-	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mD3DData;
+	SDLTextureData *aData = (SDLTextureData *)aSrcSDLImage->mD3DData;
 
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
 
@@ -810,12 +893,12 @@ void SDLInterface::DrawTriangleTex(const TriVertex &p1, const TriVertex &p2, con
 void SDLInterface::DrawTrianglesTex(const TriVertex theVertices[][3], int theNumTriangles, const Color &theColor,
 									int theDrawMode, Image *theTexture, float tx, float ty, bool blend)
 {
-	MemoryImage *aSrcMemoryImage = (MemoryImage *)theTexture;
+	SDLImage *aSrcSDLImage = (SDLImage *)theTexture;
 
-	if (!CreateImageTexture(aSrcMemoryImage))
+	if (!CreateImageTexture(aSrcSDLImage))
 		return;
 
-	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mD3DData;
+	SDLTextureData *aData = (SDLTextureData *)aSrcSDLImage->mD3DData;
 
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
 
@@ -871,10 +954,10 @@ void SDLInterface::DrawTrianglesTexStrip(const TriVertex theVertices[], int theN
 	if (theNumTriangles < 3)
 		return;
 
-	MemoryImage *aSrcMemoryImage = (MemoryImage *)theTexture;
-	if (!CreateImageTexture(aSrcMemoryImage))
+	SDLImage *aSrcSDLImage = (SDLImage *)theTexture;
+	if (!CreateImageTexture(aSrcSDLImage))
 		return;
-	SDLTextureData *aData = (SDLTextureData *)aSrcMemoryImage->mD3DData;
+	SDLTextureData *aData = (SDLTextureData *)aSrcSDLImage->mD3DData;
 	SDL_Texture *aTexture = aData->mTexture;
 
 	std::vector<float> positions;
@@ -935,18 +1018,35 @@ void SDLInterface::FillPoly(const Point theVertices[], int theNumVertices, const
 	SDL_SetRenderClipRect(mRenderer, nullptr);
 }
 
-void SDLInterface::BltTexture(SDL_Texture *theTexture, const SDL_FRect &theSrcRect, const SDL_FRect &theDestRect,
-				const Color &theColor, int theDrawMode)
+void SDLInterface::BltTexture(Texture *theTexture, const Rect &theSrcRect, const Rect &theDestRect,
+					const Color &theColor, int theDrawMode)
 {
+	SDLTexture *sdlTex = dynamic_cast<SDLTexture *>(theTexture);
+	if (!sdlTex || !sdlTex->GetSDLTexture())
+		return;
+
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
 
-	SDL_SetTextureColorMod(theTexture, theColor.GetRed(), theColor.GetGreen(), theColor.GetBlue());
-	SDL_SetTextureAlphaMod(theTexture, theColor.GetAlpha());
+	SDL_SetTextureColorMod(sdlTex->GetSDLTexture(), theColor.GetRed(), theColor.GetGreen(), theColor.GetBlue());
+	SDL_SetTextureAlphaMod(sdlTex->GetSDLTexture(), theColor.GetAlpha());
+	SDL_SetTextureBlendMode(sdlTex->GetSDLTexture(), ChooseBlendMode(theDrawMode));
 
-	SDL_SetTextureBlendMode(theTexture, ChooseBlendMode(theDrawMode));
-	SDL_RenderTexture(mRenderer, theTexture, &theSrcRect, &theDestRect);
+	SDL_FRect srcRect = {
+		static_cast<float>(theSrcRect.mX),
+		static_cast<float>(theSrcRect.mY),
+		static_cast<float>(theSrcRect.mWidth),
+		static_cast<float>(theSrcRect.mHeight),
+	};
 
-	SDL_SetTextureBlendMode(theTexture, SDL_BLENDMODE_NONE);
+	SDL_FRect destRect = {
+		static_cast<float>(theDestRect.mX),
+		static_cast<float>(theDestRect.mY),
+		static_cast<float>(theDestRect.mWidth),
+		static_cast<float>(theDestRect.mHeight),
+	};
 
+	SDL_RenderTexture(mRenderer, sdlTex->GetSDLTexture(), &srcRect, &destRect);
+
+	SDL_SetTextureBlendMode(sdlTex->GetSDLTexture(), SDL_BLENDMODE_NONE);
 	SDL_SetRenderTarget(mRenderer, nullptr);
 }

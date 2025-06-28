@@ -1,9 +1,8 @@
 #include <memory>
 #include "resourcemanager.hpp"
+#include "graphics/gpuimage.hpp"
 #include "readwrite/xmlparser.hpp"
 #include "audio/soundmanager.hpp"
-#include "graphics/sdlimage.hpp"
-#include "graphics/sdlinterface.hpp"
 #include "graphics/imagefont.hpp"
 #include "graphics/sysfont.hpp"
 #include "imagelib/imagelib.hpp"
@@ -112,7 +111,7 @@ void ResourceManager::DeleteExtraImageBuffers(const std::string &theGroup)
 		if (theGroup.empty() || anItr->second->mResGroup == theGroup)
 		{
 			ImageRes *aRes = (ImageRes *)anItr->second;
-			MemoryImage *anImage = (MemoryImage *)aRes->mImage;
+			GPUImage *anImage = (GPUImage *)aRes->mImage;
 			if (anImage != NULL)
 				anImage->DeleteExtraBuffers();
 		}
@@ -666,7 +665,7 @@ bool ResourceManager::ReparseResourcesFile(const std::string &theFilename)
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, SDLImage *theImage)
+bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, GPUImage *theImage)
 {
 	ImageLib::Image *anAlphaImage = ImageLib::GetImage(theRes->mAlphaGridImage, true);
 	if (!anAlphaImage)
@@ -715,7 +714,7 @@ bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, SDLImage *theImage)
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::LoadAlphaImage(ImageRes *theRes, SDLImage *theImage)
+bool ResourceManager::LoadAlphaImage(ImageRes *theRes, GPUImage *theImage)
 {
 	PERF_BEGIN("ResourceManager::GetImage");
 	ImageLib::Image *anAlphaImage = ImageLib::GetImage(theRes->mAlphaImage, true);
@@ -762,8 +761,8 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 	SharedImageRef aSharedImageRef = gAppBase->GetSharedImage(theRes->mPath, theRes->mVariant, &isNew);
 	ImageLib::gAlphaComposeColor = 0xFFFFFF;
 
-	SDLImage *aSDLImage = (SDLImage *)aSharedImageRef;
-	if (!aSDLImage)
+	GPUImage *aGPUImage = (GPUImage *)aSharedImageRef;
+	if (!aGPUImage)
 		return Fail(StrFormat("Failed to load image: %s", theRes->mPath.c_str()));
 
 	if (isNew)
@@ -781,20 +780,20 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 		}
 	}
 
-	aSDLImage->CommitBits();
+	aGPUImage->CommitBits();
 	theRes->mImage = aSharedImageRef;
-	aSDLImage->mPurgeBits = theRes->mPurgeBits;
+	aGPUImage->mPurgeBits = theRes->mPurgeBits;
 
 	if (theRes->mDDSurface)
 	{
 		PERF_BEGIN("ResourceManager:DDSurface");
 
-		aSDLImage->CommitBits();
+		aGPUImage->CommitBits();
 
-		if (!aSDLImage->mHasAlpha)
+		if (!aGPUImage->mHasAlpha)
 		{
-			// aSDLImage->mWantDDSurface = true;
-			aSDLImage->mPurgeBits = true;
+			// aGPUImage->mWantDDSurface = true;
+			aGPUImage->mPurgeBits = true;
 		}
 
 		PERF_END("ResourceManager:DDSurface");
@@ -803,24 +802,24 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 	if (theRes->mPalletize)
 	{
 		// PERF_BEGIN("ResourceManager:Palletize");
-		// if (aSDLImage->mSurface==NULL)
-		//	aSDLImage->Palletize();
+		// if (aGPUImage->mSurface==NULL)
+		//	aGPUImage->Palletize();
 		// else
-		// aSDLImage->mWantPal = true;
+		// aGPUImage->mWantPal = true;
 		// PERF_END("ResourceManager:Palletize");
 	}
 
 	if (theRes->mNearestFilter)
-		aSDLImage->mImageFlags |= SDLImageFlag_NearestFiltering;
+		aGPUImage->mImageFlags |= GPUImageFlag_NearestFiltering;
 
 	if (theRes->mAnimInfo.mAnimType != AnimType_None)
-		aSDLImage->mAnimInfo = new AnimInfo(theRes->mAnimInfo);
+		aGPUImage->mAnimInfo = new AnimInfo(theRes->mAnimInfo);
 
-	aSDLImage->mNumRows = theRes->mRows;
-	aSDLImage->mNumCols = theRes->mCols;
+	aGPUImage->mNumRows = theRes->mRows;
+	aGPUImage->mNumCols = theRes->mCols;
 
-	if (aSDLImage->mPurgeBits)
-		aSDLImage->PurgeBits();
+	if (aGPUImage->mPurgeBits)
+		aGPUImage->PurgeBits();
 
 	ResourceLoadedHook(theRes);
 	return true;
@@ -842,7 +841,7 @@ SharedImageRef ResourceManager::LoadImage(const std::string &theName)
 		return NULL;
 
 	ImageRes *aRes = (ImageRes *)anItr->second;
-	if ((SDLImage *)aRes->mImage != NULL)
+	if ((GPUImage *)aRes->mImage != NULL)
 		return aRes->mImage;
 
 	if (aRes->mFromProgram)
@@ -1039,7 +1038,7 @@ bool ResourceManager::LoadNextResource()
 		{
 		case ResType_Image: {
 			ImageRes *anImageRes = (ImageRes *)aRes;
-			if ((SDLImage *)anImageRes->mImage != NULL)
+			if ((GPUImage *)anImageRes->mImage != NULL)
 				continue;
 
 			return DoLoadImage(anImageRes);
@@ -1279,7 +1278,7 @@ SharedImageRef ResourceManager::GetImageThrow(const std::string &theId)
 	if (anItr != mImageMap.end())
 	{
 		ImageRes *aRes = (ImageRes *)anItr->second;
-		if ((MemoryImage *)aRes->mImage != NULL)
+		if ((GPUImage *)aRes->mImage != NULL)
 			return aRes->mImage;
 
 		if (mAllowMissingProgramResources && aRes->mFromProgram)
@@ -1343,7 +1342,7 @@ bool ResourceManager::ReplaceImage(const std::string &theId, Image *theImage)
 	if (anItr != mImageMap.end())
 	{
 		anItr->second->DeleteResource();
-		((ImageRes *)anItr->second)->mImage = (MemoryImage *)theImage;
+		((ImageRes *)anItr->second)->mImage = (GPUImage *)theImage;
 		((ImageRes *)anItr->second)->mImage.mOwnsUnshared = true;
 		return true;
 	}

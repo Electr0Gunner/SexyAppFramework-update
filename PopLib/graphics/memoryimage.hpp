@@ -16,7 +16,7 @@ namespace PopLib
 
 const ulong MEMORYCHECK_ID = 0x4BEEFADE;
 
-class NativeDisplay;
+class Interface;
 class AppBase;
 
 class MemoryImage : public Image
@@ -48,9 +48,9 @@ class MemoryImage : public Image
 	void Init();
 
   public:
-	virtual void *GetNativeAlphaData(NativeDisplay *theNative);
+	virtual void *GetNativeAlphaData(Interface *theNative);
 	virtual uchar *GetRLAlphaData();
-	virtual uchar *GetRLAdditiveData(NativeDisplay *theNative);
+	virtual uchar *GetRLAdditiveData(Interface *theNative);
 	virtual void PurgeBits();
 	virtual void DeleteSWBuffers();
 	virtual void Delete3DBuffers();
@@ -61,6 +61,11 @@ class MemoryImage : public Image
 	virtual void CommitBits();
 
 	virtual void DeleteNativeData();
+
+	static bool Check3D(Image *theImage)
+	{
+		return true;
+	}
 
 	void NormalBlt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor);
 	void AdditiveBlt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor);

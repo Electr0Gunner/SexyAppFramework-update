@@ -1,6 +1,5 @@
 #include "graphics.hpp"
 #include "font.hpp"
-#include "sdlimage.hpp"
 #include "memoryimage.hpp"
 #include "math/matrix.hpp"
 #include <math.h>
@@ -62,7 +61,7 @@ Graphics::Graphics(Image *theDestImage)
 	}
 	else
 	{
-		mIs3D = SDLImage::Check3D(theDestImage);
+		mIs3D = MemoryImage::Check3D(theDestImage);
 	}
 
 	mClipRect = Rect(0, 0, mDestImage->GetWidth(), mDestImage->GetHeight());
@@ -852,7 +851,7 @@ void Graphics::DrawImageMatrix(Image *theImage, const Matrix3 &theMatrix, const 
 void Graphics::DrawImageTransformHelper(Image *theImage, const Transform &theTransform, const Rect &theSrcRect, float x,
 										float y, bool useFloat)
 {
-	if (theTransform.mComplex || (SDLImage::Check3D(mDestImage) && useFloat))
+	if (theTransform.mComplex || (MemoryImage::Check3D(mDestImage) && useFloat))
 	{
 		DrawImageMatrix(theImage, theTransform.GetMatrix(), theSrcRect, x, y);
 		return;

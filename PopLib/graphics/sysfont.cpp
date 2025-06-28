@@ -1,10 +1,8 @@
 #include "sysfont.hpp"
-#include "sdlimage.hpp"
 #include "appbase.hpp"
 #include "graphics.hpp"
 #include "imagefont.hpp"
-#include "memoryimage.hpp"
-#include "sdlinterface.hpp"
+#include "interface.hpp"
 #include "widget/widgetmanager.hpp"
 
 #include <stdlib.h>
@@ -29,15 +27,15 @@ SysFont::SysFont(AppBase *theApp, const unsigned char aData[], size_t aDataSize,
 	SDL_IOStream *io = SDL_IOFromConstMem((void *)aData, aDataSize);
 	if (!io)
 	{
-		mApp->mSDLInterface->MakeSimpleMessageBox("Failed to create SDL_IOStream", SDL_GetError(),
-												  SDL_MESSAGEBOX_ERROR);
+		mApp->mInterface->MakeSimpleMessageBox("Failed to create SDL_IOStream", SDL_GetError(),
+												  MsgBox_OK);
 		return;
 	}
 
 	mTTFFont = TTF_OpenFontIO(io, false, thePointSize);
 	if (!mTTFFont)
 	{
-		mApp->mSDLInterface->MakeSimpleMessageBox("Error", SDL_GetError(), SDL_MESSAGEBOX_ERROR);
+		mApp->mInterface->MakeSimpleMessageBox("Error", SDL_GetError(), MsgBox_OK);
 	}
 
 	TTF_SetFontStyle(mTTFFont, (bold ? TTF_STYLE_BOLD : 0) | (italics ? TTF_STYLE_ITALIC : 0) |
@@ -58,7 +56,7 @@ void SysFont::Init(AppBase *theApp, const std::string &theFace, int thePointSize
 	mTTFFont = TTF_OpenFont(theFace.c_str(), thePointSize);
 	if (!mTTFFont)
 	{
-		mApp->mSDLInterface->MakeSimpleMessageBox("Error", SDL_GetError(), SDL_MESSAGEBOX_ERROR);
+		mApp->mInterface->MakeSimpleMessageBox("Error", SDL_GetError(), MsgBox_OK);
 	}
 
 	TTF_SetFontStyle(mTTFFont, (bold ? TTF_STYLE_BOLD : 0) | (italics ? TTF_STYLE_ITALIC : 0) |
@@ -192,36 +190,12 @@ int SysFont::StringWidth(const PopString &theString)
 void SysFont::DrawString(Graphics *g, int theX, int theY, const PopString &theString, const Color &theColor,
 						 const Rect &theClipRect)
 {
-	SDL_Renderer *renderer = mApp->mSDLInterface->mRenderer;
-	SDL_Color aColor = {(Uint8)theColor.mRed, (Uint8)theColor.mGreen, (Uint8)theColor.mBlue, (Uint8)theColor.mAlpha};
-	SDL_Surface *textSurface =
-		TTF_RenderText_Blended(mTTFFont, theString.c_str(), 0, aColor);
-	if (!textSurface)
-	{
-		mApp->mSDLInterface->MakeSimpleMessageBox("Failed to render text: ", SDL_GetError(), SDL_MESSAGEBOX_ERROR);
-		return;
-	}
+    Interface *interface = mApp->mInterface;
 
-	SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-	SDL_FRect dstRect = {(float)theX, (float)theY - (float)mAscent, (float)textSurface->w, (float)textSurface->h};
-	SDL_FRect srcRect = {0, 0, dstRect.w, dstRect.h};
-	SDL_DestroySurface(textSurface);
+    if (mDrawShadow)
+        interface->DrawText(theX + 1, theY + 1 - mAscent, theString, Color(0, 0, 0, theColor.mAlpha), mTTFFont);
 
-	if (!textTexture)
-	{
-		mApp->mSDLInterface->MakeSimpleMessageBox("Failed to create texture from surface: ", SDL_GetError(),
-												  SDL_MESSAGEBOX_ERROR);
-	}
-
-	if (mDrawShadow)
-	{
-		SDL_FRect shadowRect = {(float)theX + 1.f, (float)theY - (float)mAscent + 1.f, dstRect.w, dstRect.h};
-		mApp->mSDLInterface->BltTexture(textTexture, srcRect, shadowRect, Color(0, 0, 0), g->GetDrawMode());
-	}
-
-	mApp->mSDLInterface->BltTexture(textTexture, srcRect, dstRect, theColor, g->GetDrawMode());
-
-	SDL_DestroyTexture(textTexture);
+    interface->DrawText(theX, theY - mAscent, theString, theColor, mTTFFont);
 }
 
 Font *SysFont::Duplicate()

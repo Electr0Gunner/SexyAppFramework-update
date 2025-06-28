@@ -3,7 +3,6 @@
 #include "PopLib/widget/widgetmanager.hpp"
 #include "PopLib/common.hpp"
 #include "PopLib/audio/bassmusicinterface.hpp"
-#include "PopLib/graphics/sdlimage.hpp"
 #include "PopLib/resources/resourcemanager.hpp"
 #include "res.hpp"
 

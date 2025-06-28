@@ -10,13 +10,13 @@ namespace PopLib
 {
 
 class Image;
-class SDLImage;
+class GPUImage;
 class MemoryImage;
 
 class SharedImage
 {
   public:
-	SDLImage *mImage;
+	GPUImage *mImage;
 	int mRefCount;
 
 	SharedImage();
@@ -45,7 +45,7 @@ class SharedImageRef
 	MemoryImage *operator->();
 	operator Image *();
 	operator MemoryImage *();
-	operator SDLImage *();
+	operator GPUImage *();
 };
 
 } // namespace PopLib

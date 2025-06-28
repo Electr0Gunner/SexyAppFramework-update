@@ -14,7 +14,7 @@
 
 namespace PopLib
 {
-class SDLInterface;
+class Interface;
 
 /**
  * @brief imgui manager for sdlinterface
@@ -33,7 +33,7 @@ class ImGuiManager
 	}
 
 	/// @brief constructor
-	ImGuiManager(SDLInterface *theInterface);
+	ImGuiManager(Interface *theInterface);
 	/// @brief destructor
 	virtual ~ImGuiManager();
 
@@ -45,8 +45,8 @@ class ImGuiManager
 	/// @param none
 	virtual void Frame(void);
 
-	/// @brief the sdlinterface
-	SDLInterface *mInterface;
+	/// @brief the interface
+	Interface *mInterface;
 
   private:
 	/// @brief the imgui windows list

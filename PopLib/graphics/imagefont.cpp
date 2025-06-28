@@ -2,9 +2,9 @@
 #include "graphics.hpp"
 #include "image.hpp"
 #include "appbase.hpp"
-#include "memoryimage.hpp"
-#include "sdlimage.hpp"
+#include "gpuimage.hpp"
 #include "misc/autocrit.hpp"
+#include "interface.hpp"
 
 using namespace PopLib;
 
@@ -1020,7 +1020,7 @@ bool FontData::LoadLegacy(Image *theFontImage, const std::string &theFontDescFil
 	if (anItr == mFontLayerMap.end())
 		return false;
 
-	aFontLayer->mImage = (MemoryImage *)theFontImage;
+	aFontLayer->mImage = (GPUImage *)theFontImage;
 	aFontLayer->mDefaultHeight = aFontLayer->mImage->GetHeight();
 	aFontLayer->mAscent = aFontLayer->mImage->GetHeight();
 
@@ -1122,7 +1122,7 @@ ImageFont::ImageFont(Image *theFontImage)
 	FontLayer *aFontLayer = &mFontData->mFontLayerList.back();
 
 	mFontData->mFontLayerMap.insert(FontLayerMap::value_type("", aFontLayer));
-	aFontLayer->mImage = (MemoryImage *)theFontImage;
+	aFontLayer->mImage = (GPUImage *)theFontImage;
 	aFontLayer->mDefaultHeight = aFontLayer->mImage->GetHeight();
 	aFontLayer->mAscent = aFontLayer->mImage->GetHeight();
 }
@@ -1246,7 +1246,7 @@ void ImageFont::GenerateActiveFontLayers()
 					// Resize font elements
 					int aCharNum;
 
-					MemoryImage *aMemoryImage = new MemoryImage(mFontData->mApp);
+					GPUImage *aGPUImage = gAppBase->mInterface->NewGPUImage();
 
 					int aCurX = 0;
 					int aMaxHeight = 0;
@@ -1266,14 +1266,14 @@ void ImageFont::GenerateActiveFontLayers()
 						aCurX += aScaledRect.mWidth;
 					}
 
-					anActiveFontLayer->mScaledImage = aMemoryImage;
+					anActiveFontLayer->mScaledImage = aGPUImage;
 					anActiveFontLayer->mOwnsImage = true;
 
 					// Create the image now
 
-					aMemoryImage->Create(aCurX, aMaxHeight);
+					aGPUImage->Create(aCurX, aMaxHeight);
 
-					Graphics g(aMemoryImage);
+					Graphics g(aGPUImage);
 
 					for (aCharNum = 0; aCharNum < 256; aCharNum++)
 					{
@@ -1284,14 +1284,14 @@ void ImageFont::GenerateActiveFontLayers()
 
 					if (mForceScaledImagesWhite)
 					{
-						int aCount = aMemoryImage->mWidth * aMemoryImage->mHeight;
-						ulong *aBits = aMemoryImage->GetBits();
+						int aCount = aGPUImage->mWidth * aGPUImage->mHeight;
+						ulong *aBits = aGPUImage->GetBits();
 
 						for (int i = 0; i < aCount; i++)
 							*(aBits++) = *aBits | 0x00FFFFFF;
 					}
 
-					aMemoryImage->Palletize();
+					aGPUImage->Palletize();
 				}
 
 				int aLayerAscent = (aFontLayer->mAscent * aPointSize) / aLayerPointSize;
