@@ -2,8 +2,7 @@
 
 #include "appbase.hpp"
 #include "graphics.hpp"
-#include "interface.hpp"
-#include "interface.hpp"
+#include "renderer.hpp"
 #include "debug/debug.hpp"
 #include "quantize.hpp"
 #include "debug/perftimer.hpp"
@@ -848,7 +847,7 @@ void MemoryImage::SetVolatile(bool isVolatile)
 	mIsVolatile = isVolatile;
 }
 
-void *MemoryImage::GetNativeAlphaData(Interface *theDisplay)
+void *MemoryImage::GetNativeAlphaData(Renderer *theDisplay)
 {
 	if (mNativeAlphaData != nullptr)
 		return mNativeAlphaData;
@@ -957,7 +956,7 @@ uchar *MemoryImage::GetRLAlphaData()
 	return mRLAlphaData;
 }
 
-uchar *MemoryImage::GetRLAdditiveData(Interface *theNative)
+uchar *MemoryImage::GetRLAdditiveData(Renderer *theNative)
 {
 	if (mRLAdditiveData == nullptr)
 	{
@@ -1092,7 +1091,7 @@ void MemoryImage::PurgeBits()
 		if ((mBits == nullptr) && (mColorIndices == nullptr))
 			return;
 
-		GetNativeAlphaData(gAppBase->mInterface);
+		GetNativeAlphaData(gAppBase->mRenderer);
 	}
 
 	delete[] mBits;
@@ -1222,7 +1221,7 @@ ulong *MemoryImage::GetBits()
 		}
 		else if (mNativeAlphaData != nullptr)
 		{
-			Interface *aDisplay = gAppBase->mInterface;
+			Renderer *aDisplay = gAppBase->mRenderer;
 
 			const int rMask = aDisplay->mRedMask;
 			const int gMask = aDisplay->mGreenMask;
@@ -1249,7 +1248,7 @@ ulong *MemoryImage::GetBits()
 				*(aDestPtr++) = (r << 16) | (g << 8) | (b) | (anAlpha << 24);
 			}
 		}
-		else if ((mD3DData == nullptr) || (!mApp->mInterface->RecoverBits((GPUImage*)this)))
+		else if ((mD3DData == nullptr) || (!mApp->mRenderer->RecoverBits((GPUImage*)this)))
 		{
 			memset(mBits, 0, aSize * sizeof(ulong));
 		}

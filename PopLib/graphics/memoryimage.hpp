@@ -16,7 +16,7 @@ namespace PopLib
 
 const ulong MEMORYCHECK_ID = 0x4BEEFADE;
 
-class Interface;
+class Renderer;
 class AppBase;
 
 class MemoryImage : public Image
@@ -48,9 +48,9 @@ class MemoryImage : public Image
 	void Init();
 
   public:
-	virtual void *GetNativeAlphaData(Interface *theNative);
+	virtual void *GetNativeAlphaData(Renderer *theNative);
 	virtual uchar *GetRLAlphaData();
-	virtual uchar *GetRLAdditiveData(Interface *theNative);
+	virtual uchar *GetRLAdditiveData(Renderer *theNative);
 	virtual void PurgeBits();
 	virtual void DeleteSWBuffers();
 	virtual void Delete3DBuffers();

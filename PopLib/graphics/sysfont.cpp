@@ -2,7 +2,7 @@
 #include "appbase.hpp"
 #include "graphics.hpp"
 #include "imagefont.hpp"
-#include "interface.hpp"
+#include "renderer.hpp"
 #include "widget/widgetmanager.hpp"
 
 #include <stdlib.h>
@@ -27,15 +27,14 @@ SysFont::SysFont(AppBase *theApp, const unsigned char aData[], size_t aDataSize,
 	SDL_IOStream *io = SDL_IOFromConstMem((void *)aData, aDataSize);
 	if (!io)
 	{
-		mApp->mInterface->MakeSimpleMessageBox("Failed to create SDL_IOStream", SDL_GetError(),
-												  MsgBox_OK);
+		SDL_ShowSimpleMessageBox(static_cast<SDL_MessageBoxFlags>(MsgBox_OK), "Failed to create SDL_IOStream", SDL_GetError(), mApp->mWindow);
 		return;
 	}
 
 	mTTFFont = TTF_OpenFontIO(io, false, thePointSize);
 	if (!mTTFFont)
 	{
-		mApp->mInterface->MakeSimpleMessageBox("Error", SDL_GetError(), MsgBox_OK);
+		SDL_ShowSimpleMessageBox(static_cast<SDL_MessageBoxFlags>(MsgBox_OK), "Error", SDL_GetError(), mApp->mWindow);
 	}
 
 	TTF_SetFontStyle(mTTFFont, (bold ? TTF_STYLE_BOLD : 0) | (italics ? TTF_STYLE_ITALIC : 0) |
@@ -56,7 +55,7 @@ void SysFont::Init(AppBase *theApp, const std::string &theFace, int thePointSize
 	mTTFFont = TTF_OpenFont(theFace.c_str(), thePointSize);
 	if (!mTTFFont)
 	{
-		mApp->mInterface->MakeSimpleMessageBox("Error", SDL_GetError(), MsgBox_OK);
+		SDL_ShowSimpleMessageBox(static_cast<SDL_MessageBoxFlags>(MsgBox_OK), "Error", SDL_GetError(), mApp->mWindow);
 	}
 
 	TTF_SetFontStyle(mTTFFont, (bold ? TTF_STYLE_BOLD : 0) | (italics ? TTF_STYLE_ITALIC : 0) |
@@ -190,7 +189,7 @@ int SysFont::StringWidth(const PopString &theString)
 void SysFont::DrawString(Graphics *g, int theX, int theY, const PopString &theString, const Color &theColor,
 						 const Rect &theClipRect)
 {
-    Interface *interface = mApp->mInterface;
+    Renderer *interface = mApp->mRenderer;
 
     if (mDrawShadow)
         interface->DrawText(theX + 1, theY + 1 - mAscent, theString, Color(0, 0, 0, theColor.mAlpha), mTTFFont);

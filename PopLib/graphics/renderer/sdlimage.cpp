@@ -1,7 +1,7 @@
 #include "sdlimage.hpp"
 #include "misc/critsect.hpp"
 #include "debug/debug.hpp"
-#include "sdlinterface.hpp"
+#include "sdlrenderer.hpp"
 #include "appbase.hpp"
 #include "../image.hpp"
 
@@ -9,19 +9,19 @@ using namespace PopLib;
 
 SDLImage::SDLImage() : GPUImage()
 {
-	mInterface = gAppBase->mInterface;
-	mInterface->AddImage(this);
+	mRenderer = gAppBase->mRenderer;
+	mRenderer->AddImage(this);
 }
 
-SDLImage::SDLImage(Interface *theInterface) : GPUImage()
+SDLImage::SDLImage(Renderer *theRenderer) : GPUImage()
 {
-	mInterface = theInterface;
-	mInterface->AddImage(this);
+	mRenderer = theRenderer;
+	mRenderer->AddImage(this);
 }
 
 SDLImage::~SDLImage()
 {
-	mInterface->RemoveImage(this);
+	mRenderer->RemoveImage(this);
 }
 
 void SDLImage::Create(int theWidth, int theHeight)
@@ -42,25 +42,25 @@ void SDLImage::Create(int theWidth, int theHeight)
 bool SDLImage::PolyFill3D(const Point theVertices[], int theNumVertices, const Rect *theClipRect, const Color &theColor,
 						  int theDrawMode, int tx, int ty)
 {
-	mInterface->FillPoly(theVertices, theNumVertices, theClipRect, theColor, theDrawMode, tx, ty);
+	mRenderer->FillPoly(theVertices, theNumVertices, theClipRect, theColor, theDrawMode, tx, ty);
 	return true;
 }
 
 void SDLImage::FillRect(const Rect &theRect, const Color &theColor, int theDrawMode)
 {
-	mInterface->FillRect(theRect, theColor, theDrawMode);
+	mRenderer->FillRect(theRect, theColor, theDrawMode);
 }
 
 void SDLImage::DrawLine(double theStartX, double theStartY, double theEndX, double theEndY, const Color &theColor,
 						int theDrawMode)
 {
-	mInterface->DrawLine(theStartX, theStartY, theEndX, theEndY, theColor, theDrawMode);
+	mRenderer->DrawLine(theStartX, theStartY, theEndX, theEndY, theColor, theDrawMode);
 }
 
 void SDLImage::DrawLineAA(double theStartX, double theStartY, double theEndX, double theEndY, const Color &theColor,
 						  int theDrawMode)
 {
-	mInterface->DrawLine(theStartX, theStartY, theEndX, theEndY, theColor, theDrawMode);
+	mRenderer->DrawLine(theStartX, theStartY, theEndX, theEndY, theColor, theDrawMode);
 }
 
 void SDLImage::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor, int theDrawMode)
@@ -69,7 +69,7 @@ void SDLImage::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, 
 
 	CommitBits();
 
-	mInterface->Blt(theImage, theX, theY, theSrcRect, theColor, theDrawMode);
+	mRenderer->Blt(theImage, theX, theY, theSrcRect, theColor, theDrawMode);
 }
 
 void SDLImage::BltF(Image *theImage, float theX, float theY, const Rect &theSrcRect, const Rect &theClipRect,
@@ -84,10 +84,10 @@ void SDLImage::BltF(Image *theImage, float theX, float theY, const Rect &theSrcR
 	if (anIntersect.mWidth != aDestRect.mWidth || anIntersect.mHeight != aDestRect.mHeight)
 	{
 		if (anIntersect.mWidth != 0 && anIntersect.mHeight != 0)
-			mInterface->BltClipF(theImage, theX, theY, theSrcRect, &theClipRect, theColor, theDrawMode);
+			mRenderer->BltClipF(theImage, theX, theY, theSrcRect, &theClipRect, theColor, theDrawMode);
 	}
 	else
-		mInterface->Blt(theImage, theX, theY, theSrcRect, theColor, theDrawMode, true);
+		mRenderer->Blt(theImage, theX, theY, theSrcRect, theColor, theDrawMode, true);
 }
 
 void SDLImage::BltRotated(Image *theImage, float theX, float theY, const Rect &theSrcRect, const Rect &theClipRect,
@@ -98,7 +98,7 @@ void SDLImage::BltRotated(Image *theImage, float theX, float theY, const Rect &t
 
 	CommitBits();
 
-	mInterface->BltRotated(theImage, theX, theY, &theClipRect, theColor, theDrawMode, theRot, theRotCenterX,
+	mRenderer->BltRotated(theImage, theX, theY, &theClipRect, theColor, theDrawMode, theRot, theRotCenterX,
 						   theRotCenterY, theSrcRect);
 }
 
@@ -109,7 +109,7 @@ void SDLImage::StretchBlt(Image *theImage, const Rect &theDestRect, const Rect &
 
 	CommitBits();
 
-	mInterface->StretchBlt(theImage, theDestRect, theSrcRect, &theClipRect, theColor, theDrawMode, fastStretch);
+	mRenderer->StretchBlt(theImage, theDestRect, theSrcRect, &theClipRect, theColor, theDrawMode, fastStretch);
 }
 
 void SDLImage::BltMatrix(Image *theImage, float x, float y, const Matrix3 &theMatrix, const Rect &theClipRect,
@@ -117,7 +117,7 @@ void SDLImage::BltMatrix(Image *theImage, float x, float y, const Matrix3 &theMa
 {
 	theImage->mDrawn = true;
 
-	mInterface->BltTransformed(theImage, &theClipRect, theColor, theDrawMode, theSrcRect, theMatrix, blend, x, y, true);
+	mRenderer->BltTransformed(theImage, &theClipRect, theColor, theDrawMode, theSrcRect, theMatrix, blend, x, y, true);
 }
 
 void SDLImage::BltTrianglesTex(Image *theTexture, const TriVertex theVertices[][3], int theNumTriangles,
@@ -126,7 +126,7 @@ void SDLImage::BltTrianglesTex(Image *theTexture, const TriVertex theVertices[][
 {
 	theTexture->mDrawn = true;
 
-	mInterface->DrawTrianglesTex(theVertices, theNumTriangles, theColor, theDrawMode, theTexture, tx, ty, blend);
+	mRenderer->DrawTrianglesTex(theVertices, theNumTriangles, theColor, theDrawMode, theTexture, tx, ty, blend);
 }
 
 void SDLImage::BltMirror(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor,
@@ -136,7 +136,7 @@ void SDLImage::BltMirror(Image *theImage, int theX, int theY, const Rect &theSrc
 
 	CommitBits();
 
-	mInterface->BltMirror(theImage, theX, theY, theSrcRect, theColor, theDrawMode);
+	mRenderer->BltMirror(theImage, theX, theY, theSrcRect, theColor, theDrawMode);
 }
 
 void SDLImage::StretchBltMirror(Image *theImage, const Rect &theDestRectOrig, const Rect &theSrcRect,
@@ -146,7 +146,7 @@ void SDLImage::StretchBltMirror(Image *theImage, const Rect &theDestRectOrig, co
 
 	CommitBits();
 
-	mInterface->StretchBlt(theImage, theDestRectOrig, theSrcRect, &theClipRect, theColor, theDrawMode, fastStretch,
+	mRenderer->StretchBlt(theImage, theDestRectOrig, theSrcRect, &theClipRect, theColor, theDrawMode, fastStretch,
 						   true);
 }
 

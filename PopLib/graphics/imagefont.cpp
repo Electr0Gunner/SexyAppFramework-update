@@ -4,7 +4,7 @@
 #include "appbase.hpp"
 #include "gpuimage.hpp"
 #include "misc/autocrit.hpp"
-#include "interface.hpp"
+#include "renderer.hpp"
 
 using namespace PopLib;
 
@@ -1246,7 +1246,7 @@ void ImageFont::GenerateActiveFontLayers()
 					// Resize font elements
 					int aCharNum;
 
-					GPUImage *aGPUImage = gAppBase->mInterface->NewGPUImage();
+					GPUImage *aGPUImage = gAppBase->mRenderer->NewGPUImage();
 
 					int aCurX = 0;
 					int aMaxHeight = 0;

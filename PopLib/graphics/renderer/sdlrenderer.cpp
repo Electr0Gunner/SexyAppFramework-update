@@ -1,8 +1,8 @@
-#include "sdlinterface.hpp"
+#include "sdlrenderer.hpp"
 #include "SDL3/SDL_mouse.h"
 #include "SDL3/SDL_render.h"
 #include "graphics/graphics.hpp"
-#include "graphics/interface.hpp"
+#include "graphics/renderer.hpp"
 #include "sdlimage.hpp"
 #include "appbase.hpp"
 #include "misc/autocrit.hpp"
@@ -20,7 +20,7 @@ SDL_FPoint TransformToPoint(float x, float y, const Matrix3 &m, float aTransX = 
 	return result;
 }
 
-SDLInterface::SDLInterface(AppBase *theApp)
+SDLRenderer::SDLRenderer(AppBase *theApp)
 {
 	mApp = theApp;
 	mWidth = mApp->mWidth;
@@ -41,19 +41,19 @@ SDLInterface::SDLInterface(AppBase *theApp)
 	mScreenTexture = nullptr;
 }
 
-SDLInterface::~SDLInterface()
+SDLRenderer::~SDLRenderer()
 {
 	Cleanup();
 	SDL_Quit();
 }
 
-void SDLInterface::DrawText(int theY, int theX, const PopString &theText, const Color &theColor, TTF_Font *theFont)
+void SDLRenderer::DrawText(int theY, int theX, const PopString &theText, const Color &theColor, TTF_Font *theFont)
 {
 	SDL_Color aColor = {(Uint8)theColor.mRed, (Uint8)theColor.mGreen, (Uint8)theColor.mBlue, (Uint8)theColor.mAlpha};
 	SDL_Surface *textSurface = TTF_RenderText_Blended(theFont, theText.c_str(), 0, aColor);
 	if (!textSurface)
 	{
-		MakeSimpleMessageBox("Failed to render text: ", SDL_GetError(), MsgBox_OK);
+		SDL_ShowSimpleMessageBox(static_cast<SDL_MessageBoxFlags>(MsgBox_OK), "Failed to render text: ", SDL_GetError(), mApp->mWindow);
 		return;
 	}
 	SDL_Texture *textTexture = SDL_CreateTextureFromSurface(mRenderer, textSurface);
@@ -62,7 +62,7 @@ void SDLInterface::DrawText(int theY, int theX, const PopString &theText, const 
 
 	if (!textTexture)
 	{
-		MakeSimpleMessageBox("Failed to create texture from surface: ", SDL_GetError(), MsgBox_OK);
+		SDL_ShowSimpleMessageBox(static_cast<SDL_MessageBoxFlags>(MsgBox_OK), "Failed to create texture from surface: ", SDL_GetError(), mApp->mWindow);
 		return;
 	}
 
@@ -70,7 +70,7 @@ void SDLInterface::DrawText(int theY, int theX, const PopString &theText, const 
 	SDL_DestroyTexture(textTexture);
 }
 
-void SDLInterface::Cleanup()
+void SDLRenderer::Cleanup()
 {
 	ImageSet::iterator anItr;
 	for (anItr = mImageSet.begin(); anItr != mImageSet.end(); ++anItr)
@@ -86,14 +86,14 @@ void SDLInterface::Cleanup()
 	mHasInitiated = false;
 }
 
-void SDLInterface::AddImage(Image *theImage)
+void SDLRenderer::AddImage(Image *theImage)
 {
 	AutoCrit anAutoCrit(mCritSect);
 
 	mSDLImageSet.insert((SDLImage *)theImage);
 }
 
-void SDLInterface::RemoveImage(Image *theImage)
+void SDLRenderer::RemoveImage(Image *theImage)
 {
 	AutoCrit anAutoCrit(mCritSect);
 
@@ -102,7 +102,7 @@ void SDLInterface::RemoveImage(Image *theImage)
 		mSDLImageSet.erase(anItr);
 }
 
-void SDLInterface::Remove3DData(GPUImage *theImage)
+void SDLRenderer::Remove3DData(GPUImage *theImage)
 {
 	if (theImage->mD3DData != nullptr)
 	{
@@ -114,12 +114,12 @@ void SDLInterface::Remove3DData(GPUImage *theImage)
 	}
 }
 
-void SDLInterface::GetOutputSize(int *outWidth, int *outHeight)
+void SDLRenderer::GetOutputSize(int *outWidth, int *outHeight)
 {
 	SDL_GetCurrentRenderOutputSize(mRenderer, outWidth, outHeight);
 }
 
-std::unique_ptr<ImageData> SDLInterface::CaptureFrameBuffer()
+std::unique_ptr<ImageData> SDLRenderer::CaptureFrameBuffer()
 {
 	SDL_Surface *surface = SDL_RenderReadPixels(mRenderer, nullptr);
 	if (!surface)
@@ -145,12 +145,12 @@ std::unique_ptr<ImageData> SDLInterface::CaptureFrameBuffer()
 	return image;
 }
 
-GPUImage *SDLInterface::GetScreenImage()
+GPUImage *SDLRenderer::GetScreenImage()
 {
 	return mScreenImage;
 }
 
-void SDLInterface::UpdateViewport()
+void SDLRenderer::UpdateViewport()
 {
 	if (SDL_GetCurrentThreadID() != SDL_GetThreadID(nullptr))
 		return;
@@ -165,7 +165,7 @@ void SDLInterface::UpdateViewport()
 	mPresentationRect = Rect(0, 0, windowWidth, windowHeight);
 }
 
-int SDLInterface::Init(bool IsWindowed)
+int SDLRenderer::Init()
 {
 	int aResult = RESULT_OK;
 
@@ -186,19 +186,19 @@ int SDLInterface::Init(bool IsWindowed)
 	mGreenMask = (0xFFU << mGreenShift);
 	mBlueMask = (0xFFU << mBlueShift);
 
-	aResult = InitSDLWindow(IsWindowed) ? aResult : RESULT_FAIL;
+	aResult = InitSDLWindow() ? aResult : RESULT_FAIL;
 	mHasInitiated = true;
 	return aResult;
 }
 
-bool SDLInterface::InitSDLWindow(bool IsWindowed)
+bool SDLRenderer::InitSDLWindow()
 {
 	UpdateWindowIcon(mApp->mTitleBarIcon);
 
 	return InitSDLRenderer();
 }
 
-bool SDLInterface::InitSDLRenderer()
+bool SDLRenderer::InitSDLRenderer()
 {
 	mRenderer = SDL_CreateRenderer(mApp->mWindow, nullptr);
 	if (mRenderer == nullptr)
@@ -230,10 +230,10 @@ bool SDLInterface::InitSDLRenderer()
 
 namespace PopLib
 {
-bool gSDLInterfacePreDrawError = false;
+bool gRendererPreDrawError = false;
 }
 
-bool SDLInterface::Redraw(Rect *theClipRect)
+bool SDLRenderer::Redraw(Rect *theClipRect)
 {
 	// HACK: i dont know where to put this
 	mApp->mIGUIManager->Frame();
@@ -251,21 +251,21 @@ bool SDLInterface::Redraw(Rect *theClipRect)
 
 	SDL_SetRenderClipRect(mRenderer, &clipRect);
 
-	PopLib::gSDLInterfacePreDrawError = !SDL_RenderTexture(mRenderer, mScreenTexture, nullptr, nullptr);
+	PopLib::gRendererPreDrawError = !SDL_RenderTexture(mRenderer, mScreenTexture, nullptr, nullptr);
 
 	if (ImGui::GetDrawData() != nullptr)
 		ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), mRenderer);
 
 	SDL_RenderPresent(mRenderer);
 
-	return !PopLib::gSDLInterfacePreDrawError;
+	return !PopLib::gRendererPreDrawError;
 }
 
 /// <summary>
 /// Setup the mScreenImage
 /// </summary>
 /// <param name="videoOnly"></param>
-void SDLInterface::SetVideoOnlyDraw(bool videoOnly)
+void SDLRenderer::SetVideoOnlyDraw(bool videoOnly)
 {
 	if (mScreenImage)
 		delete mScreenImage;
@@ -284,7 +284,7 @@ void SDLInterface::SetVideoOnlyDraw(bool videoOnly)
 /// </summary>
 /// <param name="theCursorX"></param>
 /// <param name="theCursorY"></param>
-void SDLInterface::SetCursorPos(int theCursorX, int theCursorY)
+void SDLRenderer::SetCursorPos(int theCursorX, int theCursorY)
 {
 	mNextCursorX = theCursorX;
 	mNextCursorY = theCursorY;
@@ -295,7 +295,7 @@ void SDLInterface::SetCursorPos(int theCursorX, int theCursorY)
 /// </summary>
 /// <param name="theImage"></param>
 /// <returns></returns>
-bool SDLInterface::SetCursorImage(Image *theImage)
+bool SDLRenderer::SetCursorImage(Image *theImage)
 {
 	AutoCrit anAutoCrit(mCritSect);
 
@@ -320,7 +320,7 @@ bool SDLInterface::SetCursorImage(Image *theImage)
 	return false;
 }
 
-bool SDLInterface::UpdateWindowIcon(Image *theImage)
+bool SDLRenderer::UpdateWindowIcon(Image *theImage)
 {
 	if (theImage != nullptr)
 	{
@@ -336,7 +336,7 @@ bool SDLInterface::UpdateWindowIcon(Image *theImage)
 	return false;
 }
 
-void SDLInterface::SetCursor(CursorType theCursorType)
+void SDLRenderer::SetCursor(CursorType theCursorType)
 {
 	SDL_SystemCursor sdlCursorType;
 
@@ -386,20 +386,7 @@ void SDLInterface::SetCursor(CursorType theCursorType)
 	// SDL_DestroyCursor(aCursor);
 }
 
-void SDLInterface::MakeSimpleMessageBox(const char *theTitle, const char *theMessage, MsgBoxFlags flags)
-{
-	SDL_ShowSimpleMessageBox(static_cast<SDL_MessageBoxFlags>(flags), theTitle, theMessage, mApp->mWindow);
-}
-
-int SDLInterface::MakeResultMessageBox(MsgBoxData data)
-{
-	int buttonid;
-	SDL_ShowMessageBox(reinterpret_cast<const SDL_MessageBoxData *>(&data), &buttonid);
-
-	return buttonid;
-}
-
-void SDLInterface::PushTransform(const Matrix3 &theTransform, bool concatenate)
+void SDLRenderer::PushTransform(const Matrix3 &theTransform, bool concatenate)
 {
 	if (mTransformStack.empty() || !concatenate)
 		mTransformStack.push_back(theTransform);
@@ -410,18 +397,18 @@ void SDLInterface::PushTransform(const Matrix3 &theTransform, bool concatenate)
 	}
 }
 
-void SDLInterface::PopTransform()
+void SDLRenderer::PopTransform()
 {
 	if (!mTransformStack.empty())
 		mTransformStack.pop_back();
 }
 
-bool SDLInterface::PreDraw()
+bool SDLRenderer::PreDraw()
 {
 	return true;
 }
 
-bool SDLInterface::CreateImageTexture(GPUImage *theImage)
+bool SDLRenderer::CreateImageTexture(GPUImage *theImage)
 {
 	bool wantPurge = false;
 
@@ -445,7 +432,7 @@ bool SDLInterface::CreateImageTexture(GPUImage *theImage)
 	return true;
 }
 
-bool SDLInterface::RecoverBits(GPUImage *theImage)
+bool SDLRenderer::RecoverBits(GPUImage *theImage)
 {
 	if (theImage->mD3DData == nullptr)
 		return false;
@@ -470,7 +457,7 @@ bool SDLInterface::RecoverBits(GPUImage *theImage)
 	return true;
 }
 
-BlendMode SDLInterface::ChooseBlendMode(int theBlendMode)
+BlendMode SDLRenderer::ChooseBlendMode(int theBlendMode)
 {
 	BlendMode theBBlendMode;
 	switch (theBlendMode)
@@ -593,7 +580,7 @@ int SDLTextureData::GetMemSize()
 ///				DRAWING/BLITTING FUNCTIONS		    	   //////
 /////////////////////////////////////////////////////////////////
 
-void SDLInterface::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor,
+void SDLRenderer::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor,
 					   int theDrawMode, bool linearFilter)
 {
 	SDLImage *memImg = static_cast<SDLImage *>(theImage);
@@ -619,7 +606,7 @@ void SDLInterface::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRe
 	return;
 }
 
-void SDLInterface::BltClipF(Image *theImage, float theX, float theY, const Rect &theSrcRect, const Rect *theClipRect,
+void SDLRenderer::BltClipF(Image *theImage, float theX, float theY, const Rect &theSrcRect, const Rect *theClipRect,
 							const Color &theColor, int theDrawMode)
 {
 	SDLImage *aSrcSDLImage = (SDLImage *)theImage;
@@ -653,7 +640,7 @@ void SDLInterface::BltClipF(Image *theImage, float theX, float theY, const Rect 
 	SDL_SetRenderTarget(mRenderer, nullptr);
 }
 
-void SDLInterface::BltMirror(Image *theImage, float theX, float theY, const Rect &theSrcRect, const Color &theColor,
+void SDLRenderer::BltMirror(Image *theImage, float theX, float theY, const Rect &theSrcRect, const Color &theColor,
 							 int theDrawMode, bool linearFilter)
 {
 	SDLImage *aSrcSDLImage = (SDLImage *)theImage;
@@ -679,7 +666,7 @@ void SDLInterface::BltMirror(Image *theImage, float theX, float theY, const Rect
 	SDL_SetRenderTarget(mRenderer, nullptr);
 }
 
-void SDLInterface::StretchBlt(Image *theImage, const Rect &theDestRect, const Rect &theSrcRect, const Rect *theClipRect,
+void SDLRenderer::StretchBlt(Image *theImage, const Rect &theDestRect, const Rect &theSrcRect, const Rect *theClipRect,
 							  const Color &theColor, int theDrawMode, bool fastStretch, bool mirror)
 {
 	SDLImage *aSrcSDLImage = static_cast<SDLImage *>(theImage);
@@ -714,7 +701,7 @@ void SDLInterface::StretchBlt(Image *theImage, const Rect &theDestRect, const Re
 	SDL_SetRenderTarget(mRenderer, nullptr);
 }
 
-void SDLInterface::BltRotated(Image *theImage, float theX, float theY, const Rect *theClipRect, const Color &theColor,
+void SDLRenderer::BltRotated(Image *theImage, float theX, float theY, const Rect *theClipRect, const Color &theColor,
 							  int theDrawMode, double theRot, float theRotCenterX, float theRotCenterY,
 							  const Rect &theSrcRect)
 {
@@ -751,7 +738,7 @@ void SDLInterface::BltRotated(Image *theImage, float theX, float theY, const Rec
 	SDL_SetRenderTarget(mRenderer, nullptr);
 }
 
-void SDLInterface::BltTransformed(Image *theImage, const Rect *theClipRect, const Color &theColor, int theDrawMode,
+void SDLRenderer::BltTransformed(Image *theImage, const Rect *theClipRect, const Color &theColor, int theDrawMode,
 								  const Rect &theSrcRect, const Matrix3 &theTransform, bool linearFilter, float theX,
 								  float theY, bool center)
 {
@@ -813,7 +800,7 @@ void SDLInterface::BltTransformed(Image *theImage, const Rect *theClipRect, cons
 	SDL_SetRenderTarget(mRenderer, nullptr);
 }
 
-void SDLInterface::DrawLine(double theStartX, double theStartY, double theEndX, double theEndY, const Color &theColor,
+void SDLRenderer::DrawLine(double theStartX, double theStartY, double theEndX, double theEndY, const Color &theColor,
 							int theDrawMode)
 {
 	if (!mRenderer)
@@ -830,7 +817,7 @@ void SDLInterface::DrawLine(double theStartX, double theStartY, double theEndX, 
 	SDL_SetRenderTarget(mRenderer, nullptr);
 }
 
-void SDLInterface::FillRect(const Rect &theRect, const Color &theColor, int theDrawMode)
+void SDLRenderer::FillRect(const Rect &theRect, const Color &theColor, int theDrawMode)
 {
 	if (!mRenderer)
 		return;
@@ -848,7 +835,7 @@ void SDLInterface::FillRect(const Rect &theRect, const Color &theColor, int theD
 	SDL_SetRenderTarget(mRenderer, nullptr);
 }
 
-void SDLInterface::DrawTriangle(const TriVertex &p1, const TriVertex &p2, const TriVertex &p3, const Color &theColor,
+void SDLRenderer::DrawTriangle(const TriVertex &p1, const TriVertex &p2, const TriVertex &p3, const Color &theColor,
 								int theDrawMode)
 {
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
@@ -866,7 +853,7 @@ void SDLInterface::DrawTriangle(const TriVertex &p1, const TriVertex &p2, const 
 	SDL_SetRenderTarget(mRenderer, nullptr);
 }
 
-void SDLInterface::DrawTriangleTex(const TriVertex &p1, const TriVertex &p2, const TriVertex &p3, const Color &theColor,
+void SDLRenderer::DrawTriangleTex(const TriVertex &p1, const TriVertex &p2, const TriVertex &p3, const Color &theColor,
 								   int theDrawMode, Image *theTexture, bool blend)
 {
 	SDLImage *aSrcSDLImage = (SDLImage *)theTexture;
@@ -896,7 +883,7 @@ void SDLInterface::DrawTriangleTex(const TriVertex &p1, const TriVertex &p2, con
 	SDL_SetRenderTarget(mRenderer, nullptr);
 }
 
-void SDLInterface::DrawTrianglesTex(const TriVertex theVertices[][3], int theNumTriangles, const Color &theColor,
+void SDLRenderer::DrawTrianglesTex(const TriVertex theVertices[][3], int theNumTriangles, const Color &theColor,
 									int theDrawMode, Image *theTexture, float tx, float ty, bool blend)
 {
 	SDLImage *aSrcSDLImage = (SDLImage *)theTexture;
@@ -954,7 +941,7 @@ void SDLInterface::DrawTrianglesTex(const TriVertex theVertices[][3], int theNum
 	SDL_SetRenderTarget(mRenderer, nullptr);
 }
 
-void SDLInterface::DrawTrianglesTexStrip(const TriVertex theVertices[], int theNumTriangles, const Color &theColor,
+void SDLRenderer::DrawTrianglesTexStrip(const TriVertex theVertices[], int theNumTriangles, const Color &theColor,
 										 int theDrawMode, Image *theTexture, float tx, float ty, bool blend)
 {
 	if (theNumTriangles < 3)
@@ -994,7 +981,7 @@ void SDLInterface::DrawTrianglesTexStrip(const TriVertex theVertices[], int theN
 	SDL_SetRenderTarget(mRenderer, nullptr);
 }
 
-void SDLInterface::FillPoly(const Point theVertices[], int theNumVertices, const Rect *theClipRect,
+void SDLRenderer::FillPoly(const Point theVertices[], int theNumVertices, const Rect *theClipRect,
 							const Color &theColor, int theDrawMode, int tx, int ty)
 {
 	if (theNumVertices < 3)
@@ -1022,7 +1009,7 @@ void SDLInterface::FillPoly(const Point theVertices[], int theNumVertices, const
 	SDL_SetRenderClipRect(mRenderer, nullptr);
 }
 
-void SDLInterface::BltTexture(Texture *theTexture, const Rect &theSrcRect, const Rect &theDestRect,
+void SDLRenderer::BltTexture(Texture *theTexture, const Rect &theSrcRect, const Rect &theDestRect,
 							  const Color &theColor, int theDrawMode)
 {
 	SDLTexture *sdlTex = dynamic_cast<SDLTexture *>(theTexture);

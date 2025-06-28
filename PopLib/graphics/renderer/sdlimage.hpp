@@ -8,7 +8,7 @@
 
 namespace PopLib
 {
-class Interface;
+class Renderer;
 class SysFont;
 
 class SDLImage : public GPUImage
@@ -26,7 +26,7 @@ class SDLImage : public GPUImage
 
   public:
 	SDLImage();
-	SDLImage(Interface *theInterface);
+	SDLImage(Renderer *theRenderer);
 	virtual ~SDLImage();
 
 	virtual void Create(int theWidth, int theHeight);

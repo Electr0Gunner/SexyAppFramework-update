@@ -8,7 +8,7 @@
 
 namespace PopLib
 {
-class Interface;
+class Renderer;
 class SysFont;
 
 enum GPUImageFlags
@@ -25,7 +25,7 @@ class GPUImage : public MemoryImage
 	friend class SysFont;
 
   public:
-	Interface *mInterface;
+	Renderer *mRenderer;
 
   public:
 	virtual void FillScanLinesWithCoverage(Span *theSpans, int theSpanCount, const Color &theColor, int theDrawMode,

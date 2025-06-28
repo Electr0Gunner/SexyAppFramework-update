@@ -1,5 +1,5 @@
-#ifndef __INTERFACE_HPP__
-#define __INTERFACE_HPP__
+#ifndef __RENDERER_HPP__
+#define __RENDERER_HPP__
 #ifdef _WIN32
 #pragma once
 #endif
@@ -48,7 +48,7 @@ class Texture
 	virtual ~Texture() = default;
 };
 
-class Interface
+class Renderer
 {
   public:
 	int mRGBBits;
@@ -98,8 +98,8 @@ class Interface
 	int mCursorY;
 
   public:
-	Interface();
-	virtual ~Interface();
+	Renderer();
+	virtual ~Renderer();
 	virtual void Cleanup() = 0;
 
 	virtual void AddImage(Image *theImage) = 0;
@@ -112,7 +112,7 @@ class Interface
 
 	virtual GPUImage *GetScreenImage() = 0;
 	virtual void UpdateViewport() = 0;
-	virtual int Init(bool IsWindowed) = 0;
+	virtual int Init() = 0;
 
 	virtual bool Redraw(Rect *theClipRect) = 0;
 	virtual void SetVideoOnlyDraw(bool videoOnly) = 0;
@@ -125,9 +125,6 @@ class Interface
 	virtual bool UpdateWindowIcon(Image *theImage) = 0;
 
 	virtual void SetCursor(CursorType theCursorType) = 0;
-
-	virtual void MakeSimpleMessageBox(const char *theTitle, const char *theMessage, MsgBoxFlags flags) = 0;
-	virtual int MakeResultMessageBox(MsgBoxData data) = 0;
 
 	virtual void PushTransform(const Matrix3 &theTransform, bool concatenate = true) = 0;
 	virtual void PopTransform() = 0;

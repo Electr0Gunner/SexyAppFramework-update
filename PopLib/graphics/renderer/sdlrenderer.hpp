@@ -1,12 +1,12 @@
-#ifndef __SDLINTERFACE_HPP__
-#define __SDLINTERFACE_HPP__
+#ifndef __SDLRENDERER_HPP__
+#define __SDLRENDERER_HPP__
 #ifdef _WIN32
 #pragma once
 #endif
 
 #include "common.hpp"
 #include "misc/critsect.hpp"
-#include "../interface.hpp"
+#include "../renderer.hpp"
 #include "math/rect.hpp"
 #include "math/ratio.hpp"
 #include "math/matrix.hpp"
@@ -69,7 +69,7 @@ class SDLTexture : public Texture
 	SDL_Texture *mTexture;
 };
 
-class SDLInterface : public Interface
+class SDLRenderer : public Renderer
 {
   public:
 	ImageSet mImageSet;
@@ -86,8 +86,8 @@ class SDLInterface : public Interface
 	void Remove3DData(GPUImage *theImage); // for 3d texture cleanup
 
   public:
-	SDLInterface(AppBase *theApp);
-	virtual ~SDLInterface();
+	SDLRenderer(AppBase *theApp);
+	virtual ~SDLRenderer();
 	virtual void Cleanup();
 
 	virtual GPUImage *NewGPUImage()
@@ -96,9 +96,9 @@ class SDLInterface : public Interface
 	}
 	virtual GPUImage *GetScreenImage();
 	virtual void UpdateViewport();
-	virtual int Init(bool IsWindowed);
+	virtual int Init();
 
-	bool InitSDLWindow(bool IsWindowed);
+	bool InitSDLWindow();
 	bool InitSDLRenderer();
 
 	virtual void GetOutputSize(int *outWidth, int *outHeight);
@@ -109,15 +109,12 @@ class SDLInterface : public Interface
 	virtual void SetVideoOnlyDraw(bool videoOnly);
 
 	virtual void SetCursorPos(int theCursorX, int theCursorY);
-
 	virtual bool SetCursorImage(Image *theImage);
+
 	virtual bool UpdateWindowIcon(Image *theImage);
 
 	virtual void SetCursor(CursorType theCursorType);
 	virtual void DrawText(int theY, int theX, const PopString &theText, const Color &theColor, TTF_Font *theFont);
-
-	virtual void MakeSimpleMessageBox(const char *theTitle, const char *theMessage, MsgBoxFlags flags);
-	virtual int MakeResultMessageBox(MsgBoxData data);
 
   public:
 	virtual void PushTransform(const Matrix3 &theTransform, bool concatenate = true);
@@ -165,4 +162,4 @@ class SDLInterface : public Interface
 };
 } // namespace PopLib
 
-#endif // __SDLINTERFACE_HPP__
+#endif // __SDLRENDERER_HPP__

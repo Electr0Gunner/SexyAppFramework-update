@@ -2,7 +2,7 @@
 #include "appbase.hpp"
 
 // interfaces
-#include "graphics/renderer/sdlinterface.hpp"
+#include "graphics/renderer/sdlrenderer.hpp"
 
 using namespace PopLib;
 
@@ -30,9 +30,9 @@ void RegisterImGuiWindows()
 
 ////////////////////////////
 
-ImGuiManager::ImGuiManager(Interface *theInterface)
+ImGuiManager::ImGuiManager(Renderer *theInterface)
 {
-	mInterface = theInterface;
+	mRenderer = theInterface;
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -40,11 +40,11 @@ ImGuiManager::ImGuiManager(Interface *theInterface)
 	(void)io; // uhhhhhh
 	ImGui::StyleColorsDark();
 
-	switch (gAppBase->mInterfaceType)
+	switch (gAppBase->mRendererAPI)
 	{
 		default:
 		{
-			SDLInterface *aInterface = (SDLInterface*)mInterface;
+			SDLRenderer *aInterface = (SDLRenderer*)mRenderer;
 			ImGui_ImplSDL3_InitForSDLRenderer(gAppBase->mWindow, aInterface->mRenderer);
 			ImGui_ImplSDLRenderer3_Init(aInterface->mRenderer);
 		}
@@ -63,7 +63,7 @@ void ImGuiManager::RenderAll(void)
 
 void ImGuiManager::Frame(void)
 {
-	switch (gAppBase->mInterfaceType)
+	switch (gAppBase->mRendererAPI)
 	{
 		default:
 		{
@@ -83,7 +83,7 @@ void ImGuiManager::Frame(void)
 
 ImGuiManager::~ImGuiManager()
 {
-	switch (gAppBase->mInterfaceType)
+	switch (gAppBase->mRendererAPI)
 	{
 		default:
 		{

@@ -36,11 +36,12 @@ enum JSON_RTYPE
 /**
  * @brief the interface types
  */
-enum InterfaceType
+enum RendererAPI
 {
-	INTERFACE_NONE = 0,
-	INTERFACE_SDL,
-	INTERFACE_NUM
+	RENDERER_NONE = 0,
+	RENDERER_SDL,	//SDL Renderer
+	RENDERER_NUM,	//number of renderer APIs
+	RENDERER_3D_ACCEL = RENDERER_SDL, //3D Accelerated APIs
 };
 
 namespace ImageLib
@@ -52,7 +53,7 @@ namespace PopLib
 {
 
 class WidgetManager;
-class Interface;
+class Renderer;
 class Image;
 class Widget;
 class SoundManager;
@@ -144,7 +145,7 @@ enum MsgBoxFlags
  * @brief handles the game window
  *
  * the AppBase class is basically the root of all games, demos and stuff.
- * uses Interface for window handling, and everything else window-related
+ * uses Renderer for window handling, and everything else window-related
  */
 class AppBase : public ButtonListener, public DialogListener
 {
@@ -245,8 +246,8 @@ class AppBase : public ButtonListener, public DialogListener
 	bool mFullScreenPageFlip;
 	/// @brief true if tablet pc
 	bool mTabletPC;
-	/// @brief the window interface
-	Interface *mInterface;
+	/// @brief the renderer
+	Renderer *mRenderer;
 	/// @brief TBA
 	bool mAlphaDisabled;
 	/// @brief (MusicInterface) the music interface, uses BASS
@@ -344,7 +345,7 @@ class AppBase : public ButtonListener, public DialogListener
 	/// @brief the sdl window
 	SDL_Window *mWindow;
 	/// @brief the interface type
-	InterfaceType mInterfaceType;
+	RendererAPI mRendererAPI;
 
 	/// @brief cursor number
 	int mCursorNum;

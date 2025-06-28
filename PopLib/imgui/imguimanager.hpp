@@ -14,10 +14,10 @@
 
 namespace PopLib
 {
-class Interface;
+class Renderer;
 
 /**
- * @brief imgui manager for sdlinterface
+ * @brief imgui manager that automaticaly calls the window's functions.
  */
 class ImGuiManager
 {
@@ -33,7 +33,7 @@ class ImGuiManager
 	}
 
 	/// @brief constructor
-	ImGuiManager(Interface *theInterface);
+	ImGuiManager(Renderer *theInterface);
 	/// @brief destructor
 	virtual ~ImGuiManager();
 
@@ -46,7 +46,7 @@ class ImGuiManager
 	virtual void Frame(void);
 
 	/// @brief the interface
-	Interface *mInterface;
+	Renderer *mRenderer;
 
   private:
 	/// @brief the imgui windows list
