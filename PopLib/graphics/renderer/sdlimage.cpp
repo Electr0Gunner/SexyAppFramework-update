@@ -51,20 +51,19 @@ void SDLImage::FillRect(const Rect &theRect, const Color &theColor, int theDrawM
 	mInterface->FillRect(theRect, theColor, theDrawMode);
 }
 
-void SDLImage::DrawLine(double theStartX, double theStartY, double theEndX, double theEndY,
-								 const Color &theColor, int theDrawMode)
+void SDLImage::DrawLine(double theStartX, double theStartY, double theEndX, double theEndY, const Color &theColor,
+						int theDrawMode)
 {
 	mInterface->DrawLine(theStartX, theStartY, theEndX, theEndY, theColor, theDrawMode);
 }
 
-void SDLImage::DrawLineAA(double theStartX, double theStartY, double theEndX, double theEndY,
-								   const Color &theColor, int theDrawMode)
+void SDLImage::DrawLineAA(double theStartX, double theStartY, double theEndX, double theEndY, const Color &theColor,
+						  int theDrawMode)
 {
 	mInterface->DrawLine(theStartX, theStartY, theEndX, theEndY, theColor, theDrawMode);
 }
 
-void SDLImage::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor,
-							int theDrawMode)
+void SDLImage::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor, int theDrawMode)
 {
 	theImage->mDrawn = true;
 
@@ -74,7 +73,7 @@ void SDLImage::Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, 
 }
 
 void SDLImage::BltF(Image *theImage, float theX, float theY, const Rect &theSrcRect, const Rect &theClipRect,
-							 const Color &theColor, int theDrawMode)
+					const Color &theColor, int theDrawMode)
 {
 	theImage->mDrawn = true;
 
@@ -91,9 +90,9 @@ void SDLImage::BltF(Image *theImage, float theX, float theY, const Rect &theSrcR
 		mInterface->Blt(theImage, theX, theY, theSrcRect, theColor, theDrawMode, true);
 }
 
-void SDLImage::BltRotated(Image *theImage, float theX, float theY, const Rect &theSrcRect,
-								   const Rect &theClipRect, const Color &theColor, int theDrawMode, double theRot,
-								   float theRotCenterX, float theRotCenterY)
+void SDLImage::BltRotated(Image *theImage, float theX, float theY, const Rect &theSrcRect, const Rect &theClipRect,
+						  const Color &theColor, int theDrawMode, double theRot, float theRotCenterX,
+						  float theRotCenterY)
 {
 	theImage->mDrawn = true;
 
@@ -103,8 +102,8 @@ void SDLImage::BltRotated(Image *theImage, float theX, float theY, const Rect &t
 						   theRotCenterY, theSrcRect);
 }
 
-void SDLImage::StretchBlt(Image *theImage, const Rect &theDestRect, const Rect &theSrcRect,
-								   const Rect &theClipRect, const Color &theColor, int theDrawMode, bool fastStretch)
+void SDLImage::StretchBlt(Image *theImage, const Rect &theDestRect, const Rect &theSrcRect, const Rect &theClipRect,
+						  const Color &theColor, int theDrawMode, bool fastStretch)
 {
 	theImage->mDrawn = true;
 
@@ -113,9 +112,8 @@ void SDLImage::StretchBlt(Image *theImage, const Rect &theDestRect, const Rect &
 	mInterface->StretchBlt(theImage, theDestRect, theSrcRect, &theClipRect, theColor, theDrawMode, fastStretch);
 }
 
-void SDLImage::BltMatrix(Image *theImage, float x, float y, const Matrix3 &theMatrix,
-								  const Rect &theClipRect, const Color &theColor, int theDrawMode,
-								  const Rect &theSrcRect, bool blend)
+void SDLImage::BltMatrix(Image *theImage, float x, float y, const Matrix3 &theMatrix, const Rect &theClipRect,
+						 const Color &theColor, int theDrawMode, const Rect &theSrcRect, bool blend)
 {
 	theImage->mDrawn = true;
 
@@ -123,8 +121,8 @@ void SDLImage::BltMatrix(Image *theImage, float x, float y, const Matrix3 &theMa
 }
 
 void SDLImage::BltTrianglesTex(Image *theTexture, const TriVertex theVertices[][3], int theNumTriangles,
-										const Rect &theClipRect, const Color &theColor, int theDrawMode, float tx,
-										float ty, bool blend)
+							   const Rect &theClipRect, const Color &theColor, int theDrawMode, float tx, float ty,
+							   bool blend)
 {
 	theTexture->mDrawn = true;
 
@@ -132,7 +130,7 @@ void SDLImage::BltTrianglesTex(Image *theTexture, const TriVertex theVertices[][
 }
 
 void SDLImage::BltMirror(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor,
-								  int theDrawMode)
+						 int theDrawMode)
 {
 	theImage->mDrawn = true;
 
@@ -142,8 +140,7 @@ void SDLImage::BltMirror(Image *theImage, int theX, int theY, const Rect &theSrc
 }
 
 void SDLImage::StretchBltMirror(Image *theImage, const Rect &theDestRectOrig, const Rect &theSrcRect,
-										 const Rect &theClipRect, const Color &theColor, int theDrawMode,
-										 bool fastStretch)
+								const Rect &theClipRect, const Color &theColor, int theDrawMode, bool fastStretch)
 {
 	theImage->mDrawn = true;
 

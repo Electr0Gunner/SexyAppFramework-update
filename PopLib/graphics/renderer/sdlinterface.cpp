@@ -49,25 +49,25 @@ SDLInterface::~SDLInterface()
 
 void SDLInterface::DrawText(int theY, int theX, const PopString &theText, const Color &theColor, TTF_Font *theFont)
 {
-    SDL_Color aColor = {(Uint8)theColor.mRed, (Uint8)theColor.mGreen, (Uint8)theColor.mBlue, (Uint8)theColor.mAlpha};
-    SDL_Surface *textSurface = TTF_RenderText_Blended(theFont, theText.c_str(), 0, aColor);
-    if (!textSurface)
-    {
-        MakeSimpleMessageBox("Failed to render text: ", SDL_GetError(), MsgBox_OK);
-        return;
-    }
-    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(mRenderer, textSurface);
-    SDL_FRect dstRect = {(float)theX, (float)theY, (float)textSurface->w, (float)textSurface->h};
-    SDL_DestroySurface(textSurface);
+	SDL_Color aColor = {(Uint8)theColor.mRed, (Uint8)theColor.mGreen, (Uint8)theColor.mBlue, (Uint8)theColor.mAlpha};
+	SDL_Surface *textSurface = TTF_RenderText_Blended(theFont, theText.c_str(), 0, aColor);
+	if (!textSurface)
+	{
+		MakeSimpleMessageBox("Failed to render text: ", SDL_GetError(), MsgBox_OK);
+		return;
+	}
+	SDL_Texture *textTexture = SDL_CreateTextureFromSurface(mRenderer, textSurface);
+	SDL_FRect dstRect = {(float)theX, (float)theY, (float)textSurface->w, (float)textSurface->h};
+	SDL_DestroySurface(textSurface);
 
-    if (!textTexture)
-    {
-        MakeSimpleMessageBox("Failed to create texture from surface: ", SDL_GetError(), MsgBox_OK);
-        return;
-    }
+	if (!textTexture)
+	{
+		MakeSimpleMessageBox("Failed to create texture from surface: ", SDL_GetError(), MsgBox_OK);
+		return;
+	}
 
-    SDL_RenderTexture(mRenderer, textTexture, nullptr, &dstRect);
-    SDL_DestroyTexture(textTexture);
+	SDL_RenderTexture(mRenderer, textTexture, nullptr, &dstRect);
+	SDL_DestroyTexture(textTexture);
 }
 
 void SDLInterface::Cleanup()
@@ -90,14 +90,14 @@ void SDLInterface::AddImage(Image *theImage)
 {
 	AutoCrit anAutoCrit(mCritSect);
 
-	mSDLImageSet.insert((SDLImage*)theImage);
+	mSDLImageSet.insert((SDLImage *)theImage);
 }
 
 void SDLInterface::RemoveImage(Image *theImage)
 {
 	AutoCrit anAutoCrit(mCritSect);
 
-	GPUImageSet::iterator anItr = mSDLImageSet.find((SDLImage*)theImage);
+	GPUImageSet::iterator anItr = mSDLImageSet.find((SDLImage *)theImage);
 	if (anItr != mSDLImageSet.end())
 		mSDLImageSet.erase(anItr);
 }
@@ -110,18 +110,18 @@ void SDLInterface::Remove3DData(GPUImage *theImage)
 		theImage->mD3DData = nullptr;
 
 		AutoCrit aCrit(mCritSect); // Make images thread safe
-		mImageSet.erase(static_cast<SDLImage*>(theImage));
+		mImageSet.erase(static_cast<SDLImage *>(theImage));
 	}
 }
 
 void SDLInterface::GetOutputSize(int *outWidth, int *outHeight)
 {
-    SDL_GetCurrentRenderOutputSize(mRenderer, outWidth, outHeight);
+	SDL_GetCurrentRenderOutputSize(mRenderer, outWidth, outHeight);
 }
 
 std::unique_ptr<ImageData> SDLInterface::CaptureFrameBuffer()
 {
-	SDL_Surface* surface = SDL_RenderReadPixels(mRenderer, nullptr);
+	SDL_Surface *surface = SDL_RenderReadPixels(mRenderer, nullptr);
 	if (!surface)
 		return nullptr;
 
@@ -130,10 +130,11 @@ std::unique_ptr<ImageData> SDLInterface::CaptureFrameBuffer()
 	image->height = surface->h;
 	image->pixels.resize(surface->w * surface->h * 4);
 
-	uint8_t* src = static_cast<uint8_t*>(surface->pixels);
-	uint8_t* dst = image->pixels.data();
+	uint8_t *src = static_cast<uint8_t *>(surface->pixels);
+	uint8_t *dst = image->pixels.data();
 
-	for (int i = 0; i < surface->w * surface->h * 4; i += 4) {
+	for (int i = 0; i < surface->w * surface->h * 4; i += 4)
+	{
 		dst[i + 0] = src[i + 2]; // R
 		dst[i + 1] = src[i + 1]; // G
 		dst[i + 2] = src[i + 0]; // B
@@ -227,8 +228,9 @@ bool SDLInterface::InitSDLRenderer()
 	return true;
 }
 
-namespace PopLib {
-    bool gSDLInterfacePreDrawError = false;
+namespace PopLib
+{
+bool gSDLInterfacePreDrawError = false;
 }
 
 bool SDLInterface::Redraw(Rect *theClipRect)
@@ -336,52 +338,52 @@ bool SDLInterface::UpdateWindowIcon(Image *theImage)
 
 void SDLInterface::SetCursor(CursorType theCursorType)
 {
-    SDL_SystemCursor sdlCursorType;
+	SDL_SystemCursor sdlCursorType;
 
-    switch (theCursorType)
-    {
-        case CURSOR_POINTER:
-        case CURSOR_HAND:
-            sdlCursorType = SDL_SYSTEM_CURSOR_POINTER;
-            break;
-        case CURSOR_DRAGGING:
-            sdlCursorType = SDL_SYSTEM_CURSOR_MOVE;
-            break;
-        case CURSOR_TEXT:
-            sdlCursorType = SDL_SYSTEM_CURSOR_TEXT;
-            break;
-        case CURSOR_CIRCLE_SLASH:
-            sdlCursorType = SDL_SYSTEM_CURSOR_NOT_ALLOWED;
-            break;
-		case CURSOR_SIZEALL:
-			sdlCursorType = SDL_SYSTEM_CURSOR_MOVE;
-			break;
-        case CURSOR_SIZENESW:
-            sdlCursorType = SDL_SYSTEM_CURSOR_NESW_RESIZE;
-            break;
-        case CURSOR_SIZENS:
-            sdlCursorType = SDL_SYSTEM_CURSOR_NS_RESIZE;
-            break;
-        case CURSOR_SIZENWSE:
-            sdlCursorType = SDL_SYSTEM_CURSOR_NWSE_RESIZE;
-            break;
-        case CURSOR_SIZEWE:
-            sdlCursorType = SDL_SYSTEM_CURSOR_EW_RESIZE;
-            break;
-        case CURSOR_WAIT:
-            sdlCursorType = SDL_SYSTEM_CURSOR_WAIT;
-            break;
-        case CURSOR_NONE:
-            SDL_HideCursor();
-            return;
-        default:
-            sdlCursorType = SDL_SYSTEM_CURSOR_DEFAULT;
-            break;
-    }
+	switch (theCursorType)
+	{
+	case CURSOR_POINTER:
+	case CURSOR_HAND:
+		sdlCursorType = SDL_SYSTEM_CURSOR_POINTER;
+		break;
+	case CURSOR_DRAGGING:
+		sdlCursorType = SDL_SYSTEM_CURSOR_MOVE;
+		break;
+	case CURSOR_TEXT:
+		sdlCursorType = SDL_SYSTEM_CURSOR_TEXT;
+		break;
+	case CURSOR_CIRCLE_SLASH:
+		sdlCursorType = SDL_SYSTEM_CURSOR_NOT_ALLOWED;
+		break;
+	case CURSOR_SIZEALL:
+		sdlCursorType = SDL_SYSTEM_CURSOR_MOVE;
+		break;
+	case CURSOR_SIZENESW:
+		sdlCursorType = SDL_SYSTEM_CURSOR_NESW_RESIZE;
+		break;
+	case CURSOR_SIZENS:
+		sdlCursorType = SDL_SYSTEM_CURSOR_NS_RESIZE;
+		break;
+	case CURSOR_SIZENWSE:
+		sdlCursorType = SDL_SYSTEM_CURSOR_NWSE_RESIZE;
+		break;
+	case CURSOR_SIZEWE:
+		sdlCursorType = SDL_SYSTEM_CURSOR_EW_RESIZE;
+		break;
+	case CURSOR_WAIT:
+		sdlCursorType = SDL_SYSTEM_CURSOR_WAIT;
+		break;
+	case CURSOR_NONE:
+		SDL_HideCursor();
+		return;
+	default:
+		sdlCursorType = SDL_SYSTEM_CURSOR_DEFAULT;
+		break;
+	}
 
 	SDL_Cursor *aCursor = SDL_CreateSystemCursor(sdlCursorType);
 	SDL_SetCursor(aCursor);
-	//SDL_DestroyCursor(aCursor);
+	// SDL_DestroyCursor(aCursor);
 }
 
 void SDLInterface::MakeSimpleMessageBox(const char *theTitle, const char *theMessage, MsgBoxFlags flags)
@@ -392,7 +394,7 @@ void SDLInterface::MakeSimpleMessageBox(const char *theTitle, const char *theMes
 int SDLInterface::MakeResultMessageBox(MsgBoxData data)
 {
 	int buttonid;
-	SDL_ShowMessageBox(reinterpret_cast<const SDL_MessageBoxData*>(&data), &buttonid);
+	SDL_ShowMessageBox(reinterpret_cast<const SDL_MessageBoxData *>(&data), &buttonid);
 
 	return buttonid;
 }
@@ -431,11 +433,11 @@ bool SDLInterface::CreateImageTexture(GPUImage *theImage)
 		wantPurge = theImage->mPurgeBits;
 
 		AutoCrit aCrit(mCritSect); // Make images thread safe
-		mImageSet.insert(static_cast<SDLImage*>(theImage));
+		mImageSet.insert(static_cast<SDLImage *>(theImage));
 	}
 
 	SDLTextureData *aData = static_cast<SDLTextureData *>(theImage->mD3DData);
-	aData->CheckCreateTextures(static_cast<SDLImage*>(theImage));
+	aData->CheckCreateTextures(static_cast<SDLImage *>(theImage));
 
 	if (wantPurge)
 		theImage->PurgeBits();
@@ -642,7 +644,8 @@ void SDLInterface::BltClipF(Image *theImage, float theX, float theY, const Rect 
 		SDL_SetRenderClipRect(mRenderer, &clipRect);
 	}
 
-	SDL_FRect srcRect = {(float)theSrcRect.mX, (float)theSrcRect.mY, (float)theSrcRect.mWidth, (float)theSrcRect.mHeight};
+	SDL_FRect srcRect = {(float)theSrcRect.mX, (float)theSrcRect.mY, (float)theSrcRect.mWidth,
+						 (float)theSrcRect.mHeight};
 
 	SDL_SetTextureBlendMode(aTexture, ChooseBlendMode(theDrawMode));
 	SDL_RenderTexture(mRenderer, aTexture, &srcRect, &destRect);
@@ -667,7 +670,8 @@ void SDLInterface::BltMirror(Image *theImage, float theX, float theY, const Rect
 	SDL_SetTextureAlphaMod(aTexture, theColor.GetAlpha());
 
 	SDL_FRect destRect = {theX, theY, (float)theSrcRect.mWidth, (float)theSrcRect.mHeight};
-	SDL_FRect srcRect = {(float)theSrcRect.mX, (float)theSrcRect.mY, (float)theSrcRect.mWidth, (float)theSrcRect.mHeight};
+	SDL_FRect srcRect = {(float)theSrcRect.mX, (float)theSrcRect.mY, (float)theSrcRect.mWidth,
+						 (float)theSrcRect.mHeight};
 
 	SDL_SetTextureBlendMode(aTexture, ChooseBlendMode(theDrawMode));
 
@@ -748,8 +752,8 @@ void SDLInterface::BltRotated(Image *theImage, float theX, float theY, const Rec
 }
 
 void SDLInterface::BltTransformed(Image *theImage, const Rect *theClipRect, const Color &theColor, int theDrawMode,
-								  const Rect &theSrcRect, const Matrix3 &theTransform, bool linearFilter,
-								  float theX, float theY, bool center)
+								  const Rect &theSrcRect, const Matrix3 &theTransform, bool linearFilter, float theX,
+								  float theY, bool center)
 {
 	SDLImage *aSrcSDLImage = static_cast<SDLImage *>(theImage);
 
@@ -849,7 +853,8 @@ void SDLInterface::DrawTriangle(const TriVertex &p1, const TriVertex &p2, const 
 {
 	SDL_SetRenderTarget(mRenderer, mScreenTexture);
 
-	SDL_FColor aColor = {(float)theColor.GetRed(), (float)theColor.GetGreen(), (float)theColor.GetBlue(), (float)theColor.GetAlpha()};
+	SDL_FColor aColor = {(float)theColor.GetRed(), (float)theColor.GetGreen(), (float)theColor.GetBlue(),
+						 (float)theColor.GetAlpha()};
 
 	int indices[] = {0, 1, 2};
 
@@ -878,7 +883,8 @@ void SDLInterface::DrawTriangleTex(const TriVertex &p1, const TriVertex &p2, con
 	SDL_SetTextureAlphaMod(aTexture, theColor.GetAlpha());
 	SDL_SetTextureBlendMode(aTexture, ChooseBlendMode(theDrawMode));
 
-	SDL_FColor aColor = {(float)theColor.GetRed(), (float)theColor.GetGreen(), (float)theColor.GetBlue(), (float)theColor.GetAlpha()};
+	SDL_FColor aColor = {(float)theColor.GetRed(), (float)theColor.GetGreen(), (float)theColor.GetBlue(),
+						 (float)theColor.GetAlpha()};
 
 	int indices[] = {0, 1, 2};
 
@@ -972,10 +978,8 @@ void SDLInterface::DrawTrianglesTexStrip(const TriVertex theVertices[], int theN
 		uvs.push_back(v.u);
 		uvs.push_back(v.v);
 
-		SDL_FColor color = {(float)((v.color >> 16) & 0xFF),
-			(float)((v.color >> 8) & 0xFF),
-			(float)(v.color & 0xFF),
-			(float)((v.color >> 24) & 0xFF)};
+		SDL_FColor color = {(float)((v.color >> 16) & 0xFF), (float)((v.color >> 8) & 0xFF), (float)(v.color & 0xFF),
+							(float)((v.color >> 24) & 0xFF)};
 		colors.push_back(color);
 	}
 
@@ -996,10 +1000,10 @@ void SDLInterface::FillPoly(const Point theVertices[], int theNumVertices, const
 	if (theNumVertices < 3)
 		if (theNumVertices == 2)
 		{
-			DrawLine(theVertices[0].mX + tx, theVertices[0].mY + ty, theVertices[1].mX + tx, theVertices[1].mY + ty, theColor, theDrawMode);
+			DrawLine(theVertices[0].mX + tx, theVertices[0].mY + ty, theVertices[1].mX + tx, theVertices[1].mY + ty,
+					 theColor, theDrawMode);
 			return;
 		}
-			
 
 	if (theClipRect != nullptr)
 	{
@@ -1009,8 +1013,8 @@ void SDLInterface::FillPoly(const Point theVertices[], int theNumVertices, const
 	}
 
 	for (int i = 0; i < theNumVertices - 1; i++)
-		DrawLine(theVertices[i].mX + tx, theVertices[i].mY + ty, theVertices[i + 1].mX + tx, theVertices[i + 1].mY + ty, theColor,
-				 theDrawMode);
+		DrawLine(theVertices[i].mX + tx, theVertices[i].mY + ty, theVertices[i + 1].mX + tx, theVertices[i + 1].mY + ty,
+				 theColor, theDrawMode);
 
 	DrawLine(theVertices[theNumVertices - 1].mX + tx, theVertices[theNumVertices - 1].mY + ty, theVertices[0].mX + tx,
 			 theVertices[0].mY + ty, theColor, theDrawMode);
@@ -1019,7 +1023,7 @@ void SDLInterface::FillPoly(const Point theVertices[], int theNumVertices, const
 }
 
 void SDLInterface::BltTexture(Texture *theTexture, const Rect &theSrcRect, const Rect &theDestRect,
-					const Color &theColor, int theDrawMode)
+							  const Color &theColor, int theDrawMode)
 {
 	SDLTexture *sdlTex = dynamic_cast<SDLTexture *>(theTexture);
 	if (!sdlTex || !sdlTex->GetSDLTexture())

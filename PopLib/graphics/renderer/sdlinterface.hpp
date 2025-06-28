@@ -50,18 +50,23 @@ struct SDLTextureData
 
 class SDLTexture : public Texture
 {
-public:
-    SDLTexture(SDL_Texture* texture) : mTexture(texture) {}
-    ~SDLTexture() override
-    {
-        if (mTexture)
-            SDL_DestroyTexture(mTexture);
-    }
+  public:
+	SDLTexture(SDL_Texture *texture) : mTexture(texture)
+	{
+	}
+	~SDLTexture() override
+	{
+		if (mTexture)
+			SDL_DestroyTexture(mTexture);
+	}
 
-    SDL_Texture* GetSDLTexture() const { return mTexture; }
+	SDL_Texture *GetSDLTexture() const
+	{
+		return mTexture;
+	}
 
-private:
-    SDL_Texture* mTexture;
+  private:
+	SDL_Texture *mTexture;
 };
 
 class SDLInterface : public Interface
@@ -126,35 +131,37 @@ class SDLInterface : public Interface
 	virtual BlendMode ChooseBlendMode(int theBlendMode);
 
 	// Draw Funcs
-	virtual void Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor, int theDrawMode,
-			 bool linearFilter = false);
+	virtual void Blt(Image *theImage, int theX, int theY, const Rect &theSrcRect, const Color &theColor,
+					 int theDrawMode, bool linearFilter = false);
 	virtual void BltClipF(Image *theImage, float theX, float theY, const Rect &theSrcRect, const Rect *theClipRect,
-				  const Color &theColor, int theDrawMode);
+						  const Color &theColor, int theDrawMode);
 	virtual void BltMirror(Image *theImage, float theX, float theY, const Rect &theSrcRect, const Color &theColor,
-				   int theDrawMode, bool linearFilter = false);
+						   int theDrawMode, bool linearFilter = false);
 	virtual void StretchBlt(Image *theImage, const Rect &theDestRect, const Rect &theSrcRect, const Rect *theClipRect,
-					const Color &theColor, int theDrawMode, bool fastStretch, bool mirror = false);
+							const Color &theColor, int theDrawMode, bool fastStretch, bool mirror = false);
 	virtual void BltRotated(Image *theImage, float theX, float theY, const Rect *theClipRect, const Color &theColor,
-					int theDrawMode, double theRot, float theRotCenterX, float theRotCenterY, const Rect &theSrcRect);
+							int theDrawMode, double theRot, float theRotCenterX, float theRotCenterY,
+							const Rect &theSrcRect);
 	virtual void BltTransformed(Image *theImage, const Rect *theClipRect, const Color &theColor, int theDrawMode,
-						const Rect &theSrcRect, const Matrix3 &theTransform, bool linearFilter, float theX = 0,
-						float theY = 0, bool center = false);
+								const Rect &theSrcRect, const Matrix3 &theTransform, bool linearFilter, float theX = 0,
+								float theY = 0, bool center = false);
 	virtual void DrawLine(double theStartX, double theStartY, double theEndX, double theEndY, const Color &theColor,
-				  int theDrawMode);
+						  int theDrawMode);
 	virtual void FillRect(const Rect &theRect, const Color &theColor, int theDrawMode);
 	virtual void DrawTriangle(const TriVertex &p1, const TriVertex &p2, const TriVertex &p3, const Color &theColor,
-					  int theDrawMode);
+							  int theDrawMode);
 	virtual void DrawTriangleTex(const TriVertex &p1, const TriVertex &p2, const TriVertex &p3, const Color &theColor,
-						 int theDrawMode, Image *theTexture, bool blend = true);
-	virtual void DrawTrianglesTex(const TriVertex theVertices[][3], int theNumTriangles, const Color &theColor, int theDrawMode,
-						  Image *theTexture, float tx = 0, float ty = 0, bool blend = true);
+								 int theDrawMode, Image *theTexture, bool blend = true);
+	virtual void DrawTrianglesTex(const TriVertex theVertices[][3], int theNumTriangles, const Color &theColor,
+								  int theDrawMode, Image *theTexture, float tx = 0, float ty = 0, bool blend = true);
 	virtual void DrawTrianglesTexStrip(const TriVertex theVertices[], int theNumTriangles, const Color &theColor,
-							   int theDrawMode, Image *theTexture, float tx = 0, float ty = 0, bool blend = true);
+									   int theDrawMode, Image *theTexture, float tx = 0, float ty = 0,
+									   bool blend = true);
 	virtual void FillPoly(const Point theVertices[], int theNumVertices, const Rect *theClipRect, const Color &theColor,
-				  int theDrawMode, int tx, int ty);
+						  int theDrawMode, int tx, int ty);
 
-	virtual void BltTexture(Texture *theTexture, const Rect &theSrcRect, const Rect &theDestRect,
-					const Color &theColor, int theDrawMode);
+	virtual void BltTexture(Texture *theTexture, const Rect &theSrcRect, const Rect &theDestRect, const Color &theColor,
+							int theDrawMode);
 };
 } // namespace PopLib
 
