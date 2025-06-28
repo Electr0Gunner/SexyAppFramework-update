@@ -108,12 +108,8 @@ class SDLRenderer : public Renderer
 	virtual bool Redraw(Rect *theClipRect);
 	virtual void SetVideoOnlyDraw(bool videoOnly);
 
-	virtual void SetCursorPos(int theCursorX, int theCursorY);
-	virtual bool SetCursorImage(Image *theImage);
-
 	virtual bool UpdateWindowIcon(Image *theImage);
 
-	virtual void SetCursor(CursorType theCursorType);
 	virtual void DrawText(int theY, int theX, const PopString &theText, const Color &theColor, TTF_Font *theFont);
 
   public:

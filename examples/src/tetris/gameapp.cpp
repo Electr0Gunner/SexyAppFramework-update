@@ -22,6 +22,8 @@ GameApp::GameApp()
 	mHeight = 600;
 
 	mBoard = nullptr;
+
+	mDebugKeysEnabled = true;
 }
 
 GameApp::~GameApp()

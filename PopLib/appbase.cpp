@@ -156,7 +156,6 @@ AppBase::AppBase()
 	mLoadingThreadStarted = false;
 	mAutoStartLoadingThread = true;
 	mLoadingThreadCompleted = false;
-	mCursorThreadRunning = false;
 	mNumLoadingThreadTasks = 0;
 	mCompletedLoadingThreadTasks = 0;
 	mLastDrawTick = SDL_GetTicks();
@@ -325,9 +324,6 @@ AppBase::~AppBase()
 	BASS_Stop();
 
 	WaitForLoadingThread();
-
-	SDL_DestroyCursor(mHandCursor);
-	SDL_DestroyCursor(mDraggingCursor);
 
 	gAppBase = nullptr;
 
@@ -1421,12 +1417,6 @@ void AppBase::Shutdown()
 		mShutdown = true;
 		ShutdownHook();
 
-		// Blah
-		while (mCursorThreadRunning)
-		{
-			SDL_Delay(10);
-		}
-
 		if (mWindow)
 			SDL_DestroyWindow(mWindow);
 
@@ -2341,71 +2331,6 @@ void AppBase::StartLoadingThread()
 		SDL_DetachThread(aThread);
 	}
 }
-void AppBase::CursorThreadProc()
-{
-	SDL_SetCurrentThreadPriority(SDL_THREAD_PRIORITY_HIGH);
-	SDL_Point aLastCursorPos = {0, 0};
-	int aLastDrawCount = 0;
-
-	while (!mShutdown)
-	{
-
-		SDL_Point aCursorPos;
-
-		float x, y;
-
-		SDL_GetMouseState(&x, &y);
-
-		aCursorPos.x = (int)x;
-		aCursorPos.y = (int)y;
-
-		if (aLastDrawCount != mDrawCount)
-		{
-			// We did a draw so we may have committed a pending mNextCursorX/Y
-			aLastCursorPos.x = mRenderer->mCursorX;
-			aLastCursorPos.y = mRenderer->mCursorY;
-		}
-
-		if ((aCursorPos.x != aLastCursorPos.x) || (aCursorPos.y != aLastCursorPos.y))
-		{
-			Uint32 aTimeNow = SDL_GetTicks();
-			if (aTimeNow - mNextDrawTick > mRenderer->mMillisecondsPerFrame + 5)
-			{
-				// Do the special drawing if we are rendering at less than full framerate
-				mRenderer->SetCursorPos(aCursorPos.x, aCursorPos.y);
-				aLastCursorPos = aCursorPos;
-			}
-			else
-			{
-				// Set them up to get assigned in the next screen redraw
-				mRenderer->mNextCursorX = aCursorPos.x;
-				mRenderer->mNextCursorY = aCursorPos.y;
-			}
-		}
-
-		SDL_Delay(10);
-	}
-
-	mCursorThreadRunning = false;
-}
-
-int AppBase::CursorThreadProcStub(void *theArg)
-{
-	AppBase *aPopLibApp = (AppBase *)theArg;
-	aPopLibApp->CursorThreadProc();
-	return 0;
-}
-
-void AppBase::StartCursorThread()
-{
-	if (!mCursorThreadRunning)
-	{
-		mCursorThreadRunning = true;
-		SDL_SetCurrentThreadPriority(SDL_THREAD_PRIORITY_HIGH);
-		SDL_Thread *aThread = SDL_CreateThread(CursorThreadProcStub, "CursorThread", (void *)this);
-		SDL_DetachThread(aThread);
-	}
-}
 
 void AppBase::SwitchScreenMode(bool wantWindowed, bool is3d, bool force)
 {
@@ -2463,30 +2388,75 @@ void AppBase::SetAlphaDisabled(bool isDisabled)
 void AppBase::EnforceCursor()
 {
     bool wantSysCursor = true;
+	
+	SDL_SystemCursor sdlCursorType;
 
-    if (mRenderer == nullptr)
-        return;
-
+	switch (mCursorNum)
+	{
+		case CURSOR_HAND:
+			sdlCursorType = SDL_SYSTEM_CURSOR_POINTER;
+			break;
+		case CURSOR_DRAGGING:
+			sdlCursorType = SDL_SYSTEM_CURSOR_MOVE;
+			break;
+		case CURSOR_TEXT:
+			sdlCursorType = SDL_SYSTEM_CURSOR_TEXT;
+			break;
+		case CURSOR_CIRCLE_SLASH:
+			sdlCursorType = SDL_SYSTEM_CURSOR_NOT_ALLOWED;
+			break;
+		case CURSOR_SIZEALL:
+			sdlCursorType = SDL_SYSTEM_CURSOR_MOVE;
+			break;
+		case CURSOR_SIZENESW:
+			sdlCursorType = SDL_SYSTEM_CURSOR_NESW_RESIZE;
+			break;
+		case CURSOR_SIZENS:
+			sdlCursorType = SDL_SYSTEM_CURSOR_NS_RESIZE;
+			break;
+		case CURSOR_SIZENWSE:
+			sdlCursorType = SDL_SYSTEM_CURSOR_NWSE_RESIZE;
+			break;
+		case CURSOR_SIZEWE:
+			sdlCursorType = SDL_SYSTEM_CURSOR_EW_RESIZE;
+			break;
+		case CURSOR_WAIT:
+			sdlCursorType = SDL_SYSTEM_CURSOR_WAIT;
+			break;
+		case CURSOR_NONE:
+			SDL_HideCursor();
+			return;
+		case CURSOR_POINTER:
+		default:
+			sdlCursorType = SDL_SYSTEM_CURSOR_DEFAULT;
+			break;
+	}
+	
     if ((mSEHOccured) || (!mMouseIn))
     {
-        mRenderer->SetCursor(CURSOR_POINTER);
-        if (mRenderer->SetCursorImage(nullptr))
-            mCustomCursorDirty = true;
+		SDL_Cursor *aCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_POINTER);
+		SDL_SetCursor(aCursor);
     }
     else
     {
+
         if ((mCursorImages[mCursorNum] == nullptr) || ((!mCustomCursorsEnabled) && (mCursorNum != CURSOR_CUSTOM)))
         {
-            mRenderer->SetCursor(static_cast<CursorType>(mCursorNum));
-            if (mRenderer->SetCursorImage(nullptr))
-                mCustomCursorDirty = true;
+            SDL_Cursor *aCursor = SDL_CreateSystemCursor(sdlCursorType);
+			SDL_SetCursor(aCursor);
         }
         else
         {
-            if (mRenderer->SetCursorImage(mCursorImages[mCursorNum]))
-                mCustomCursorDirty = true;
+			SDL_Surface *aSurface =
+				SDL_CreateSurfaceFrom(mCursorImages[mCursorNum]->mWidth, mCursorImages[mCursorNum]->mHeight, SDL_PIXELFORMAT_ARGB8888,
+									((SDLImage *)mCursorImages[mCursorNum])->GetBits(), mCursorImages[mCursorNum]->mWidth * sizeof(ulong));
 
-            wantSysCursor = false;
+			SDL_Cursor *aCursor = SDL_CreateColorCursor(aSurface, mCursorImages[mCursorNum]->mWidth / 2, mCursorImages[mCursorNum]->mHeight / 2);
+
+			SDL_SetCursor(aCursor);
+
+			SDL_DestroySurface(aSurface);
+
         }
     }
 
@@ -2873,8 +2843,6 @@ void AppBase::Start()
 {
 	if (mShutdown)
 		return;
-
-	StartCursorThread();
 
 	if (mAutoStartLoadingThread)
 		StartLoadingThread();

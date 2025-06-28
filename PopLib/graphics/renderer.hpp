@@ -26,6 +26,16 @@ enum BlendMode
 	BLENDMODE_LAST,
 };
 
+
+enum TextureFlags
+{
+    Flag_MinimizeNumSubdivisions = 0x0001,		// subdivide image into fewest possible textures (may use more memory)
+    Flag_Use64By64Subdivisions = 0x0002,		// good to use with image strips so the entire texture isn't pulled in when drawing just a piece
+    Flag_UseA4R4G4B4 = 0x0004,		// images with not too many color gradients work well in this format
+    Flag_UseA8R8G8B8 = 0x0008,		// non-alpha images will be stored as R5G6B5 by default so use this option if you want a 32-bit non-alpha image
+	Flag_NearestFiltering = 0x0016 //use the nearest filtering for texture scaling.
+};
+
 struct MsgBoxData
 {
 	MsgBoxFlags mFlags;
@@ -39,6 +49,16 @@ struct ImageData
 	int height;
 	std::vector<uint8_t> pixels; // RGBA8
 };
+
+enum PixelFormat
+{
+	PixelFormat_Unknown				=			0x0000,
+	PixelFormat_A8R8G8B8			=			0x0001,
+	PixelFormat_A4R4G4B4			=			0x0002,
+	PixelFormat_R5G6B5				=			0x0004,
+	PixelFormat_Palette8			=			0x0008
+};
+
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -89,13 +109,7 @@ class Renderer
 	int mRefreshRate;
 	int mMillisecondsPerFrame;
 
-	Image *mCursorImage;
 	GPUImage *mScreenImage;
-
-	int mNextCursorX;
-	int mNextCursorY;
-	int mCursorX;
-	int mCursorY;
 
   public:
 	Renderer();
@@ -119,12 +133,7 @@ class Renderer
 
 	virtual std::unique_ptr<ImageData> CaptureFrameBuffer() = 0;
 
-	virtual void SetCursorPos(int theCursorX, int theCursorY) = 0;
-
-	virtual bool SetCursorImage(Image *theImage) = 0;
 	virtual bool UpdateWindowIcon(Image *theImage) = 0;
-
-	virtual void SetCursor(CursorType theCursorType) = 0;
 
 	virtual void PushTransform(const Matrix3 &theTransform, bool concatenate = true) = 0;
 	virtual void PopTransform() = 0;

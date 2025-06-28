@@ -30,12 +30,8 @@ SDLRenderer::SDLRenderer(AppBase *theApp)
 	mPresentationRect = Rect(0, 0, mWidth, mHeight);
 	mScreenImage = nullptr;
 	mHasInitiated = false;
-	mCursorX = 0;
-	mCursorY = 0;
 	mIs3D = false;
 	mMillisecondsPerFrame = 0;
-	mNextCursorX = 0;
-	mNextCursorY = 0;
 	mRefreshRate = 0;
 	mRenderer = nullptr;
 	mScreenTexture = nullptr;
@@ -279,47 +275,6 @@ void SDLRenderer::SetVideoOnlyDraw(bool videoOnly)
 	mScreenImage->SetImageMode(false, false);
 }
 
-/// <summary>
-/// Set the next cursor position
-/// </summary>
-/// <param name="theCursorX"></param>
-/// <param name="theCursorY"></param>
-void SDLRenderer::SetCursorPos(int theCursorX, int theCursorY)
-{
-	mNextCursorX = theCursorX;
-	mNextCursorY = theCursorY;
-}
-
-/// <summary>
-/// Set the cursor image to a Image* or nullptr to hide the cursor
-/// </summary>
-/// <param name="theImage"></param>
-/// <returns></returns>
-bool SDLRenderer::SetCursorImage(Image *theImage)
-{
-	AutoCrit anAutoCrit(mCritSect);
-
-	if (mCursorImage != theImage)
-	{
-		mCursorImage = theImage;
-		if (theImage == nullptr)
-			return true;
-		SDL_Surface *aSurface =
-			SDL_CreateSurfaceFrom(theImage->mWidth, theImage->mHeight, SDL_PIXELFORMAT_ARGB8888,
-								  ((SDLImage *)mCursorImage)->GetBits(), theImage->mWidth * sizeof(ulong));
-
-		SDL_Cursor *aCursor = SDL_CreateColorCursor(aSurface, mCursorImage->mWidth / 2, mCursorImage->mHeight / 2);
-
-		SDL_SetCursor(aCursor);
-
-		SDL_DestroySurface(aSurface);
-
-		return true;
-	}
-
-	return false;
-}
-
 bool SDLRenderer::UpdateWindowIcon(Image *theImage)
 {
 	if (theImage != nullptr)
@@ -334,56 +289,6 @@ bool SDLRenderer::UpdateWindowIcon(Image *theImage)
 		return true;
 	}
 	return false;
-}
-
-void SDLRenderer::SetCursor(CursorType theCursorType)
-{
-	SDL_SystemCursor sdlCursorType;
-
-	switch (theCursorType)
-	{
-	case CURSOR_POINTER:
-	case CURSOR_HAND:
-		sdlCursorType = SDL_SYSTEM_CURSOR_POINTER;
-		break;
-	case CURSOR_DRAGGING:
-		sdlCursorType = SDL_SYSTEM_CURSOR_MOVE;
-		break;
-	case CURSOR_TEXT:
-		sdlCursorType = SDL_SYSTEM_CURSOR_TEXT;
-		break;
-	case CURSOR_CIRCLE_SLASH:
-		sdlCursorType = SDL_SYSTEM_CURSOR_NOT_ALLOWED;
-		break;
-	case CURSOR_SIZEALL:
-		sdlCursorType = SDL_SYSTEM_CURSOR_MOVE;
-		break;
-	case CURSOR_SIZENESW:
-		sdlCursorType = SDL_SYSTEM_CURSOR_NESW_RESIZE;
-		break;
-	case CURSOR_SIZENS:
-		sdlCursorType = SDL_SYSTEM_CURSOR_NS_RESIZE;
-		break;
-	case CURSOR_SIZENWSE:
-		sdlCursorType = SDL_SYSTEM_CURSOR_NWSE_RESIZE;
-		break;
-	case CURSOR_SIZEWE:
-		sdlCursorType = SDL_SYSTEM_CURSOR_EW_RESIZE;
-		break;
-	case CURSOR_WAIT:
-		sdlCursorType = SDL_SYSTEM_CURSOR_WAIT;
-		break;
-	case CURSOR_NONE:
-		SDL_HideCursor();
-		return;
-	default:
-		sdlCursorType = SDL_SYSTEM_CURSOR_DEFAULT;
-		break;
-	}
-
-	SDL_Cursor *aCursor = SDL_CreateSystemCursor(sdlCursorType);
-	SDL_SetCursor(aCursor);
-	// SDL_DestroyCursor(aCursor);
 }
 
 void SDLRenderer::PushTransform(const Matrix3 &theTransform, bool concatenate)

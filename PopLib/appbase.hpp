@@ -351,10 +351,6 @@ class AppBase : public ButtonListener, public DialogListener
 	int mCursorNum;
 	/// @brief (SoundManager) app sound manager
 	SoundManager *mSoundManager;
-	/// @brief current hand cursor
-	SDL_Cursor *mHandCursor;
-	/// @brief current dragging cursor
-	SDL_Cursor *mDraggingCursor;
 	/// @brief list of widgets to be safely deleted
 	WidgetSafeDeleteList mSafeDeleteList;
 	/// @brief TBA
@@ -401,8 +397,6 @@ class AppBase : public ButtonListener, public DialogListener
 	bool mYieldMainThread;
 	/// @brief true if loading failed
 	bool mLoadingFailed;
-	/// @brief true if cursor thread running
-	bool mCursorThreadRunning;
 	/// @brief true if has system cursor
 	bool mSysCursor;
 	/// @brief true if custom cursors are enabled
@@ -517,15 +511,6 @@ class AppBase : public ButtonListener, public DialogListener
 	virtual void LoadingThreadCompleted();
 	/// @brief stub for loading thread
 	static int LoadingThreadProcStub(void *theArg);
-
-	// Cursor thread methods
-
-	/// @brief TBA
-	void CursorThreadProc();
-	/// @brief stub for cursor thread
-	static int CursorThreadProcStub(void *theArg);
-	/// @brief TBA
-	void StartCursorThread();
 
 	/// @brief TBA
 	void WaitForLoadingThread();
